@@ -1,0 +1,66 @@
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>DocTear</title>
+    <style>
+        @keyframes scale-y {
+            0% { transform: scaleY(1); }
+            to { transform: scaleY(3); }
+        }
+
+        :root {
+            font-size: 16px;
+        }
+
+        #application,
+        #loader {
+            transition: opacity 0.5s linear 0.5s;
+        }
+
+        #application:empty,
+        #application:not(:empty) + #loader {
+            opacity: 0;
+        }
+
+        #loader {
+            pointer-events: none;
+
+            position: fixed;
+
+            left: 50%;
+            top:  50%;
+
+            height: 20rem;
+            width:  20rem;
+
+            transform: translate(-50%, -50%);
+        }
+
+        #loader path {
+            fill: #424242;
+        }
+
+        #loader path:nth-child(-n+5) {
+            animation: infinite alternate scale-y 0.5s;
+            transform-origin: center top;
+        }
+
+        #loader path:nth-child(2) { animation-delay: 0.2s; }
+        #loader path:nth-child(3) { animation-delay: 0.1s; }
+        #loader path:nth-child(4) { animation-delay: 0.3s; }
+        #loader path:nth-child(5) { animation-delay: 0.4s; }
+    </style>
+</head>
+
+<body>
+    <div id="application"></div>
+    <svg id="loader" viewBox="0 0 32 28">
+        <path d="M7 21v2h1v-2zm10 0v2h1v-2" />
+        <path d="M9 21v2h1v-2zm16 0v2h1v-2" />
+        <path d="M11 21v2h1v-2zm10 0v2h1v-2" />
+        <path d="M13 21v2h1v-2zm6 0v2h1v-2" />
+        <path d="M15 21v2h1v-2zm8 0v2h1v-2" />
+        <path d="M27 20H6v2H5v-5h1v2h21v-2h1v5h-1v-2zm-1-2v-8l-6-7H9C7 3 7 4 7 5v13h1V5c0-1 0-1 1-1h10v5c0 1 1 2 2 2h4v7z" />
+    </svg>
+</body>
