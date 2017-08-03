@@ -9,6 +9,8 @@
   "dependencies": {
     "autoprefixer": "7.1.2",
     "babel-runtime": "6.23.0",
+    "baobab": "2.4.3",
+    "baobab-react": "2.1.2",
     "faker": "4.1.0",
     "html-minifier": "3.5.2",
     "meteor-node-stubs": "0.2.11",

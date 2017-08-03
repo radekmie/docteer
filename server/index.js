@@ -26,9 +26,9 @@ Meteor.methods({
 
         const groups = faker.random.array(3, 5, () =>
             ({
-                _id:  faker.random.uuid().substr(0, 8),
-                name: faker.commerce.department(),
-                tags: faker.random.array(3, 5, () =>
+                _id:    faker.random.uuid().substr(0, 8),
+                name:   faker.commerce.department(),
+                labels: faker.random.array(3, 5, () =>
                     ({
                         _id:  faker.random.uuid().substr(0, 8),
                         name: faker.commerce.product()
@@ -37,19 +37,19 @@ Meteor.methods({
             })
         );
 
-        const tags = groups.reduce((tags, group) => tags.concat(group.tags), []);
+        const labels = groups.reduce((labels, group) => labels.concat(group.labels), []);
 
-        const testcases = faker.random.array(10, 50, () =>
+        const proofs = faker.random.array(10, 50, () =>
             ({
                 _id:    faker.random.uuid().substr(0, 8),
                 name:   faker.lorem.sentence(),
                 expect: faker.lorem.sentences(),
                 target: faker.lorem.sentences(),
                 steps:  faker.random.array(2, 10, faker.lorem.sentence),
-                tags:   groups.map(group =>
+                labels: groups.map(group =>
                     ({
                         group,
-                        ...faker.random.arrayElement(group.tags)
+                        ...faker.random.arrayElement(group.labels)
                     })
                 )
             })
@@ -57,8 +57,8 @@ Meteor.methods({
 
         return {
             groups,
-            tags,
-            testcases
+            labels,
+            proofs
         };
     }
 });
