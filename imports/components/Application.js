@@ -198,21 +198,15 @@ const Application = branch(props => ({
     view:   ['view']
 }), class Application extends React.PureComponent {
     onChange = (_id, key, value) =>
-        this.props.dispatch(tree => {
-            if (tree.get(['proofsLocal', _id])) {
-                if (JSON.stringify(tree.get(['proofsRemote', {_id}])[key]) === JSON.stringify(value)) {
-                    if (Object.keys(tree.get(['proofsLocal', _id])).length === 1) {
-                        tree.unset(['proofsLocal', _id]);
-                    } else {
-                        tree.unset(['proofsLocal', _id, key]);
-                    }
-                } else {
-                    tree.set(['proofsLocal', _id, key], value);
-                }
-            } else {
-                tree.set(['proofsLocal', _id], value);
-            }
-        })
+        this.props.dispatch(tree =>
+            tree.get(['proofsLocal', _id])
+                ? JSON.stringify(tree.get(['proofsRemote', {_id}])[key]) === JSON.stringify(value)
+                    ? Object.keys(tree.get(['proofsLocal', _id])).length === 1
+                        ? tree.unset(['proofsLocal', _id])
+                        : tree.unset(['proofsLocal', _id, key])
+                    : tree.set(['proofsLocal', _id, key], value)
+                : tree.set(['proofsLocal', _id], {[key]: value})
+        )
     ;
 
     onFilter = _id =>
