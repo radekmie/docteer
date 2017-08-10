@@ -1,9 +1,14 @@
 import {Meteor} from 'meteor/meteor';
+import {Mongo}  from 'meteor/mongo';
 
-import {PlainCollection} from '/imports/lib';
+export const Proofs = new Mongo.Collection('proofs');
 
-export const Proofs = new PlainCollection('proofs');
-
-Meteor.publish('proofs', function proofs () {
-    return Proofs.find();
+Proofs.allow({
+    update: () => true
 });
+
+if (Meteor.isServer) {
+    Meteor.publish('proofs', function proofs () {
+        return Proofs.find();
+    });
+}

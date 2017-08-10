@@ -15,17 +15,21 @@
 
         #application,
         #loader {
-            transition: opacity 0.5s linear 0.5s;
+            transition: opacity 0.5s linear 0.25s;
         }
 
-        #application:empty,
-        #application:not(:empty) + #loader {
+        #application.loading,
+        #loader {
+            pointer-events: none;
+        }
+
+        #application.loading,
+        #application:not(.loading):empty,
+        #application:not(.loading):not(:empty) + #loader {
             opacity: 0;
         }
 
         #loader {
-            pointer-events: none;
-
             position: fixed;
 
             left: 50%;

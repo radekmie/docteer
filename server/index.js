@@ -1,8 +1,11 @@
-import faker    from 'faker/locale/en';
 import {minify} from 'html-minifier';
 
 import {Boilerplate} from 'meteor/boilerplate-generator';
 import {Meteor}      from 'meteor/meteor';
+import {check}       from 'meteor/check';
+
+import {Labels} from '/imports/api/labels';
+import {Proofs} from '/imports/api/proofs';
 
 if (Meteor.isProduction) {
     const options = {
@@ -21,44 +24,32 @@ if (Meteor.isProduction) {
 }
 
 Meteor.methods({
-    randomData () {
-        faker.random.array = (min, max, fn) => Array.from({length: faker.random.number({max, min})}, fn);
+    patch (patch) {
+        check(patch, {
+            labels: Object,
+            proofs: Object
+        });
 
-        const groups = faker.random.array(3, 5, () =>
-            ({
-                _id:    faker.random.uuid().substr(0, 8),
-                name:   faker.commerce.department(),
-                labels: faker.random.array(3, 5, () =>
-                    ({
-                        _id:  faker.random.uuid().substr(0, 8),
-                        name: faker.commerce.product()
-                    })
-                )
-            })
-        );
+        const now = Date.now();
 
-        const labels = groups.reduce((labels, group) => labels.concat(group.labels), []);
+        bulkPatch(Labels, patch.labels);
+        bulkPatch(Proofs, patch.proofs);
 
-        const proofs = faker.random.array(10, 50, () =>
-            ({
-                _id:    faker.random.uuid().substr(0, 8),
-                name:   faker.lorem.sentence(),
-                expect: faker.lorem.sentences(),
-                target: faker.lorem.sentences(),
-                steps:  faker.random.array(2, 10, faker.lorem.sentence),
-                labels: groups.map(group =>
-                    ({
-                        group,
-                        ...faker.random.arrayElement(group.labels)
-                    })
-                )
-            })
-        );
+        const elapsed = Date.now() - now;
+        const minimum = 2000;
 
-        return {
-            groups,
-            labels,
-            proofs
-        };
+        if (elapsed < minimum)
+            Meteor._sleepForMs(minimum - elapsed);
     }
 });
+
+function bulkPatch (collection, patch) {
+    const keys = Object.keys(patch);
+    if (!keys.length)
+        return;
+
+    const hand = collection.rawCollection();
+    const bulk = hand.initializeUnorderedBulkOp();
+    keys.forEach(_id => bulk.find({_id}).update({$set: patch[_id]}));
+    bulk.execute();
+}
