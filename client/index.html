@@ -15,7 +15,11 @@
 
         #application,
         #loader {
-            transition: opacity 0.5s linear 0.25s;
+            transition: opacity 0.5s linear 0.1s;
+        }
+
+        #application.loading {
+            transition-delay: 0;
         }
 
         #application.loading,

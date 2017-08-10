@@ -2,6 +2,8 @@ import Link     from 'react-router-dom/Link';
 import React    from 'react';
 import {branch} from 'baobab-react/higher-order';
 
+import {Meteor} from 'meteor/meteor';
+
 class Editable extends React.PureComponent {
     onRef = element => this.element = element;
     onChange = () => {
@@ -27,7 +29,7 @@ class Editable extends React.PureComponent {
         if (this.props.html !== props.html && this.element.innerHTML !== props.html)
             return true;
 
-        if (props.tag === 'ol' && !this.element.innerHTML.startsWith('<li>'))
+        if ((props.tag === 'ol' || props.tag === 'ul') && !this.element.innerHTML.startsWith('<li>'))
             return true;
 
         return false;
@@ -42,6 +44,7 @@ class Editable extends React.PureComponent {
         const {disabled, html, tag, ...props} = this.props;
 
         return React.createElement(tag || 'div', Object.assign(props, {
+            className: ['ph1', props.className, disabled || 'bg-near-white'].filter(Boolean).join(' '),
             contentEditable: !disabled,
             dangerouslySetInnerHTML: {__html: html},
 
@@ -63,14 +66,14 @@ class Description extends React.PureComponent {
 }
 
 class LabelsLabel extends React.PureComponent {
-    onFilter = () => this.props.onFilter(this.props.label._id);
+    onFilter = () => this.props.onFilter(this.props.label);
 
     render () {
         return (
             <li>
-                <label className="db pointer" htmlFor={this.props.label._id}>
-                    <input checked={this.props.filter.includes(this.props.label._id)} className="mr2 v-mid" id={this.props.label._id} onChange={this.onFilter} type="checkbox" />
-                    {this.props.label.name}
+                <label className="db pointer" htmlFor={this.props.label}>
+                    <input checked={this.props.filter.includes(this.props.label)} className="mr2 v-mid" id={this.props.label} onChange={this.onFilter} type="checkbox" />
+                    {this.props.label}
                 </label>
             </li>
         );
@@ -84,7 +87,7 @@ class Labels extends React.PureComponent {
                 {this.props.labels.map(label =>
                     <LabelsLabel
                         filter={this.props.filter}
-                        key={label._id}
+                        key={label}
                         label={label}
                         onFilter={this.props.onFilter}
                     />
@@ -97,7 +100,7 @@ class Labels extends React.PureComponent {
 class Header extends React.PureComponent {
     render () {
         return (
-            <header className="bb bw1 cf ph3 pv1">
+            <header className="bb bw1 cf pv1">
                 <Link to="/">
                     <svg className="fl w3" viewBox="0 0 32 32">
                         <path d="M7 21v4h1v-4zm10 0v4h1v-4" />
@@ -121,6 +124,7 @@ class Proof extends React.PureComponent {
     onChange = (key, map) => html => this.props.onChange(this.props.proof._id, key, map ? map(html) : html);
 
     onExpect = this.onChange('expect');
+    onLabels = this.onChange('labels', listToSteps);
     onName   = this.onChange('name');
     onSteps  = this.onChange('steps', listToSteps);
     onTarget = this.onChange('target');
@@ -132,15 +136,7 @@ class Proof extends React.PureComponent {
                 <dd><Editable disabled={this.props.view} html={this.props.proof.name} onChange={this.onName} /></dd>
 
                 <dt className="mt3"><b>Labels:</b></dt>
-                <dd>
-                    <ul className="mv0 pl0">
-                        {this.props.proof.labels.map(_id =>
-                            <li key={_id}>
-                                <i>{this.props.labels.find(label => label._id === _id).name}</i>
-                            </li>
-                        )}
-                    </ul>
-                </dd>
+                <dd><Editable className="mv0 pl0" disabled={this.props.view} html={stepsToList(this.props.proof.labels)} onChange={this.onLabels} tag="ul" /></dd>
 
                 <dt className="mt3"><b>Description:</b></dt>
                 <dd><Editable disabled={this.props.view} html={this.props.proof.target} onChange={this.onTarget} /></dd>
@@ -160,7 +156,7 @@ class ProofsProof extends React.PureComponent {
         return (
             <li>
                 <Link className="black dim link" to={{pathname: this.props.proof._id, search: this.props.search}}>
-                    {this.props.proof.name}
+                    {this.props.proof.name || '(untitled)'}
                 </Link>
             </li>
         );
@@ -179,11 +175,59 @@ class Proofs extends React.PureComponent {
     }
 }
 
+const iconAdd = (
+    <svg className="ma1" viewBox="0 0 512 512">
+        <path fill="currentColor" fillRule="evenodd" d="M417.4 224H288V94.6c0-16.9-14.3-30.6-32-30.6s-32 13.7-32 30.6V224H94.6C77.7 224 64 238.3 64 256s13.7 32 30.6 32H224v129.4c0 16.9 14.3 30.6 32 30.6s32-13.7 32-30.6V288h129.4c16.9 0 30.6-14.3 30.6-32s-13.7-32-30.6-32z" />
+    </svg>
+);
+
+const iconDo = (
+    <svg className="ma1" viewBox="0 0 512 512">
+        <path fill="currentColor" fillRule="evenodd" d="M448 294.4v-76.8h-42.8c-3.4-14.4-8.9-28-16.1-40.5l29.8-29.7-54.3-54.3-29.1 29.1c-12.6-7.7-26.4-13.5-41.1-17.3V64h-76.8v40.9c-14.7 3.8-28.5 9.7-41.1 17.3l-29.1-29.1-54.3 54.3 29.8 29.7c-7.2 12.5-12.6 26.1-16.1 40.5H64v76.8h44.1c3.8 13.7 9.5 26.6 16.7 38.6l-31.7 31.7 54.3 54.3 32.3-32.3c11.7 6.8 24.5 11.9 37.9 15.4v46h76.8v-46c13.5-3.5 26.2-8.6 37.9-15.4l32.3 32.3 54.3-54.3-31.6-31.7c7.2-11.9 12.9-24.8 16.7-38.6h44zm-192 15.4c-29.7 0-53.7-24.1-53.7-53.8s24-53.8 53.7-53.8 53.8 24.1 53.8 53.8-24.1 53.8-53.8 53.8z" />
+    </svg>
+);
+
+const iconNo = (
+    <svg className="ma1" viewBox="0 0 512 512">
+        <path fill="currentColor" fillRule="evenodd" d="M443.6 387.1L312.4 255.4l131.5-130c5.4-5.4 5.4-14.2 0-19.6l-37.4-37.6c-2.6-2.6-6.1-4-9.8-4-3.7 0-7.2 1.5-9.8 4L256 197.8 124.9 68.3c-2.6-2.6-6.1-4-9.8-4-3.7 0-7.2 1.5-9.8 4L68 105.9c-5.4 5.4-5.4 14.2 0 19.6l131.5 130L68.4 387.1c-2.6 2.6-4.1 6.1-4.1 9.8 0 3.7 1.4 7.2 4.1 9.8l37.4 37.6c2.7 2.7 6.2 4.1 9.8 4.1 3.5 0 7.1-1.3 9.8-4.1L256 313.1l130.7 131.1c2.7 2.7 6.2 4.1 9.8 4.1 3.5 0 7.1-1.3 9.8-4.1l37.4-37.6c2.6-2.6 4.1-6.1 4.1-9.8-.1-3.6-1.6-7.1-4.2-9.7z" />
+    </svg>
+);
+
+const iconOk = (
+    <svg className="ma1" viewBox="0 0 512 512">
+        <path fill="currentColor" fillRule="evenodd" d="M448 71.9c-17.3-13.4-41.5-9.3-54.1 9.1L214 344.2l-99.1-107.3c-14.6-16.6-39.1-17.4-54.7-1.8-15.6 15.5-16.4 41.6-1.7 58.1 0 0 120.4 133.6 137.7 147 17.3 13.4 41.5 9.3 54.1-9.1l206.3-301.7c12.6-18.5 8.7-44.2-8.6-57.5z" />
+    </svg>
+);
+
+const iconRemove = (
+    <svg className="ma1" viewBox="0 0 512 512">
+        <path fill="currentColor" fillRule="evenodd" d="M417.4 224H94.6C77.7 224 64 238.3 64 256s13.7 32 30.6 32h322.8c16.9 0 30.6-14.3 30.6-32s-13.7-32-30.6-32z" />
+    </svg>
+);
+
 class Viewer extends React.PureComponent {
     render () {
         return (
-            <div className="bb bw1 cf ph3 pointer pv1 tc" onClick={this.props.onView}>
-                {this.props.load ? '~~LOAD~~' : this.props.view ? '~~VIEW~~' : '~~EDIT~~'}
+            <div className="bottom-1 fixed right-1">
+                <div className="b--black ba bg-white br-100 bw1 cf h2 hover-dark-pink link mb1 pointer tc w2" onClick={this.props.onAdd}>
+                    {iconAdd}
+                </div>
+
+                {this.props.view || this.props.proof && (
+                    <div className="b--black ba bg-white br-100 bw1 cf h2 hover-red link mb1 pointer tc w2" onClick={this.props.onRemove}>
+                        {iconRemove}
+                    </div>
+                )}
+
+                {this.props.view || (
+                    <div className="b--black ba bg-white br-100 bw1 cf h2 hover-green link mb1 pointer tc w2" onClick={this.props.onSave}>
+                        {iconOk}
+                    </div>
+                )}
+
+                <div className={`b--black ba bg-white br-100 bw1 cf h2 hover-${this.props.view ? 'dark-blue' : 'blue'} link pointer tc w2`} onClick={this.props.onView}>
+                    {this.props.view ? iconDo : iconNo}
+                </div>
             </div>
         );
     }
@@ -192,13 +236,30 @@ class Viewer extends React.PureComponent {
 const Application = branch(props => ({
     filter: ['proofsFilter'],
     labels: ['labels'],
-    load:   ['load'],
     proof:  ['proofs', {_id: props.match.params.proof}],
     proofs: ['proofsFiltered'],
     view:   ['view']
 }), class Application extends React.PureComponent {
-    onChange = (_id, key, value) =>
-        this.props.dispatch(tree =>
+    onAdd = () => {
+        this.props.dispatch(tree => tree.set(['load'], true));
+
+        Meteor.call('create', (error, _id) => {
+            this.props.dispatch(tree => {
+                tree.set(['load'], false);
+
+                error
+                    ? alert(error.error)
+                    : this.props.dispatch(tree => {
+                        tree.set(['view'], false);
+                        tree.set(['proof'], _id);
+                    })
+                ;
+            });
+        });
+    };
+
+    onChange = (_id, key, value) => {
+        this.props.dispatch(tree => {
             tree.get(['proofsLocal', _id])
                 ? JSON.stringify(tree.get(['proofsRemote', {_id}])[key]) === JSON.stringify(value)
                     ? Object.keys(tree.get(['proofsLocal', _id])).length === 1
@@ -206,31 +267,57 @@ const Application = branch(props => ({
                         : tree.unset(['proofsLocal', _id, key])
                     : tree.set(['proofsLocal', _id, key], value)
                 : tree.set(['proofsLocal', _id], {[key]: value})
-        )
-    ;
+            ;
+        });
+    };
 
-    onFilter = _id =>
+    onFilter = _id => {
         this.props.dispatch(tree => {
             const index = tree.get(['proofsFilter']).indexOf(_id);
 
-            if (index === -1) {
-                tree.push(['proofsFilter'], _id);
-            } else {
-                tree.unset(['proofsFilter', index]);
-            }
-        })
-    ;
+            index === -1
+                ? tree.push(['proofsFilter'], _id)
+                : tree.unset(['proofsFilter', index])
+            ;
+        });
+    };
 
-    onView = () =>
-        this.props.dispatch(tree => tree.set('view', !tree.get('view')))
-    ;
+    onRemove = () => {
+        this.props.dispatch(tree => tree.set(['load'], true));
+
+        Meteor.call('remove', this.props.proof._id, error => {
+            this.props.dispatch(tree => {
+                tree.set(['load'], false);
+
+                error
+                    ? alert(error.error)
+                    : this.props.dispatch(tree => {
+                        tree.set(['view'], false);
+                        tree.set(['proof'], undefined);
+                    })
+                ;
+            });
+        });
+    };
+
+    onSave = () => {
+        this.props.dispatch(tree => {
+            tree.set(['view'], true);
+        });
+    };
+
+    onView = () => {
+        this.props.dispatch(tree => {
+            tree.set(['proofsLocal'], {});
+            tree.set(['view'], !tree.get('view'));
+        });
+    };
 
     render () {
         return (
             <main className="cf h-100 lh-copy">
                 <section className="br bw1 fl flex flex-column h-100 w-20">
                     <Header />
-                    <Viewer load={this.props.load} onView={this.onView} view={this.props.view} />
                     <Labels filter={this.props.filter} labels={this.props.labels} onFilter={this.onFilter} />
                 </section>
 
@@ -241,6 +328,8 @@ const Application = branch(props => ({
                 ) : (
                     <Description />
                 )}
+
+                <Viewer onAdd={this.onAdd} onRemove={this.onRemove} onSave={this.onSave} onView={this.onView} proof={!!this.props.proof} view={this.props.view} />
             </main>
         );
     }

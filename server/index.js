@@ -4,7 +4,6 @@ import {Boilerplate} from 'meteor/boilerplate-generator';
 import {Meteor}      from 'meteor/meteor';
 import {check}       from 'meteor/check';
 
-import {Labels} from '/imports/api/labels';
 import {Proofs} from '/imports/api/proofs';
 
 if (Meteor.isProduction) {
@@ -24,22 +23,18 @@ if (Meteor.isProduction) {
 }
 
 Meteor.methods({
+    create () {
+        return Proofs.insert({expect: '', labels: [], name: '', steps: [], target: ''});
+    },
+
     patch (patch) {
-        check(patch, {
-            labels: Object,
-            proofs: Object
-        });
+        check(patch, Object);
+        bulkPatch(Proofs, patch);
+    },
 
-        const now = Date.now();
-
-        bulkPatch(Labels, patch.labels);
-        bulkPatch(Proofs, patch.proofs);
-
-        const elapsed = Date.now() - now;
-        const minimum = 2000;
-
-        if (elapsed < minimum)
-            Meteor._sleepForMs(minimum - elapsed);
+    remove (_id) {
+        check(_id, String);
+        Proofs.remove({_id});
     }
 });
 

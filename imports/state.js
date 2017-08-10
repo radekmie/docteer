@@ -3,12 +3,18 @@ import createHistory from 'history/createBrowserHistory';
 
 import {Meteor} from 'meteor/meteor';
 
-import {Labels} from '/imports/api/labels';
 import {Proofs} from '/imports/api/proofs';
 
 export const history = window._history = createHistory();
 export const central = window._central = new Baobab({
-    ...collection('labels'),
+    labels: Baobab.monkey(
+        ['proofs'],
+        proofs => Array.from(proofs.reduce(
+            (labels, proof) => (proof.labels.forEach(label => labels.add(label)), labels),
+            new Set()
+        )).sort()
+    ),
+
     ...collection('proofs'),
 
     proofsFilter: [],
@@ -46,12 +52,9 @@ central.select(['view']).on('update', event => {
     if (event.data.currentData === false)
         return;
 
-    const patch = {
-        labels: central.get(['labelsLocal']),
-        proofs: central.get(['proofsLocal'])
-    };
+    const patch = central.get(['proofsLocal']);
 
-    if (!Object.keys(patch.labels).length && !Object.keys(patch.proofs).length)
+    if (!Object.keys(patch).length)
         return;
 
     central.set(['load'], true);
@@ -60,7 +63,6 @@ central.select(['view']).on('update', event => {
         if (error)
             alert(error.error);
 
-        central.set(['labelsLocal'], {});
         central.set(['proofsLocal'], {});
         central.set(['load'], false);
     });
@@ -68,16 +70,12 @@ central.select(['view']).on('update', event => {
 
 history.listen(syncHistory);
 
-bindCursorToPath(Labels.find(), 'labelsRemote');
 bindCursorToPath(Proofs.find(), 'proofsRemote');
 
 central.set(['load'], true);
 central.set(['view'], true);
 
-const handles = [
-    Meteor.subscribe('labels', subscribed),
-    Meteor.subscribe('proofs', subscribed)
-];
+const handles = [Meteor.subscribe('proofs', subscribed)];
 
 central.once(['load'], () => {
     central.set(['proof'], history.location.pathname.slice(1) || undefined);
