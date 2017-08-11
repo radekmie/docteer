@@ -11,6 +11,7 @@
     "babel-runtime": "6.25.0",
     "baobab": "2.4.3",
     "baobab-react": "2.1.2",
+    "bcrypt": "1.0.2",
     "html-minifier": "3.5.3",
     "meteor-node-stubs": "0.2.11",
     "postcss-import": "10.0.0",
