@@ -1,7 +1,8 @@
 import Baobab        from 'baobab';
 import createHistory from 'history/createBrowserHistory';
 
-import {Meteor} from 'meteor/meteor';
+import {Meteor}  from 'meteor/meteor';
+import {Tracker} from 'meteor/tracker';
 
 import {Proofs} from '/imports/api/proofs';
 
@@ -12,7 +13,14 @@ export const central = window._central = new Baobab({
         ['proofsFiltered'],
         ['proofsFilter'],
         (a, b, f) => a
-            .reduce((labels, proof) => (proof.labels.forEach(label => labels.includes(label) || labels.push(label)), labels), [])
+            .reduce((labels, proof) => {
+                proof.labels.forEach(label => {
+                    if (label && !labels.includes(label))
+                        labels.push(label);
+                });
+
+                return labels;
+            }, [])
             .sort()
             .map(name => ({
                 active: f.includes(name),
@@ -22,8 +30,12 @@ export const central = window._central = new Baobab({
             }))
     ),
 
+    user:      null,
+    userError: null,
+
     ...collection('proofs'),
 
+    proof: null,
     proofsFilter: [],
     proofsFiltered: Baobab.monkey(
         ['proofs'],
@@ -85,15 +97,27 @@ history.listen(syncHistory);
 
 bindCursorToPath(Proofs.find(), 'proofsOrigins');
 
+Meteor.users.find().observe({
+    added:   user,
+    changed: user,
+    removed: user
+});
+
 central.set(['load'], true);
 central.set(['view'], true);
 
-const handles = [Meteor.subscribe('proofs', subscribed)];
+Meteor.subscribe('profile', () => {
+    Tracker.autorun(() => {
+        Meteor.userId();
+        Meteor.subscribe('proofs', () => {
+            central.set(['load'], false);
+        });
+    });
+});
 
 central.select(['load']).once('update', () => {
     syncHistory(history.location);
 });
-
 
 function byName (a, b) {
     return a.name.localeCompare(b.name);
@@ -104,8 +128,8 @@ function bindCursorToPath (cursor, path) {
 
     cursor.observe({
         added:   doc => base.set(base.get().concat(doc)),
-        removed: doc => base.set(base.get().filter(obj => obj._id !== doc._id)),
-        changed: doc => base.set(base.get().map(obj => obj._id === doc._id ? doc : obj))
+        changed: doc => base.set(base.get().map(obj => obj._id === doc._id ? doc : obj)),
+        removed: doc => base.set(base.get().filter(obj => obj._id !== doc._id))
     });
 }
 
@@ -151,18 +175,20 @@ function searchToFilter (search) {
     return search ? search.replace(/^\?filter=/, '').split(',').sort() : [];
 }
 
-function subscribed () {
-    central.set(['load'], handles.some(handle => !handle.ready()));
-}
-
 function syncHistory (location) {
     const _id = location.pathname.slice(1);
 
     if (_id !== central.get(['proof']))
-        central.set(['proof'], central.get(['proofs']).find(proof => proof._id === _id) ? _id : undefined);
+        central.set(['proof'], central.get(['proofs']).find(proof => proof._id === _id) ? _id : null);
 
     const filter = searchToFilter(location.search);
 
     if (JSON.stringify(filter) !== JSON.stringify(central.get(['proofsFilter'])))
         central.set(['proofsFilter'], filter);
+}
+
+function user () {
+    Tracker.afterFlush(() => {
+        central.set(['user'], Meteor.user() || null);
+    });
 }

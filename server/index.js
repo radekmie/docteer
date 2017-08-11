@@ -1,10 +1,14 @@
 import {minify} from 'html-minifier';
 
+import {Accounts}    from 'meteor/accounts-base';
 import {Boilerplate} from 'meteor/boilerplate-generator';
 import {Meteor}      from 'meteor/meteor';
 import {check}       from 'meteor/check';
 
 import {Proofs} from '/imports/api/proofs';
+
+if (Meteor.users.find({}, {fields: {_id: 1}, limit: 1}).count() === 0)
+    Accounts.createUser({email: 'admin@doctear.com', password: 'doctear'});
 
 if (Meteor.isProduction) {
     const options = {
@@ -22,19 +26,28 @@ if (Meteor.isProduction) {
     };
 }
 
+Meteor.publish('profile', function profile () {
+    return Meteor.users.find({_id: this.userId});
+});
+
+Meteor.publish('proofs', function proofs () {
+    return Proofs.find({userId: this.userId});
+});
+
 Meteor.methods({
     patch (patch) {
+        check(this.userId, String);
         check(patch, {
             created: [String],
             removed: [String],
             updated: Object
         });
 
-        bulkPatch(Proofs, patch);
+        bulkPatch(Proofs, patch, this.userId);
     }
 });
 
-function bulkPatch (collection, patch) {
+function bulkPatch (collection, patch, userId) {
     const idsC = patch.created;
     const idsR = patch.removed;
     const idsU = Object.keys(patch.updated);
@@ -49,7 +62,7 @@ function bulkPatch (collection, patch) {
     idsU.forEach(_id => {
         if (!patch.removed[_id]) {
             if (idsC.includes(_id)) {
-                bulk.insert(Object.assign({_id}, patch.updated[_id]));
+                bulk.insert(Object.assign({_id, userId}, patch.updated[_id]));
             } else {
                 bulk.find({_id}).update({$set: patch.updated[_id]});
             }
