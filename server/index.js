@@ -23,28 +23,38 @@ if (Meteor.isProduction) {
 }
 
 Meteor.methods({
-    create () {
-        return Proofs.insert({expect: '', labels: [], name: '', steps: [], target: ''});
-    },
-
     patch (patch) {
-        check(patch, Object);
-        bulkPatch(Proofs, patch);
-    },
+        check(patch, {
+            created: [String],
+            removed: [String],
+            updated: Object
+        });
 
-    remove (_id) {
-        check(_id, String);
-        Proofs.remove({_id});
+        bulkPatch(Proofs, patch);
     }
 });
 
 function bulkPatch (collection, patch) {
-    const keys = Object.keys(patch);
-    if (!keys.length)
+    const idsC = patch.created;
+    const idsR = patch.removed;
+    const idsU = Object.keys(patch.updated);
+
+    if (!idsC.length && !idsR.length && !idsU.length)
         return;
 
     const hand = collection.rawCollection();
     const bulk = hand.initializeUnorderedBulkOp();
-    keys.forEach(_id => bulk.find({_id}).update({$set: patch[_id]}));
+
+    idsR.forEach(_id => bulk.find({_id}).remove());
+    idsU.forEach(_id => {
+        if (!patch.removed[_id]) {
+            if (idsC.includes(_id)) {
+                bulk.insert(Object.assign({_id}, patch.updated[_id]));
+            } else {
+                bulk.find({_id}).update({$set: patch.updated[_id]});
+            }
+        }
+    });
+
     bulk.execute();
 }

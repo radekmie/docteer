@@ -9,10 +9,17 @@ export const history = window._history = createHistory();
 export const central = window._central = new Baobab({
     labels: Baobab.monkey(
         ['proofs'],
-        proofs => Array.from(proofs.reduce(
-            (labels, proof) => (proof.labels.forEach(label => labels.add(label)), labels),
-            new Set()
-        )).sort()
+        ['proofsFiltered'],
+        ['proofsFilter'],
+        (a, b, f) => a
+            .reduce((labels, proof) => (proof.labels.forEach(label => labels.includes(label) || labels.push(label)), labels), [])
+            .sort()
+            .map(name => ({
+                active: f.includes(name),
+                name,
+                count: b.reduce((a, b) => a + b.labels.includes(name), 0),
+                total: a.reduce((a, b) => a + b.labels.includes(name), 0)
+            }))
     ),
 
     ...collection('proofs'),
@@ -40,7 +47,7 @@ central.select(['proof']).on('update', event => {
 });
 
 central.select(['proofsFilter']).on('update', event => {
-    const search = filterToSearch(event.data.currentData);
+    const search = filterToSearch(event.data.currentData.slice());
 
     if (history.location.search === search)
         return;
@@ -52,9 +59,13 @@ central.select(['view']).on('update', event => {
     if (event.data.currentData === false)
         return;
 
-    const patch = central.get(['proofsLocal']);
+    const patch = {
+        created: Object.keys(central.get(['proofsCreated'])),
+        removed: Object.keys(central.get(['proofsRemoved'])),
+        updated: central.get(['proofsUpdated'])
+    };
 
-    if (!Object.keys(patch).length)
+    if (!patch.created.length && !patch.removed.length && !Object.keys(patch.updated).length)
         return;
 
     central.set(['load'], true);
@@ -63,24 +74,23 @@ central.select(['view']).on('update', event => {
         if (error)
             alert(error.error);
 
-        central.set(['proofsLocal'], {});
+        central.set(['proofsCreated'], {});
+        central.set(['proofsRemoved'], {});
+        central.set(['proofsUpdated'], {});
         central.set(['load'], false);
     });
 });
 
 history.listen(syncHistory);
 
-bindCursorToPath(Proofs.find(), 'proofsRemote');
+bindCursorToPath(Proofs.find(), 'proofsOrigins');
 
 central.set(['load'], true);
 central.set(['view'], true);
 
 const handles = [Meteor.subscribe('proofs', subscribed)];
 
-central.once(['load'], () => {
-    central.set(['proof'], history.location.pathname.slice(1) || undefined);
-    central.set(['proofsFilter'], central.set(['proofsFilter'], searchToFilter(location.search)));
-
+central.select(['load']).once('update', () => {
     syncHistory(history.location);
 });
 
@@ -99,24 +109,46 @@ function bindCursorToPath (cursor, path) {
     });
 }
 
-function collection (prefix) {
-    const B = prefix;
-    const L = prefix + 'Local';
-    const R = prefix + 'Remote';
+function collection (name) {
+    const created = name + 'Created';
+    const origins = name + 'Origins';
+    const present = name + 'Present';
+    const removed = name + 'Removed';
+    const updated = name + 'Updated';
 
     return {
-        [B]: Baobab.monkey([L], [R], (l, r) => r.map(x => Object.assign({}, x, l[x._id])).sort(byName)),
-        [L]: {},
-        [R]: []
+        [origins]: [],
+        [present]: Baobab.monkey(
+            [created],
+            [origins],
+            [removed],
+            (created, origins, removed) =>
+                origins
+                    .concat(Object.keys(created).map(_id => ({_created: true, _id})))
+                    .map(x => Object.assign({_removed: !!removed[x._id]}, x))
+        ),
+
+        [created]: {},
+        [removed]: {},
+        [updated]: {},
+
+        [name]: Baobab.monkey(
+            [present],
+            [updated],
+            (present, updated) =>
+                present
+                    .map(x => Object.assign({_updated: !!updated[x._id]}, x, updated[x._id]))
+                    .sort(byName)
+        )
     };
 }
 
 function filterToSearch (filter) {
-    return filter.length ? `?filter=${filter.join(',')}` : '';
+    return filter.length ? `?filter=${filter.sort().join(',')}` : '';
 }
 
 function searchToFilter (search) {
-    return search ? search.replace(/^\?filter=/, '').split(',') : [];
+    return search ? search.replace(/^\?filter=/, '').split(',').sort() : [];
 }
 
 function subscribed () {
