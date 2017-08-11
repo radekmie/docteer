@@ -6,8 +6,8 @@ import {Tracker} from 'meteor/tracker';
 
 import {Proofs} from '/imports/api/proofs';
 
-export const history = window._history = createHistory();
-export const central = window._central = new Baobab({
+export const history = createHistory();
+export const central = new Baobab({
     labels: Baobab.monkey(
         ['proofs'],
         ['proofsFiltered'],

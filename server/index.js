@@ -10,7 +10,7 @@ import {Proofs} from '/imports/api/proofs';
 if (Meteor.users.find({}, {fields: {_id: 1}, limit: 1}).count() === 0)
     Accounts.createUser({email: 'admin@doctear.com', password: 'doctear'});
 
-if (Meteor.isProduction) {
+if (process.env.NODE_ENV === 'production') {
     const options = {
         collapseWhitespace: true,
         minifyCSS: true,

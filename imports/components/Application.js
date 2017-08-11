@@ -1,6 +1,6 @@
-import Link     from 'react-router-dom/Link';
-import React    from 'react';
-import {branch} from 'baobab-react/higher-order';
+/** @jsx h */
+
+import {Component, h} from 'preact';
 
 import {Meteor} from 'meteor/meteor';
 
@@ -8,7 +8,21 @@ function getContent (disabled, html, placeholder) {
     return html ? html : (disabled && placeholder || '');
 }
 
-class Account extends React.PureComponent {
+class PureComponent extends Component {
+    shouldComponentUpdate (props) {
+        for (const key in props)
+            if (this.props[key] !== props[key])
+                return true;
+
+        for (const key in props)
+            if (!(key in props))
+                return true;
+
+        return false;
+    }
+}
+
+class Account extends PureComponent {
     onRefEmail = ref => {
         this.email = ref;
     };
@@ -26,28 +40,28 @@ class Account extends React.PureComponent {
         this.props.onLogin(this.email.value, this.password.value);
     };
 
-    render () {
+    render (props) {
         return (
             <form className="b--dark-gray bt bw1 pa1" onSubmit={this.onSubmit}>
-                {!!this.props.user && (
+                {!!props.user && (
                     <div className="tc w-100">
-                        <b>{this.props.user.emails[0].address}</b>
+                        <b>{props.user.emails[0].address}</b>
                     </div>
                 )}
 
-                {!!this.props.user && (
-                    <button className="w-100" onClick={this.props.onLogout}>Log Out</button>
+                {!!props.user && (
+                    <button className="w-100" onClick={props.onLogout}>Log Out</button>
                 )}
 
-                {!!this.props.user || (
-                    <input className={`${this.props.error ? 'bg-washed-red' : 'bg-near-white'} bw0 mb1 ph1 w-100`} defaultValue="admin@doctear.com" name="email" ref={this.onRefEmail} type="email" />
+                {!!props.user || (
+                    <input className={`${props.error ? 'bg-washed-red' : 'bg-near-white'} bw0 mb1 ph1 w-100`} defaultValue="admin@doctear.com" name="email" ref={this.onRefEmail} type="email" />
                 )}
 
-                {!!this.props.user || (
-                    <input className={`${this.props.error ? 'bg-washed-red' : 'bg-near-white'} bw0 mb1 ph1 w-100`} defaultValue="doctear" name="password" ref={this.onRefPassword} type="password" />
+                {!!props.user || (
+                    <input className={`${props.error ? 'bg-washed-red' : 'bg-near-white'} bw0 mb1 ph1 w-100`} defaultValue="doctear" name="password" ref={this.onRefPassword} type="password" />
                 )}
 
-                {!!this.props.user || (
+                {!!props.user || (
                     <button className="w-100">Log In</button>
                 )}
             </form>
@@ -55,7 +69,7 @@ class Account extends React.PureComponent {
     }
 }
 
-class Editable extends React.PureComponent {
+class Editable extends Component {
     onRef = element => this.element = element;
     onChange = () => {
         if (!this.props.onChange)
@@ -91,10 +105,8 @@ class Editable extends React.PureComponent {
             this.element.innerHTML = getContent(this.props.disabled, this.props.html, this.props.placeholder);
     }
 
-    render () {
-        const {disabled, html, placeholder, tag, ...props} = this.props;
-
-        return React.createElement(tag || 'div', Object.assign(props, {
+    render ({disabled, html, placeholder, tag, ...props}) {
+        return h(tag || 'div', Object.assign(props, {
             className: ['ph1', props.className, disabled ? '' : 'bg-near-white'].filter(Boolean).join(' '),
             contentEditable: !disabled,
             dangerouslySetInnerHTML: {__html: getContent(disabled, html, placeholder)},
@@ -106,28 +118,28 @@ class Editable extends React.PureComponent {
     }
 }
 
-class Description extends React.PureComponent {
-    render () {
+class Description extends PureComponent {
+    render (props) {
         return (
-            <div className={`fl pv3 tc ${this.props.className}`}>
+            <div className={`fl pv3 tc ${props.className}`}>
                 Some description should be placed here!
             </div>
         );
     }
 }
 
-class LabelsLabel extends React.PureComponent {
+class LabelsLabel extends PureComponent {
     onFilter = () => this.props.onFilter(this.props.label.name);
 
-    render () {
+    render (props) {
         return (
             <li>
-                <label className="cf db pointer" htmlFor={this.props.label.name}>
-                    <input checked={this.props.label.active} className="mr2 v-mid" id={this.props.label.name} onChange={this.onFilter} type="checkbox" />
-                    {this.props.label.name}
+                <label className="cf db pointer" htmlFor={props.label.name}>
+                    <input checked={props.label.active} className="mr2 v-mid" id={props.label.name} onChange={this.onFilter} type="checkbox" />
+                    {props.label.name}
 
                     <span className="fr">
-                        {`${this.props.label.count}/${this.props.label.total}`}
+                        {`${props.label.count}/${props.label.total}`}
                     </span>
                 </label>
             </li>
@@ -135,7 +147,7 @@ class LabelsLabel extends React.PureComponent {
     }
 }
 
-class Filler extends React.PureComponent {
+class Filler extends PureComponent {
     render () {
         return (
             <div className="filler flex-auto near-white" />
@@ -143,9 +155,9 @@ class Filler extends React.PureComponent {
     }
 }
 
-class Labels extends React.PureComponent {
-    render () {
-        if (this.props.labels.length === 0) {
+class Labels extends PureComponent {
+    render (props) {
+        if (props.labels.length === 0) {
             return (
                 <div className="flex-auto pa3 tc">
                     (no labels)
@@ -155,11 +167,11 @@ class Labels extends React.PureComponent {
 
         return (
             <div className="flex-auto list overflow-auto ph3">
-                {this.props.labels.map(label =>
+                {props.labels.map(label =>
                     <LabelsLabel
                         key={label.name}
                         label={label}
-                        onFilter={this.props.onFilter}
+                        onFilter={props.onFilter}
                     />
                 )}
             </div>
@@ -167,11 +179,11 @@ class Labels extends React.PureComponent {
     }
 }
 
-class Header extends React.PureComponent {
+class Header extends PureComponent {
     render () {
         return (
             <header className="b--dark-gray bb bw1 cf pt1">
-                <Link to="/">
+                <a href="/">
                     <svg className="fl w3" viewBox="0 0 32 32">
                         <path d="M7 21v4h1v-4zm10 0v4h1v-4" />
                         <path d="M9 21v3h1v-3zm16 0v3h1v-3" />
@@ -181,16 +193,16 @@ class Header extends React.PureComponent {
                         <path d="M27 20H6v2H5v-5h1v2h21v-2h1v5h-1v-2zm-1-2v-8l-6-7H9C7 3 7 4 7 5v13h1V5c0-1 0-1 1-1h10v5c0 1 1 2 2 2h4v7z" />
                     </svg>
 
-                    <h1 className="dark-gray dim fl f4 link">
+                    <h1 className="dark-gray fl f4 hover-gray link">
                         DocTear
                     </h1>
-                </Link>
+                </a>
             </header>
         );
     }
 }
 
-class Proof extends React.PureComponent {
+class Proof extends PureComponent {
     onChange = (key, map) => html => {
         this.props.onChange(this.props.proof._id, key, map ? map(html) : html);
     };
@@ -209,23 +221,23 @@ class Proof extends React.PureComponent {
     onLabelsFocus = this.onEnsure('labels');
     onStepsFocus = this.onEnsure('steps');
 
-    render () {
+    render (props) {
         return (
             <dl className="fl h-100 ma0 overflow-auto pa4 w-50">
                 <dt><b>Name:</b></dt>
-                <dd><Editable disabled={this.props.view} html={this.props.proof.name} onChange={this.onName} placeholder="(untitled)" /></dd>
+                <dd><Editable disabled={props.view} html={props.proof.name} onChange={this.onName} placeholder="(untitled)" /></dd>
 
                 <dt className="mt3"><b>Labels:</b></dt>
-                <dd><Editable className="mv0 pl0" disabled={this.props.view} html={stepsToList(this.props.proof.labels)} onChange={this.onLabels} onFocus={this.onLabelsFocus} placeholder="(no labels)" tag="ul" /></dd>
+                <dd><Editable className="mv0 pl0" disabled={props.view} html={stepsToList(props.proof.labels)} onChange={this.onLabels} onFocus={this.onLabelsFocus} placeholder="(no labels)" tag="ul" /></dd>
 
                 <dt className="mt3"><b>Description:</b></dt>
-                <dd><Editable disabled={this.props.view} html={this.props.proof.target} onChange={this.onTarget} placeholder="(no description)" /></dd>
+                <dd><Editable disabled={props.view} html={props.proof.target} onChange={this.onTarget} placeholder="(no description)" /></dd>
 
                 <dt className="mt3"><b>Expected result:</b></dt>
-                <dd><Editable disabled={this.props.view} html={this.props.proof.expect} onChange={this.onExpect} placeholder="(no expected result)" /></dd>
+                <dd><Editable disabled={props.view} html={props.proof.expect} onChange={this.onExpect} placeholder="(no expected result)" /></dd>
 
                 <dt className="mt3"><b>Steps:</b></dt>
-                <dd><Editable className="mv0 pl0" disabled={this.props.view} html={stepsToList(this.props.proof.steps)} onChange={this.onSteps} onFocus={this.onStepsFocus} placeholder="(no steps)" tag="ol" /></dd>
+                <dd><Editable className="mv0 pl0" disabled={props.view} html={stepsToList(props.proof.steps)} onChange={this.onSteps} onFocus={this.onStepsFocus} placeholder="(no steps)" tag="ol" /></dd>
             </dl>
         );
     }
@@ -234,33 +246,33 @@ class Proof extends React.PureComponent {
 function getProofColor (proof) {
     return proof._created
         ? proof._removed
-            ? 'gray'
-            : 'green'
+            ? 'gray hover-light-gray'
+            : 'green hover-light-green'
         : proof._removed
-            ? 'red'
+            ? 'hover-light-red red'
             : proof._updated
-                ? 'blue'
-                : 'dark-gray'
+                ? 'blue hover-light-blue'
+                : 'dark-gray hover-gray'
     ;
 }
 
-class ProofsProof extends React.PureComponent {
-    render () {
+class ProofsProof extends PureComponent {
+    render (props) {
         return (
             <li>
-                <Link
-                    className={`${getProofColor(this.props.proof)} db dim link`}
-                    dangerouslySetInnerHTML={{__html: this.props.proof.name || '(untitled)'}}
-                    to={{pathname: this.props.proof._id, search: this.props.search}}
+                <a
+                    className={`${getProofColor(props.proof)} db link`}
+                    dangerouslySetInnerHTML={{__html: props.proof.name || '(untitled)'}}
+                    href={[`/${props.proof._id}`, props.search].filter(Boolean).join('?')}
                 />
             </li>
         );
     }
 }
 
-class Proofs extends React.PureComponent {
-    render () {
-        if (this.props.proofs.length === 0) {
+class Proofs extends PureComponent {
+    render (props) {
+        if (props.proofs.length === 0) {
             return (
                 <div className="b--dark-gray br bw1 fl h-100 mv0 overflow-auto pl4 pr3 pv3 tc w-30">
                     (no test cases)
@@ -270,8 +282,8 @@ class Proofs extends React.PureComponent {
 
         return (
             <ul className="b--dark-gray br bw1 fl h-100 mv0 overflow-auto pl4 pr3 pv3 w-30">
-                {this.props.proofs.map(proof =>
-                    <ProofsProof key={proof._id} proof={proof} search={this.props.search} />
+                {props.proofs.map(proof =>
+                    <ProofsProof key={proof._id} proof={proof} search={props.search} />
                 )}
             </ul>
         );
@@ -308,44 +320,74 @@ const iconRemove = (
     </svg>
 );
 
-class Viewer extends React.PureComponent {
-    render () {
+class Viewer extends PureComponent {
+    render (props) {
         return (
             <div className="bottom-1 fixed right-1">
-                <div className="b--dark-gray ba bg-white br-100 bw1 cf h2 hover-dark-pink link mb1 pointer tc w2" onClick={this.props.onAdd}>
+                <div className="b--dark-gray ba bg-white br-100 bw1 cf h2 hover-dark-pink link mb1 pointer tc w2" onClick={props.onAdd}>
                     {iconAdd}
                 </div>
 
-                {this.props.view || this.props.proof && (
-                    <div className="b--dark-gray ba bg-white br-100 bw1 cf h2 hover-red link mb1 pointer tc w2" onClick={this.props.onRemove}>
+                {props.view || props.proof && (
+                    <div className="b--dark-gray ba bg-white br-100 bw1 cf h2 hover-red link mb1 pointer tc w2" onClick={props.onRemove}>
                         {iconRemove}
                     </div>
                 )}
 
-                {this.props.view || (
-                    <div className="b--dark-gray ba bg-white br-100 bw1 cf h2 hover-green link mb1 pointer tc w2" onClick={this.props.onSave}>
+                {props.view || (
+                    <div className="b--dark-gray ba bg-white br-100 bw1 cf h2 hover-green link mb1 pointer tc w2" onClick={props.onSave}>
                         {iconOk}
                     </div>
                 )}
 
-                <div className={`b--dark-gray ba bg-white br-100 bw1 cf h2 hover-${this.props.view ? 'dark-blue' : 'blue'} link pointer tc w2`} onClick={this.props.onView}>
-                    {this.props.view ? iconDo : iconNo}
+                <div className={`b--dark-gray ba bg-white br-100 bw1 cf h2 hover-${props.view ? 'dark-blue' : 'blue'} link pointer tc w2`} onClick={props.onView}>
+                    {props.view ? iconDo : iconNo}
                 </div>
             </div>
         );
     }
 }
 
-const Application = branch(props => ({
-    error:  ['error'],
-    labels: ['labels'],
-    proof:  ['proofs', {_id: props.match.params.proof}],
-    proofs: ['proofsFiltered'],
-    user:   ['user'],
-    view:   ['view']
-}), class Application extends React.PureComponent {
+class Application extends Component {
+    constructor () {
+        super(...arguments);
+
+        this.componentWillReceiveProps(this.props);
+
+        this.watcher.on('update', event => {
+            this.setState(event.target.get());
+        });
+    }
+
+    componentWillReceiveProps (props) {
+        const mapping = {
+            error:  ['error'],
+            labels: ['labels'],
+            proof:  ['proofs', {_id: props.matches.proof}],
+            proofs: ['proofsFiltered'],
+            user:   ['user'],
+            view:   ['view']
+        };
+
+        if (this.watcher) {
+            this.watcher.refresh(mapping);
+        } else {
+            this.watcher = this.context.tree.watch(mapping);
+        }
+
+        if (this.state) {
+            this.setState(this.watcher.get());
+        } else {
+            this.state = this.watcher.get();
+        }
+    }
+
+    dispatch = fn => {
+        fn(this.context.tree);
+    };
+
     onAdd = () => {
-        this.props.dispatch(tree => {
+        this.dispatch(tree => {
             const _id = Math.random().toString(36).substr(2, 8);
 
             tree.set(['proofsUpdated', _id], {expect: '', labels: [], name: '', steps: [], target: ''});
@@ -356,7 +398,7 @@ const Application = branch(props => ({
     };
 
     onChange = (_id, key, value) => {
-        this.props.dispatch(tree => {
+        this.dispatch(tree => {
             tree.get(['proofsUpdated', _id])
                 ? tree.set(['proofsUpdated', _id, key], value)
                 : tree.set(['proofsUpdated', _id], {[key]: value})
@@ -365,7 +407,7 @@ const Application = branch(props => ({
     };
 
     onFilter = _id => {
-        this.props.dispatch(tree => {
+        this.dispatch(tree => {
             const index = tree.get(['proofsFilter']).indexOf(_id);
 
             index === -1
@@ -376,13 +418,13 @@ const Application = branch(props => ({
     };
 
     onLogin = (email, password) => {
-        this.props.dispatch(tree => {
+        this.dispatch(tree => {
             tree.set(['error'], null);
             tree.set(['load'],  true);
         });
 
         Meteor.loginWithPassword(email, password, error => {
-            this.props.dispatch(tree => {
+            this.dispatch(tree => {
                 if (error)
                     tree.set(['error'], error.error);
 
@@ -392,12 +434,12 @@ const Application = branch(props => ({
     };
 
     onLogout = () => {
-        this.props.dispatch(tree => {
+        this.dispatch(tree => {
             tree.set(['load'], true);
         });
 
         Meteor.logout(() => {
-            this.props.dispatch(tree => {
+            this.dispatch(tree => {
                 tree.set(['proof'], null);
                 tree.set(['load'], false);
             });
@@ -405,20 +447,20 @@ const Application = branch(props => ({
     };
 
     onRemove = () => {
-        this.props.dispatch(tree => {
-            tree.set(['proofsRemoved', this.props.proof._id], true);
+        this.dispatch(tree => {
+            tree.set(['proofsRemoved', this.state.proof._id], true);
             tree.set(['proof'], null);
         });
     };
 
     onSave = () => {
-        this.props.dispatch(tree => {
+        this.dispatch(tree => {
             tree.set(['view'], true);
         });
     };
 
     onView = () => {
-        this.props.dispatch(tree => {
+        this.dispatch(tree => {
             tree.set(['proofsCreated'], {});
             tree.set(['proofsRemoved'], {});
             tree.set(['proofsUpdated'], {});
@@ -426,38 +468,38 @@ const Application = branch(props => ({
         });
     };
 
-    render () {
+    render (props, state) {
         return (
             <main className="cf dark-gray h-100 lh-copy">
                 <section className="b--dark-gray br bw1 fl flex flex-column h-100 w-20">
                     <Header />
 
-                    {this.props.user ? (
-                        <Labels labels={this.props.labels} onFilter={this.onFilter} />
+                    {state.user ? (
+                        <Labels labels={state.labels} onFilter={this.onFilter} />
                     ) : (
                         <Filler />
                     )}
 
-                    <Account error={this.props.error} user={this.props.user} onLogin={this.onLogin} onLogout={this.onLogout} />
+                    <Account error={state.error} user={state.user} onLogin={this.onLogin} onLogout={this.onLogout} />
                 </section>
 
-                {!!this.props.user && (
-                    <Proofs proofs={this.props.proofs} search={this.props.location.search} />
+                {!!state.user && (
+                    <Proofs proofs={state.proofs} search={props.url.split('?')[1]} />
                 )}
 
-                {!!this.props.user && (
-                    <Viewer onAdd={this.onAdd} onRemove={this.onRemove} onSave={this.onSave} onView={this.onView} proof={!!this.props.proof} view={this.props.view} />
+                {!!state.user && (
+                    <Viewer onAdd={this.onAdd} onRemove={this.onRemove} onSave={this.onSave} onView={this.onView} proof={!!state.proof} view={state.view} />
                 )}
 
-                {!!this.props.user && this.props.proof ? (
-                    <Proof labels={this.props.labels} onChange={this.onChange} proof={this.props.proof} view={this.props.view} />
+                {!!state.user && state.proof ? (
+                    <Proof labels={state.labels} onChange={this.onChange} proof={state.proof} view={state.view} />
                 ) : (
-                    <Description className={this.props.user ? 'w-50' : 'w-75'} />
+                    <Description className={state.user ? 'w-50' : 'w-75'} />
                 )}
             </main>
         );
     }
-});
+}
 
 function listToSteps (html) {
     const steps = html.split('<li>').slice(1).map(element => element.slice(0, -5));
