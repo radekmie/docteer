@@ -26,12 +26,14 @@ if (process.env.NODE_ENV === 'production') {
     };
 }
 
+Proofs._ensureIndex({userId: 1});
+
 Meteor.publish('profile', function profile () {
-    return Meteor.users.find({_id: this.userId});
+    return Meteor.users.find({_id: this.userId}, {fields: {emails: 1}});
 });
 
 Meteor.publish('proofs', function proofs () {
-    return Proofs.find({userId: this.userId});
+    return Proofs.find({userId: this.userId}, {fields: {userId: 0}});
 });
 
 Meteor.methods({
