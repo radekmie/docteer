@@ -46,6 +46,14 @@ export const central = new Baobab({
     )
 }, {immutable: process.env.NODE_ENV === 'development'});
 
+central.select(['labels']).on('update', event => {
+    const filter = central.get(['proofsFilter']);
+    const filtered = filter.filter(name => event.data.currentData.find(label => label.name === name));
+
+    if (filter.length !== filtered.length)
+        central.set(['proofsFilter'], filtered);
+});
+
 central.select(['load']).on('update', event => {
     document.getElementById('application').classList.toggle('loading', event.data.currentData);
 });
