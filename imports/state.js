@@ -151,7 +151,7 @@ central.select(['labels']).on('update', event => {
 });
 
 central.select(['load']).on('update', event => {
-    document.getElementById('app').classList.toggle('loading', event.data.currentData);
+    document.querySelector('#app').classList.toggle('loading', event.data.currentData);
 });
 
 central.select(['proofId']).on('update', event => {

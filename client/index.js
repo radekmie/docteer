@@ -6,4 +6,4 @@ import {central}     from '/imports/state';
 if (process.env.NODE_ENV === 'development')
     require('preact/devtools');
 
-render(h(Application, {central}), document.getElementById('app'));
+render(h(Application, {central}), document.querySelector('#app'));
