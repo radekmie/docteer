@@ -13,23 +13,23 @@
             font-size: 16px;
         }
 
-        #application,
+        #app,
         #loader {
             transition: opacity 0.5s linear 0.1s;
         }
 
-        #application.loading {
+        #app.loading {
             transition-delay: 0;
         }
 
-        #application.loading,
+        #app.loading,
         #loader {
             pointer-events: none;
         }
 
-        #application.loading,
-        #application:not(.loading):empty,
-        #application:not(.loading):not(:empty) + #loader {
+        #app.loading,
+        #app:not(.loading):empty,
+        #app:not(.loading):not(:empty) + #loader {
             opacity: 0;
         }
 
@@ -62,7 +62,7 @@
 </head>
 
 <body>
-    <div id="application"></div>
+    <div id="app"></div>
     <svg id="loader" viewBox="0 0 32 28">
         <path d="M7 21v2h1v-2zm10 0v2h1v-2" />
         <path d="M9 21v2h1v-2zm16 0v2h1v-2" />

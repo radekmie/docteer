@@ -16,7 +16,6 @@
     "meteor-node-stubs": "0.2.11",
     "postcss-import": "10.0.0",
     "preact": "8.2.1",
-    "preact-router": "2.5.5",
     "tachyons": "4.7.4"
   },
   "devDependencies": {

@@ -51,6 +51,8 @@ export const central = new Baobab({
     proofsRemoved: {},
     proofsUpdated: {},
 
+    search: '',
+
     proofs: Baobab.monkey(
         ['proofsPresent'],
         ['proofsUpdated'],
@@ -149,7 +151,7 @@ central.select(['labels']).on('update', event => {
 });
 
 central.select(['load']).on('update', event => {
-    document.getElementById('application').classList.toggle('loading', event.data.currentData);
+    document.getElementById('app').classList.toggle('loading', event.data.currentData);
 });
 
 central.select(['proofId']).on('update', event => {
@@ -197,6 +199,24 @@ central.select(['view']).on('update', event => {
 
 history.listen(syncHistory);
 
+document.addEventListener('click', event => {
+    if (event.altKey || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey)
+        return;
+
+    let node = event.target;
+    do {
+        if (String(node.nodeName).toLowerCase() === 'a' && node.getAttribute('href') && (node.__preactattr_ || node[Symbol.for('preactattr')])) {
+            event.stopImmediatePropagation && event.stopImmediatePropagation();
+            event.stopPropagation && event.stopPropagation();
+            event.preventDefault();
+
+            history.push(node.getAttribute('href'));
+
+            return;
+        }
+    } while ((node = node.parentNode));
+});
+
 bindCursorToPath(Proofs.find(), 'proofsOrigins');
 
 Meteor.users.find().observe({
@@ -238,6 +258,8 @@ function searchToFilter (search) {
 }
 
 function syncHistory (location) {
+    central.set(['search'], location.search);
+
     const _id = location.pathname.slice(1);
 
     if (_id !== central.get(['proofId']))
