@@ -358,135 +358,35 @@ class Application extends Component {
     constructor () {
         super(...arguments);
 
-        this.componentWillReceiveProps(this.props);
-
-        this.watcher.on('update', event => {
-            this.setState(event.target.get());
-        });
-    }
-
-    componentWillReceiveProps (props) {
-        const mapping = {
+        const watcher = this.context.tree.watch({
             error:  ['error'],
             labels: ['labels'],
-            proof:  ['proofs', {_id: props.matches.proof}],
+            proof:  ['proof'],
             proofs: ['proofsFiltered'],
             user:   ['user'],
             view:   ['view']
-        };
+        });
 
-        if (this.watcher) {
-            this.watcher.refresh(mapping);
-        } else {
-            this.watcher = this.context.tree.watch(mapping);
-        }
+        watcher.on('update', () => {
+            this.setState(watcher.get());
+        });
 
-        if (this.state) {
-            this.setState(this.watcher.get());
-        } else {
-            this.state = this.watcher.get();
-        }
+        this.state = watcher.get();
     }
 
-    dispatch = fn => {
-        fn(this.context.tree);
-    };
-
-    onAdd = () => {
-        this.dispatch(tree => {
-            const _id = Math.random().toString(36).substr(2, 8);
-
-            tree.set(['proofsUpdated', _id], {expect: '', labels: [], name: '', steps: [], target: ''});
-            tree.set(['proofsCreated', _id], true);
-            tree.set(['proof'], _id);
-            tree.set(['view'], false);
-        });
-    };
-
-    onChange = (_id, key, value) => {
-        this.dispatch(tree => {
-            tree.get(['proofsUpdated', _id])
-                ? tree.set(['proofsUpdated', _id, key], value)
-                : tree.set(['proofsUpdated', _id], {[key]: value})
-            ;
-        });
-    };
-
-    onFilter = _id => {
-        this.dispatch(tree => {
-            const index = tree.get(['proofsFilter']).indexOf(_id);
-
-            index === -1
-                ? tree.push(['proofsFilter'], _id)
-                : tree.unset(['proofsFilter', index])
-            ;
-        });
-    };
-
-    onLogin = (email, password) => {
-        this.dispatch(tree => {
-            tree.set(['error'], null);
-            tree.set(['load'],  true);
-        });
-
-        Meteor.loginWithPassword(email, password, error => {
-            this.dispatch(tree => {
-                if (error)
-                    tree.set(['error'], error.error);
-
-                tree.set(['load'], false);
-            });
-        });
-    };
-
-    onLogout = () => {
-        this.dispatch(tree => {
-            tree.set(['load'], true);
-        });
-
-        Meteor.logout(() => {
-            this.dispatch(tree => {
-                tree.set(['proof'], null);
-                tree.set(['load'], false);
-            });
-        });
-    };
-
-    onRemove = () => {
-        this.dispatch(tree => {
-            tree.set(['proofsRemoved', this.state.proof._id], true);
-            tree.set(['proof'], null);
-        });
-    };
-
-    onSave = () => {
-        this.dispatch(tree => {
-            tree.set(['view'], true);
-        });
-    };
-
-    onView = () => {
-        this.dispatch(tree => {
-            tree.set(['proofsCreated'], {});
-            tree.set(['proofsRemoved'], {});
-            tree.set(['proofsUpdated'], {});
-            tree.set(['view'], !tree.get('view'));
-        });
-    };
-
-    render (props, state) {
+    render (props, state, {tree}) {
         return (
             <main className="cf dark-gray h-100 lh-copy">
                 <section className="b--dark-gray br bw1 fl flex flex-column h-100 w-20">
                     <Header />
 
                     {state.user ? (
-                        <Labels labels={state.labels} onFilter={this.onFilter} />
+                        <Labels labels={state.labels} onFilter={tree.onFilter} />
                     ) : (
                         <Filler />
                     )}
 
-                    <Account error={state.error} user={state.user} onLogin={this.onLogin} onLogout={this.onLogout} />
+                    <Account error={state.error} user={state.user} onLogin={tree.onLogin} onLogout={tree.onLogout} />
                 </section>
 
                 {!!state.user && (
@@ -494,11 +394,11 @@ class Application extends Component {
                 )}
 
                 {!!state.user && (
-                    <Viewer onAdd={this.onAdd} onRemove={this.onRemove} onSave={this.onSave} onView={this.onView} proof={!!state.proof} view={state.view} />
+                    <Viewer onAdd={tree.onAdd} onRemove={tree.onRemove} onSave={tree.onSave} onView={tree.onView} proof={!!state.proof} view={state.view} />
                 )}
 
                 {!!state.user && state.proof ? (
-                    <Proof labels={state.labels} onChange={this.onChange} proof={state.proof} view={state.view} />
+                    <Proof labels={state.labels} onChange={tree.onChange} proof={state.proof} view={state.view} />
                 ) : (
                     <Description className={state.user ? 'w-50' : 'w-75'} />
                 )}

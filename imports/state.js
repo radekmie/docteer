@@ -8,6 +8,9 @@ import {Proofs} from '/imports/api/proofs';
 
 export const history = createHistory();
 export const central = new Baobab({
+    load: true,
+    view: true,
+
     labels: Baobab.monkey(
         ['proofs'],
         ['proofsFiltered'],
@@ -33,9 +36,38 @@ export const central = new Baobab({
     user:      null,
     userError: null,
 
-    ...collection('proofs'),
+    proofsOrigins: [],
+    proofsPresent: Baobab.monkey(
+        ['proofsCreated'],
+        ['proofsOrigins'],
+        ['proofsRemoved'],
+        (created, origins, removed) =>
+            origins
+                .concat(Object.keys(created).map(_id => ({_created: true, _id})))
+                .map(x => Object.assign({_removed: !!removed[x._id]}, x))
+    ),
 
-    proof: null,
+    proofsCreated: {},
+    proofsRemoved: {},
+    proofsUpdated: {},
+
+    proofs: Baobab.monkey(
+        ['proofsPresent'],
+        ['proofsUpdated'],
+        (present, updated) =>
+            present
+                .map(x => Object.assign({_updated: !!updated[x._id]}, x, updated[x._id]))
+                .sort(byName)
+    ),
+
+    proof: Baobab.monkey(
+        ['proofs'],
+        ['proofId'],
+        (proofs, proofId) =>
+            proofs.find(proof => proof._id === proofId)
+    ),
+
+    proofId: null,
     proofsFilter: [],
     proofsFiltered: Baobab.monkey(
         ['proofs'],
@@ -45,6 +77,68 @@ export const central = new Baobab({
             : proofs
     )
 }, {immutable: process.env.NODE_ENV === 'development'});
+
+central.onAdd = () => {
+    const _id = Math.random().toString(36).substr(2, 8);
+
+    central.set(['proofsUpdated', _id], {expect: '', labels: [], name: '', steps: [], target: ''});
+    central.set(['proofsCreated', _id], true);
+    central.set(['proofId'], _id);
+    central.set(['view'], false);
+};
+
+central.onChange = (_id, key, value) => {
+    central.get(['proofsUpdated', _id])
+        ? central.set(['proofsUpdated', _id, key], value)
+        : central.set(['proofsUpdated', _id], {[key]: value})
+    ;
+};
+
+central.onFilter = _id => {
+    const index = central.get(['proofsFilter']).indexOf(_id);
+
+    index === -1
+        ? central.push(['proofsFilter'], _id)
+        : central.unset(['proofsFilter', index])
+    ;
+};
+
+central.onLogin = (email, password) => {
+    central.set(['error'], null);
+    central.set(['load'],  true);
+
+    Meteor.loginWithPassword(email, password, error => {
+        if (error)
+            central.set(['error'], error.error);
+
+        central.set(['load'], false);
+    });
+};
+
+central.onLogout = () => {
+    central.set(['load'], true);
+
+    Meteor.logout(() => {
+        central.set(['proofId'], null);
+        central.set(['load'], false);
+    });
+};
+
+central.onRemove = () => {
+    central.set(['proofsRemoved', central.get(['proofId'])], true);
+    central.set(['proofId'], null);
+};
+
+central.onSave = () => {
+    central.set(['view'], true);
+};
+
+central.onView = () => {
+    central.set(['proofsCreated'], {});
+    central.set(['proofsRemoved'], {});
+    central.set(['proofsUpdated'], {});
+    central.set(['view'], !central.get('view'));
+};
 
 central.select(['labels']).on('update', event => {
     const filter = central.get(['proofsFilter']);
@@ -58,7 +152,7 @@ central.select(['load']).on('update', event => {
     document.getElementById('application').classList.toggle('loading', event.data.currentData);
 });
 
-central.select(['proof']).on('update', event => {
+central.select(['proofId']).on('update', event => {
     const _id = event.data.currentData;
     const pathname = central.get(['proofs']).find(proof => proof._id === _id) ? _id : '';
 
@@ -111,20 +205,14 @@ Meteor.users.find().observe({
     removed: user
 });
 
-central.set(['load'], true);
-central.set(['view'], true);
-
 Meteor.subscribe('profile', () => {
     Tracker.autorun(() => {
         Meteor.userId();
         Meteor.subscribe('proofs', () => {
+            syncHistory(history.location);
             central.set(['load'], false);
         });
     });
-});
-
-central.select(['load']).once('update', () => {
-    syncHistory(history.location);
 });
 
 function byName (a, b) {
@@ -141,40 +229,6 @@ function bindCursorToPath (cursor, path) {
     });
 }
 
-function collection (name) {
-    const created = name + 'Created';
-    const origins = name + 'Origins';
-    const present = name + 'Present';
-    const removed = name + 'Removed';
-    const updated = name + 'Updated';
-
-    return {
-        [origins]: [],
-        [present]: Baobab.monkey(
-            [created],
-            [origins],
-            [removed],
-            (created, origins, removed) =>
-                origins
-                    .concat(Object.keys(created).map(_id => ({_created: true, _id})))
-                    .map(x => Object.assign({_removed: !!removed[x._id]}, x))
-        ),
-
-        [created]: {},
-        [removed]: {},
-        [updated]: {},
-
-        [name]: Baobab.monkey(
-            [present],
-            [updated],
-            (present, updated) =>
-                present
-                    .map(x => Object.assign({_updated: !!updated[x._id]}, x, updated[x._id]))
-                    .sort(byName)
-        )
-    };
-}
-
 function filterToSearch (filter) {
     return filter.length ? `?filter=${filter.sort().join(',')}` : '';
 }
@@ -186,8 +240,8 @@ function searchToFilter (search) {
 function syncHistory (location) {
     const _id = location.pathname.slice(1);
 
-    if (_id !== central.get(['proof']))
-        central.set(['proof'], central.get(['proofs']).find(proof => proof._id === _id) ? _id : null);
+    if (_id !== central.get(['proofId']))
+        central.set(['proofId'], central.get(['proofs']).find(proof => proof._id === _id) ? _id : null);
 
     const filter = searchToFilter(location.search);
 
