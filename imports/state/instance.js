@@ -74,7 +74,7 @@ export const tree = new Baobab({
         }
     ),
 
-    proofId: null,
+    proofId: undefined,
     proof: Baobab.monkey(
         ['proofs'],
         ['proofId'],

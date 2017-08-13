@@ -14,14 +14,17 @@ Meteor.subscribe('users.self', () => {
         tree.set(['proofsOrigins'], cursor.fetch());
     });
 
-    Tracker.autorun(() => {
-        Meteor.userId();
-        Meteor.subscribe('proofs.mine', () => {
-            tree.set(['proofsOrigins'], cursor.fetch());
-            tree.set(['load'], false);
+    Tracker.autorun(computation => {
+        if (Meteor.userId()) {
+            Meteor.subscribe('proofs.mine', () => {
+                tree.set(['proofsOrigins'], cursor.fetch());
+                tree.set(['load'], false);
 
+                syncHistory(history.location);
+            });
+        } else if (computation.firstRun) {
             syncHistory(history.location);
-        });
+        }
     });
 
     Users.find().observe({

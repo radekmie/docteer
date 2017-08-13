@@ -246,19 +246,19 @@ class Proof extends PureComponent {
         return (
             <dl class="fl h-100 ma0 overflow-auto pa4 w-50">
                 <dt><b>Name:</b></dt>
-                <dd><Editable disabled={props.view} html={props.proof.name} onChange={this.onName} placeholder="(untitled)" /></dd>
+                <dd class="ml3"><Editable disabled={props.view} html={props.proof.name} onChange={this.onName} placeholder="(untitled)" /></dd>
 
                 <dt class="mt3"><b>Labels:</b></dt>
-                <dd><Editable class="mv0 pl0" disabled={props.view} html={stepsToList(props.proof.labels)} onChange={this.onLabels} onFocus={this.onLabelsFocus} placeholder="(no labels)" tag="ul" /></dd>
+                <dd class="ml4"><Editable class="mv0 pl0" disabled={props.view} html={stepsToList(props.proof.labels)} onChange={this.onLabels} onFocus={this.onLabelsFocus} placeholder="(no labels)" tag="ul" /></dd>
 
                 <dt class="mt3"><b>Description:</b></dt>
-                <dd><Editable disabled={props.view} html={props.proof.target} onChange={this.onTarget} placeholder="(no description)" /></dd>
+                <dd class="ml3"><Editable disabled={props.view} html={props.proof.target} onChange={this.onTarget} placeholder="(no description)" /></dd>
 
                 <dt class="mt3"><b>Expected result:</b></dt>
-                <dd><Editable disabled={props.view} html={props.proof.expect} onChange={this.onExpect} placeholder="(no expected result)" /></dd>
+                <dd class="ml3"><Editable disabled={props.view} html={props.proof.expect} onChange={this.onExpect} placeholder="(no expected result)" /></dd>
 
                 <dt class="mt3"><b>Steps:</b></dt>
-                <dd><Editable class="mv0 pl0" disabled={props.view} html={stepsToList(props.proof.steps)} onChange={this.onSteps} onFocus={this.onStepsFocus} placeholder="(no steps)" tag="ol" /></dd>
+                <dd class="ml4"><Editable class="mv0 pl0" disabled={props.view} html={stepsToList(props.proof.steps)} onChange={this.onSteps} onFocus={this.onStepsFocus} placeholder="(no steps)" tag="ol" /></dd>
             </dl>
         );
     }
