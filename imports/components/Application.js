@@ -2,6 +2,17 @@
 
 import {Component, h} from 'preact';
 
+import {
+    onAdd,
+    onChange,
+    onFilter,
+    onLogin,
+    onLogout,
+    onRemove,
+    onSave,
+    onView
+} from '/imports/state/actions';
+
 /* eslint-disable max-len */
 const iconAdd = icon('M417.4 224H288V94.6c0-16.9-14.3-30.6-32-30.6s-32 13.7-32 30.6V224H94.6C77.7 224 64 238.3 64 256s13.7 32 30.6 32H224v129.4c0 16.9 14.3 30.6 32 30.6s32-13.7 32-30.6V288h129.4c16.9 0 30.6-14.3 30.6-32s-13.7-32-30.6-32z');
 const iconDo = icon('M448 294.4v-76.8h-42.8c-3.4-14.4-8.9-28-16.1-40.5l29.8-29.7-54.3-54.3-29.1 29.1c-12.6-7.7-26.4-13.5-41.1-17.3V64h-76.8v40.9c-14.7 3.8-28.5 9.7-41.1 17.3l-29.1-29.1-54.3 54.3 29.8 29.7c-7.2 12.5-12.6 26.1-16.1 40.5H64v76.8h44.1c3.8 13.7 9.5 26.6 16.7 38.6l-31.7 31.7 54.3 54.3 32.3-32.3c11.7 6.8 24.5 11.9 37.9 15.4v46h76.8v-46c13.5-3.5 26.2-8.6 37.9-15.4l32.3 32.3 54.3-54.3-31.6-31.7c7.2-11.9 12.9-24.8 16.7-38.6h44zm-192 15.4c-29.7 0-53.7-24.1-53.7-53.8s24-53.8 53.7-53.8 53.8 24.1 53.8 53.8-24.1 53.8-53.8 53.8z');
@@ -39,7 +50,7 @@ class Account extends PureComponent {
         if (!this.email || !this.password)
             return;
 
-        this.props.onLogin(this.email.value, this.password.value);
+        onLogin(this.email.value, this.password.value);
     };
 
     render (props) {
@@ -52,7 +63,7 @@ class Account extends PureComponent {
                 )}
 
                 {!!props.user && (
-                    <button className="w-100" onClick={props.onLogout}>Log Out</button>
+                    <button className="w-100" onClick={onLogout}>Log Out</button>
                 )}
 
                 {!!props.user || (
@@ -137,7 +148,7 @@ class Description extends PureComponent {
 }
 
 class LabelsLabel extends PureComponent {
-    onFilter = () => this.props.onFilter(this.props.label.name);
+    onFilter = () => onFilter(this.props.label.name);
 
     render (props) {
         return (
@@ -176,11 +187,7 @@ class Labels extends PureComponent {
         return (
             <div className="flex-auto list overflow-auto ph3">
                 {props.labels.map(label =>
-                    <LabelsLabel
-                        key={label.name}
-                        label={label}
-                        onFilter={props.onFilter}
-                    />
+                    <LabelsLabel key={label.name} label={label} />
                 )}
             </div>
         );
@@ -212,12 +219,12 @@ class Header extends PureComponent {
 
 class Proof extends PureComponent {
     onChange = (key, map) => html => {
-        this.props.onChange(this.props.proof._id, key, map ? map(html) : html);
+        onChange(this.props.proof._id, key, map ? map(html) : html);
     };
 
     onEnsure = key => () => {
         if (!this.props.proof[key].length)
-            this.props.onChange(this.props.proof._id, key, ['']);
+            onChange(this.props.proof._id, key, ['']);
     };
 
     onExpect = this.onChange('expect');
@@ -289,23 +296,23 @@ class Viewer extends PureComponent {
     render (props) {
         return (
             <div className="bottom-1 fixed right-1">
-                <div className="b--dark-gray ba bg-white br-100 bw1 cf h2 hover-dark-pink link mb1 pointer tc w2" onClick={props.onAdd}>
+                <div className="b--dark-gray ba bg-white br-100 bw1 cf h2 hover-dark-pink link mb1 pointer tc w2" onClick={onAdd}>
                     {iconAdd}
                 </div>
 
                 {props.view || props.proof && (
-                    <div className="b--dark-gray ba bg-white br-100 bw1 cf h2 hover-red link mb1 pointer tc w2" onClick={props.onRemove}>
+                    <div className="b--dark-gray ba bg-white br-100 bw1 cf h2 hover-red link mb1 pointer tc w2" onClick={onRemove}>
                         {iconRemove}
                     </div>
                 )}
 
                 {props.view || (
-                    <div className="b--dark-gray ba bg-white br-100 bw1 cf h2 hover-green link mb1 pointer tc w2" onClick={props.onSave}>
+                    <div className="b--dark-gray ba bg-white br-100 bw1 cf h2 hover-green link mb1 pointer tc w2" onClick={onSave}>
                         {iconOk}
                     </div>
                 )}
 
-                <div className={`b--dark-gray ba bg-white br-100 bw1 cf h2 hover-${props.view ? 'dark-blue' : 'blue'} link pointer tc w2`} onClick={props.onView}>
+                <div className={`b--dark-gray ba bg-white br-100 bw1 cf h2 hover-${props.view ? 'dark-blue' : 'blue'} link pointer tc w2`} onClick={onView}>
                     {props.view ? iconDo : iconNo}
                 </div>
             </div>
@@ -317,7 +324,7 @@ export class Application extends Component {
     constructor () {
         super(...arguments);
 
-        const watcher = this.props.central.watch({
+        const watcher = this.props.tree.watch({
             error:  ['error'],
             labels: ['labels'],
             proof:  ['proof'],
@@ -334,19 +341,19 @@ export class Application extends Component {
         this.state = watcher.get();
     }
 
-    render ({central}, state) {
+    render (props, state) {
         return (
             <main className="cf dark-gray h-100 lh-copy sans-serif">
                 <section className="b--dark-gray br bw1 fl flex flex-column h-100 w-20">
                     <Header />
 
                     {state.user ? (
-                        <Labels labels={state.labels} onFilter={central.onFilter} />
+                        <Labels labels={state.labels} />
                     ) : (
                         <Filler />
                     )}
 
-                    <Account error={state.error} user={state.user} onLogin={central.onLogin} onLogout={central.onLogout} />
+                    <Account error={state.error} user={state.user} />
                 </section>
 
                 {!!state.user && (
@@ -354,11 +361,11 @@ export class Application extends Component {
                 )}
 
                 {!!state.user && (
-                    <Viewer onAdd={central.onAdd} onRemove={central.onRemove} onSave={central.onSave} onView={central.onView} proof={!!state.proof} view={state.view} />
+                    <Viewer proof={!!state.proof} view={state.view} />
                 )}
 
                 {!!state.user && state.proof ? (
-                    <Proof labels={state.labels} onChange={central.onChange} proof={state.proof} view={state.view} />
+                    <Proof labels={state.labels} proof={state.proof} view={state.view} />
                 ) : (
                     <Description className={state.user ? 'w-50' : 'w-75'} />
                 )}
