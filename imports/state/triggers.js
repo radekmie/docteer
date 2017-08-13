@@ -17,9 +17,10 @@ Meteor.subscribe('users.self', () => {
     Tracker.autorun(() => {
         Meteor.userId();
         Meteor.subscribe('proofs.mine', () => {
-            syncHistory(history.location);
-
+            tree.set(['proofsOrigins'], cursor.fetch());
             tree.set(['load'], false);
+
+            syncHistory(history.location);
         });
     });
 
@@ -55,11 +56,11 @@ history.listen(syncHistory);
 
 // Tree
 tree.select(['labels']).on('update', event => {
-    const filter = tree.get(['proofsFilter']);
-    const filtered = filter.filter(name => event.data.currentData.find(label => label.name === name));
+    const filter = tree.get(['filter']);
+    const proofsFiltered = filter.filter(name => event.data.currentData.find(label => label.name === name));
 
-    if (filter.length !== filtered.length) {
-        tree.set(['proofsFilter'], filtered);
+    if (filter.length !== proofsFiltered.length) {
+        tree.set(['filter'], proofsFiltered);
     }
 });
 
@@ -76,7 +77,7 @@ tree.select(['proofId']).on('update', event => {
     }
 });
 
-tree.select(['proofsFilter']).on('update', event => {
+tree.select(['filter']).on('update', event => {
     const search = filterToSearch(event.data.currentData.slice());
 
     if (history.location.search === search) {
@@ -96,8 +97,6 @@ function searchToFilter (search) {
 }
 
 function syncHistory (location) {
-    tree.set(['search'], location.search);
-
     const _id = location.pathname.slice(1);
 
     if (_id !== tree.get(['proofId'])) {
@@ -106,8 +105,8 @@ function syncHistory (location) {
 
     const filter = searchToFilter(location.search);
 
-    if (JSON.stringify(filter) !== JSON.stringify(tree.get(['proofsFilter']))) {
-        tree.set(['proofsFilter'], filter);
+    if (JSON.stringify(filter) !== JSON.stringify(tree.get(['filter']))) {
+        tree.set(['filter'], filter);
     }
 }
 

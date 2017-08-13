@@ -7,7 +7,7 @@ export const tree = new Baobab({
     labels: Baobab.monkey(
         ['proofs'],
         ['proofsFiltered'],
-        ['proofsFilter'],
+        ['filter'],
         (a, b, f) => a
             .reduce((labels, proof) => {
                 proof.labels.forEach(label => {
@@ -41,15 +41,6 @@ export const tree = new Baobab({
                 .map(x => Object.assign({_removed: !!removed[x._id]}, x))
     ),
 
-    proofsFilter: [],
-    proofsFiltered: Baobab.monkey(
-        ['proofs'],
-        ['proofsFilter'],
-        (proofs, filter) => filter.length
-            ? proofs.filter(proof => filter.every(filter => proof.labels.some(label => label === filter)))
-            : proofs
-    ),
-
     proofs: Baobab.monkey(
         ['proofsPresent'],
         ['proofsUpdated'],
@@ -57,6 +48,30 @@ export const tree = new Baobab({
             present
                 .map(x => Object.assign({_updated: !!updated[x._id]}, x, updated[x._id]))
                 .sort(byName)
+    ),
+
+    filter: [],
+    filterString: Baobab.monkey(
+        ['filter'],
+        filter => filter.length ? `?filter=${filter.slice().sort().join(',')}` : ''
+    ),
+
+    proofsFiltered: Baobab.monkey(
+        ['proofs'],
+        ['filter'],
+        ['search'],
+        (proofs, filter, search) => {
+            if (filter) {
+                proofs = proofs.filter(proof => filter.every(filter => proof.labels.some(label => label === filter)));
+            }
+
+            if (search) {
+                search = new RegExp(search, 'i');
+                proofs = proofs.filter(proof => search.test(proof.name));
+            }
+
+            return proofs;
+        }
     ),
 
     proofId: null,

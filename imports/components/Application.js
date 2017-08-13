@@ -10,6 +10,7 @@ import {
     onLogout,
     onRemove,
     onSave,
+    onSearch,
     onView
 } from '/imports/state/actions';
 
@@ -55,35 +56,35 @@ class Account extends PureComponent {
 
     render (props) {
         return (
-            <form className="b--dark-gray bt bw1 pa1" onSubmit={this.onSubmit}>
+            <form class="b--dark-gray bt bw1 pa1" onSubmit={this.onSubmit}>
                 {!!props.user && (
-                    <div className="mb1 tc w-100">
+                    <div class="mb1 tc w-100">
                         <b>{props.user.emails[0].address}</b>
                     </div>
                 )}
 
                 {!!props.user && (
-                    <button className="w-100" onClick={onLogout} title="Log Out">
+                    <button class="w-100" onClick={onLogout} title="Log Out">
                         Log Out
                     </button>
                 )}
 
                 {!!props.user || (
-                    <label className="flex mb1" htmlFor="email" title="Email">
+                    <label class="flex mb1" htmlFor="email" title="Email">
                         <code><b>L</b></code>
-                        <input className={`bg-${props.error ? 'washed-red' : 'near-white'} bw0 flex-auto ml1 ph1`} defaultValue="admin@doctear.com" id="email" name="email" ref={this.onRefEmail} type="email" />
+                        <input class={`bg-${props.error ? 'washed-red' : 'near-white'} bw0 flex-auto ml1 ph1`} defaultValue="admin@doctear.com" id="email" name="email" ref={this.onRefEmail} type="email" />
                     </label>
                 )}
 
                 {!!props.user || (
-                    <label className="flex mb1" htmlFor="password" title="Password">
+                    <label class="flex mb1" htmlFor="password" title="Password">
                         <code><b>P</b></code>
-                        <input className={`bg-${props.error ? 'washed-red' : 'near-white'} bw0 flex-auto ml1 ph1`} defaultValue="doctear" id="password" name="password" ref={this.onRefPassword} type="password" />
+                        <input class={`bg-${props.error ? 'washed-red' : 'near-white'} bw0 flex-auto ml1 ph1`} defaultValue="doctear" id="password" name="password" ref={this.onRefPassword} type="password" />
                     </label>
                 )}
 
                 {!!props.user || (
-                    <button className="w-100" title="Log In">
+                    <button class="w-100" title="Log In">
                         Log In
                     </button>
                 )}
@@ -130,13 +131,13 @@ class Editable extends Component {
 
     render ({disabled, html, placeholder, tag, ...props}) {
         return h(tag || 'div', Object.assign(props, {
-            className: ['ph1', props.className, disabled ? '' : 'bg-near-white'].filter(Boolean).join(' '),
+            class: ['ph1', props.class, disabled ? '' : 'bg-near-white'].filter(Boolean).join(' '),
             contentEditable: !disabled,
             dangerouslySetInnerHTML: {__html: getContent(disabled, html, placeholder)},
 
-            onBlur:  this.onChange,
-            onInput: this.onChange,
-            ref:     this.onRef
+            onBlur:   this.onChange,
+            onChange: this.onChange,
+            ref:      this.onRef
         }));
     }
 }
@@ -144,7 +145,7 @@ class Editable extends Component {
 class Description extends PureComponent {
     render (props) {
         return (
-            <div className={`fl pv3 tc ${props.className}`}>
+            <div class={`fl pt3 tc ${props.class}`}>
                 Some description should be placed here!
             </div>
         );
@@ -157,13 +158,14 @@ class LabelsLabel extends PureComponent {
     render (props) {
         return (
             <li>
-                <label className="cf db pointer" htmlFor={props.label.name}>
-                    <input checked={props.label.active} className="mr2 v-mid" id={props.label.name} onChange={this.onFilter} type="checkbox" />
-                    {props.label.name}
-
-                    <span className="fr">
+                <label class="flex hover-gray items-baseline link ph2 pointer" htmlFor={props.label.name}>
+                    <input checked={props.label.active} class="mr2" id={props.label.name} onChange={this.onFilter} type="checkbox" />
+                    <div class="flex-auto truncate">
+                        {props.label.name}
+                    </div>
+                    <div>
                         {`${props.label.count}/${props.label.total}`}
-                    </span>
+                    </div>
                 </label>
             </li>
         );
@@ -173,7 +175,7 @@ class LabelsLabel extends PureComponent {
 class Filler extends PureComponent {
     render () {
         return (
-            <div className="filler flex-auto near-white" />
+            <div class="filler flex-auto near-white" />
         );
     }
 }
@@ -182,14 +184,14 @@ class Labels extends PureComponent {
     render (props) {
         if (props.labels.length === 0) {
             return (
-                <div className="flex-auto pa3 tc">
+                <div class="flex-auto pa3 tc">
                     (no labels)
                 </div>
             );
         }
 
         return (
-            <div className="flex-auto list overflow-auto ph3">
+            <div class="flex-auto list overflow-auto">
                 {props.labels.map(label =>
                     <LabelsLabel key={label.name} label={label} />
                 )}
@@ -201,9 +203,9 @@ class Labels extends PureComponent {
 class Header extends PureComponent {
     render () {
         return (
-            <header className="b--dark-gray bb bw1 cf pt1">
-                <a className="dark-gray hover-gray link" href="/">
-                    <svg className="fl w3" viewBox="0 0 32 32">
+            <header class="b--dark-gray bb bw1 cf pt1">
+                <a class="dark-gray hover-gray link" href="/">
+                    <svg class="fl w3" viewBox="0 0 32 32">
                         <path d="M7 21v4h1v-4zm10 0v4h1v-4" />
                         <path d="M9 21v3h1v-3zm16 0v3h1v-3" />
                         <path d="M11 21v6h1v-6zm10 0v6h1v-6" />
@@ -212,7 +214,7 @@ class Header extends PureComponent {
                         <path d="M27 20H6v2H5v-5h1v2h21v-2h1v5h-1v-2zm-1-2v-8l-6-7H9C7 3 7 4 7 5v13h1V5c0-1 0-1 1-1h10v5c0 1 1 2 2 2h4v7z" />
                     </svg>
 
-                    <h1 className="fl f4">
+                    <h1 class="fl f4">
                         DocTear
                     </h1>
                 </a>
@@ -242,21 +244,21 @@ class Proof extends PureComponent {
 
     render (props) {
         return (
-            <dl className="fl h-100 ma0 overflow-auto pa4 w-50">
+            <dl class="fl h-100 ma0 overflow-auto pa4 w-50">
                 <dt><b>Name:</b></dt>
                 <dd><Editable disabled={props.view} html={props.proof.name} onChange={this.onName} placeholder="(untitled)" /></dd>
 
-                <dt className="mt3"><b>Labels:</b></dt>
-                <dd><Editable className="mv0 pl0" disabled={props.view} html={stepsToList(props.proof.labels)} onChange={this.onLabels} onFocus={this.onLabelsFocus} placeholder="(no labels)" tag="ul" /></dd>
+                <dt class="mt3"><b>Labels:</b></dt>
+                <dd><Editable class="mv0 pl0" disabled={props.view} html={stepsToList(props.proof.labels)} onChange={this.onLabels} onFocus={this.onLabelsFocus} placeholder="(no labels)" tag="ul" /></dd>
 
-                <dt className="mt3"><b>Description:</b></dt>
+                <dt class="mt3"><b>Description:</b></dt>
                 <dd><Editable disabled={props.view} html={props.proof.target} onChange={this.onTarget} placeholder="(no description)" /></dd>
 
-                <dt className="mt3"><b>Expected result:</b></dt>
+                <dt class="mt3"><b>Expected result:</b></dt>
                 <dd><Editable disabled={props.view} html={props.proof.expect} onChange={this.onExpect} placeholder="(no expected result)" /></dd>
 
-                <dt className="mt3"><b>Steps:</b></dt>
-                <dd><Editable className="mv0 pl0" disabled={props.view} html={stepsToList(props.proof.steps)} onChange={this.onSteps} onFocus={this.onStepsFocus} placeholder="(no steps)" tag="ol" /></dd>
+                <dt class="mt3"><b>Steps:</b></dt>
+                <dd><Editable class="mv0 pl0" disabled={props.view} html={stepsToList(props.proof.steps)} onChange={this.onSteps} onFocus={this.onStepsFocus} placeholder="(no steps)" tag="ol" /></dd>
             </dl>
         );
     }
@@ -265,33 +267,41 @@ class Proof extends PureComponent {
 class ProofsProof extends PureComponent {
     render (props) {
         return (
-            <li>
-                <a
-                    className={`${getProofColor(props.proof)} db link`}
-                    dangerouslySetInnerHTML={{__html: props.proof.name || '(untitled)'}}
-                    href={[`/${props.proof._id}`, props.search].filter(Boolean).join('')}
-                />
-            </li>
+            <a
+                class={`db ${getProofColor(props.proof)} link pl3 truncate`}
+                dangerouslySetInnerHTML={{__html: props.proof.name || '(untitled)'}}
+                href={[`/${props.proof._id}`, props.filter].filter(Boolean).join('')}
+            />
         );
     }
 }
 
 class Proofs extends PureComponent {
-    render (props) {
-        if (props.proofs.length === 0) {
-            return (
-                <div className="b--dark-gray br bw1 fl h-100 mv0 overflow-auto pl4 pr3 pv3 tc w-30">
-                    (no test cases)
-                </div>
-            );
-        }
+    onSearch = event => {
+        onSearch(event.target.value);
+    };
 
+    render (props) {
         return (
-            <ul className="b--dark-gray br bw1 fl h-100 mv0 overflow-auto pl4 pr3 pv3 w-30">
-                {props.proofs.map(proof =>
-                    <ProofsProof key={proof._id} proof={proof} search={props.search} />
+            <div class="b--dark-gray br bw1 fl flex flex-column h-100 mv0 w-30">
+                <div class="b--dark-gray bb bw1">
+                    <label class="flex" htmlFor="search" title="Search">
+                        <input class="bg-near-white bw0 flex-auto pa2" id="search" name="search" placeholder="Search..." onChange={this.onSearch} type="search" value={props.search} />
+                    </label>
+                </div>
+
+                {props.proofs.length ? (
+                    <div class="ma0 overflow-auto">
+                        {props.proofs.map(proof =>
+                            <ProofsProof filter={props.filter} key={proof._id} proof={proof} />
+                        )}
+                    </div>
+                ) : (
+                    <div class="pa3 tc">
+                        {`(no test cases${props.search ? ' found' : ''})`}
+                    </div>
                 )}
-            </ul>
+            </div>
         );
     }
 }
@@ -299,24 +309,24 @@ class Proofs extends PureComponent {
 class Viewer extends PureComponent {
     render (props) {
         return (
-            <div className="bottom-1 fixed right-1">
-                <div className={getButtonClasses('dark-pink')} onClick={onAdd} title="Create">
+            <div class="bottom-1 fixed right-1">
+                <div class={getButtonClasses('dark-pink')} onClick={onAdd} title="Create">
                     {iconAdd}
                 </div>
 
                 {props.view || props.proof && (
-                    <div className={getButtonClasses('red')} onClick={onRemove} title="Remove">
+                    <div class={getButtonClasses('red')} onClick={onRemove} title="Remove">
                         {iconRemove}
                     </div>
                 )}
 
                 {props.view || (
-                    <div className={getButtonClasses('green')} onClick={onSave} title="Save">
+                    <div class={getButtonClasses('green')} onClick={onSave} title="Save">
                         {iconOk}
                     </div>
                 )}
 
-                <div className={getButtonClasses(props.view ? 'dark-blue' : 'blue')} onClick={onView} title={props.view ? 'Edit' : 'Cancel'}>
+                <div class={getButtonClasses(props.view ? 'dark-blue' : 'blue')} onClick={onView} title={props.view ? 'Edit' : 'Cancel'}>
                     {props.view ? iconDo : iconNo}
                 </div>
             </div>
@@ -330,6 +340,7 @@ export class Application extends Component {
 
         const watcher = this.props.tree.watch({
             error:  ['error'],
+            filter: ['filterString'],
             labels: ['labels'],
             proof:  ['proof'],
             proofs: ['proofsFiltered'],
@@ -347,8 +358,8 @@ export class Application extends Component {
 
     render (props, state) {
         return (
-            <main className="cf dark-gray h-100 lh-copy sans-serif">
-                <section className="b--dark-gray br bw1 fl flex flex-column h-100 w-20">
+            <main class="cf dark-gray h-100 lh-copy sans-serif">
+                <section class="b--dark-gray br bw1 fl flex flex-column h-100 w-20">
                     <Header />
 
                     {state.user ? (
@@ -361,13 +372,13 @@ export class Application extends Component {
                 </section>
 
                 {!!state.user && (
-                    <Proofs proofs={state.proofs} search={state.search} />
+                    <Proofs filter={state.filter} proofs={state.proofs} search={state.search} />
                 )}
 
                 {!!state.user && state.proof ? (
                     <Proof labels={state.labels} proof={state.proof} view={state.view} />
                 ) : (
-                    <Description className={state.user ? 'w-50' : 'w-75'} />
+                    <Description class={state.user ? 'w-50' : 'w-75'} />
                 )}
 
                 {!!state.user && (
@@ -401,7 +412,7 @@ function getProofColor (proof) {
 
 function icon (size, d) {
     return (
-        <svg className="ma1" viewBox={`0 0 ${size} ${size}`}>
+        <svg class="ma1" viewBox={`0 0 ${size} ${size}`}>
             <path d={d} />
         </svg>
     );

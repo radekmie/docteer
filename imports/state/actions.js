@@ -20,12 +20,12 @@ export function onChange (_id, key, value) {
 }
 
 export function onFilter (_id) {
-    const index = tree.get(['proofsFilter']).indexOf(_id);
+    const index = tree.get(['filter']).indexOf(_id);
 
     if (index === -1) {
-        tree.push(['proofsFilter'], _id);
+        tree.push(['filter'], _id);
     } else {
-        tree.unset(['proofsFilter', index]);
+        tree.unset(['filter', index]);
     }
 }
 
@@ -97,6 +97,10 @@ export function onSave () {
 
         tree.set(['load'], false);
     });
+}
+
+export function onSearch (search) {
+    tree.set(['search'], search);
 }
 
 export function onView () {
