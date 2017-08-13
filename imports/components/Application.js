@@ -336,7 +336,7 @@ export class Application extends Component {
 
     render ({central}, state) {
         return (
-            <main className="cf dark-gray h-100 lh-copy">
+            <main className="cf dark-gray h-100 lh-copy sans-serif">
                 <section className="b--dark-gray br bw1 fl flex flex-column h-100 w-20">
                     <Header />
 

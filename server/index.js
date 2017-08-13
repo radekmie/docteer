@@ -1,6 +1,7 @@
 import UglifyJS        from 'uglify-es';
 import autoprefixer    from 'autoprefixer';
 import cssnano         from 'cssnano';
+import parse           from 'css-selector-tokenizer/lib/parse';
 import postcss         from 'postcss';
 import {minify}        from 'html-minifier';
 import {prepackString} from 'prepack/lib/prepack-standalone';
@@ -18,11 +19,145 @@ if (Meteor.users.find({}, {fields: {_id: 1}, limit: 1}).count() === 0)
     Accounts.createUser({email: 'admin@doctear.com', password: 'doctear'});
 
 if (process.env.NODE_ENV === 'production') {
-    const bundledCSSPath = Object.values(WebAppInternals.staticFiles).find(file => file.type === 'css').absolutePath;
-    const bundledCSS = Meteor.wrapAsync(readFile)(bundledCSSPath, 'utf8');
+    let bundledCSS;
+
+    Object.entries(WebAppInternals.staticFiles).forEach(entry => {
+        if (entry[1].type === 'css') {
+            bundledCSS = Meteor.wrapAsync(readFile)(entry[1].absolutePath, 'utf8');
+        }
+
+        if (entry[1].type !== 'js')
+            delete WebAppInternals.staticFiles[entry[0]];
+    });
+
+    const selectors = {
+        classes: [
+            'b--dark-gray',
+            'ba',
+            'bb',
+            'bg-near-white',
+            'bg-washed-red',
+            'bg-white',
+            'blue',
+            'bottom-1',
+            'br',
+            'br-100',
+            'bt',
+            'bw0',
+            'bw1',
+            'cf',
+            'dark-gray',
+            'db',
+            'f4',
+            'filler',
+            'fixed',
+            'fl',
+            'flex',
+            'flex-auto',
+            'flex-column',
+            'fr',
+            'gray',
+            'green',
+            'h-100',
+            'h2',
+            'hover-blue',
+            'hover-dark-blue',
+            'hover-dark-pink',
+            'hover-gray',
+            'hover-green',
+            'hover-light-blue',
+            'hover-light-gray',
+            'hover-light-green',
+            'hover-light-red',
+            'hover-red',
+            'lh-copy',
+            'link',
+            'list',
+            'loading',
+            'ma0',
+            'ma1',
+            'mb1',
+            'ml1',
+            'mr2',
+            'mt3',
+            'mv0',
+            'near-white',
+            'overflow-auto',
+            'pa1',
+            'pa3',
+            'pa4',
+            'ph1',
+            'ph3',
+            'pl0',
+            'pl4',
+            'pointer',
+            'pr3',
+            'pt1',
+            'pv3',
+            'red',
+            'right-1',
+            'sans-serif',
+            'tc',
+            'v-mid',
+            'w-100',
+            'w-20',
+            'w-30',
+            'w-50',
+            'w-75',
+            'w2',
+            'w3'
+        ],
+
+        elements: [
+            'a',
+            'b',
+            'body',
+            'button',
+            'code',
+            'dd',
+            'div',
+            'dl',
+            'dt',
+            'form',
+            'h1',
+            'header',
+            'html',
+            'input',
+            'label',
+            'li',
+            'main',
+            'path',
+            'section',
+            'span',
+            'svg',
+            'to',
+            'ul'
+        ],
+
+        ids: [
+            'app',
+            'loader'
+        ]
+    };
 
     const minifyCSSLib = postcss([
-        autoprefixer({browsers: ['last 2 versions']}),
+        postcss.plugin('filter', () => root => root.walkRules(rule => {
+            rule.selectors = rule.selectors.filter(selector => {
+                const parsed = parse(selector).nodes[0];
+                if (parsed === undefined)
+                    return true;
+
+                return parsed.nodes.some(token =>
+                    token.name === ':root'   ||
+                    token.type === 'class'   && selectors.classes.includes(token.name) ||
+                    token.type === 'element' && selectors.elements.includes(token.name) ||
+                    token.type === 'id'      && selectors.ids.includes(token.name) ||
+                    token.type === 'invalid'
+                );
+            });
+            rule.selectors.length || rule.remove();
+        })),
+        autoprefixer({browsers: ['last 2 Chrome versions']}),
         cssnano({preset: 'default'})
     ]);
 
