@@ -26,9 +26,9 @@ export const tree = new Baobab({
             }))
     ),
 
-    proofsCreated: {},
-    proofsRemoved: {},
-    proofsUpdated: {},
+    proofsCreated: Object.create(null),
+    proofsRemoved: Object.create(null),
+    proofsUpdated: Object.create(null),
 
     proofsOrigins: [],
     proofsPresent: Baobab.monkey(

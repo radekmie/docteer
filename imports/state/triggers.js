@@ -14,6 +14,7 @@ Meteor.subscribe('users.self', () => {
         Meteor.userId();
         Meteor.subscribe('proofs.mine', () => {
             syncHistory(history.location);
+
             tree.set(['load'], false);
         });
     });
@@ -27,8 +28,9 @@ Meteor.subscribe('users.self', () => {
 
 // Events
 document.addEventListener('click', event => {
-    if (event.altKey || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey)
+    if (event.altKey || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey) {
         return;
+    }
 
     let node = event.target;
     do {
@@ -52,8 +54,9 @@ tree.select(['labels']).on('update', event => {
     const filter = tree.get(['proofsFilter']);
     const filtered = filter.filter(name => event.data.currentData.find(label => label.name === name));
 
-    if (filter.length !== filtered.length)
+    if (filter.length !== filtered.length) {
         tree.set(['proofsFilter'], filtered);
+    }
 });
 
 tree.select(['load']).on('update', event => {
@@ -64,43 +67,19 @@ tree.select(['proofId']).on('update', event => {
     const _id = event.data.currentData;
     const pathname = tree.get(['proofs']).find(proof => proof._id === _id) ? _id : '';
 
-    if (pathname !== history.location.pathname.slice(1))
+    if (pathname !== history.location.pathname.slice(1)) {
         history.push({pathname: '/' + pathname, search: history.location.search});
+    }
 });
 
 tree.select(['proofsFilter']).on('update', event => {
     const search = filterToSearch(event.data.currentData.slice());
 
-    if (history.location.search === search)
+    if (history.location.search === search) {
         return;
+    }
 
     history.push({pathname: history.location.pathname, search});
-});
-
-tree.select(['view']).on('update', event => {
-    if (event.data.currentData === false)
-        return;
-
-    const patch = {
-        created: Object.keys(tree.get(['proofsCreated'])),
-        removed: Object.keys(tree.get(['proofsRemoved'])),
-        updated: tree.get(['proofsUpdated'])
-    };
-
-    if (!patch.created.length && !patch.removed.length && !Object.keys(patch.updated).length)
-        return;
-
-    tree.set(['load'], true);
-
-    Meteor.call('proofs.patch', patch, error => {
-        if (error)
-            alert(error.error);
-
-        tree.set(['proofsCreated'], {});
-        tree.set(['proofsRemoved'], {});
-        tree.set(['proofsUpdated'], {});
-        tree.set(['load'], false);
-    });
 });
 
 // Helpers
@@ -127,13 +106,15 @@ function syncHistory (location) {
 
     const _id = location.pathname.slice(1);
 
-    if (_id !== tree.get(['proofId']))
+    if (_id !== tree.get(['proofId'])) {
         tree.set(['proofId'], tree.get(['proofs']).find(proof => proof._id === _id) ? _id : null);
+    }
 
     const filter = searchToFilter(location.search);
 
-    if (JSON.stringify(filter) !== JSON.stringify(tree.get(['proofsFilter'])))
+    if (JSON.stringify(filter) !== JSON.stringify(tree.get(['proofsFilter']))) {
         tree.set(['proofsFilter'], filter);
+    }
 }
 
 function user () {
