@@ -132,15 +132,7 @@
         "span",
         "svg",
         "ul"
-      ],
-      "cssnano": {
-        "preset": "default"
-      },
-      "autoprefixer": {
-        "browsers": [
-          "last 2 versions"
-        ]
-      }
+      ]
     }
   }
 }
