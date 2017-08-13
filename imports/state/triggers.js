@@ -8,7 +8,11 @@ import {history, tree} from './instance';
 
 // Collections
 Meteor.subscribe('users.self', () => {
-    bindCursorToPath(Proofs.find(), 'proofsOrigins');
+    const cursor = Proofs.find();
+
+    Tracker.autorun(() => {
+        tree.set(['proofsOrigins'], cursor.fetch());
+    });
 
     Tracker.autorun(() => {
         Meteor.userId();
@@ -83,24 +87,6 @@ tree.select(['proofsFilter']).on('update', event => {
 });
 
 // Helpers
-function bindCursorToPath (cursor, path) {
-    const base = tree.select([path]);
-
-    cursor.observe({
-        added (doc) {
-            base.push(doc);
-        },
-
-        changed (doc) {
-            base.set({_id: doc._id}, doc);
-        },
-
-        removed (doc) {
-            base.unset({_id: doc._id});
-        }
-    });
-}
-
 function filterToSearch (filter) {
     return filter.length ? `?filter=${filter.sort().join(',')}` : '';
 }
