@@ -16,15 +16,18 @@ const processor = postcss([
     postcss.plugin('filter', () => root => root.walkRules(rule => {
         rule.selectors = rule.selectors.filter(selector => {
             const parsed = parse(selector).nodes[0];
-            if (parsed === undefined)
+
+            if (parsed === undefined) {
                 return true;
+            }
 
             return parsed.nodes.some(token =>
                 token.name === ':root'   ||
                 token.type === 'class'   && selectors.classes.includes(token.name) ||
-                token.type === 'element' && selectors.elements.includes(token.name) ||
                 token.type === 'id'      && selectors.ids.includes(token.name) ||
                 token.type === 'invalid'
+            ) || parsed.nodes.every(token =>
+                token.type === 'element' && selectors.elements.includes(token.name)
             );
         });
         rule.selectors.length || rule.remove();

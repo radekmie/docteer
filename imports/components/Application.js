@@ -24,13 +24,17 @@ const iconRemove = icon(512, 'M417.4 224H94.6C77.7 224 64 238.3 64 256s13.7 32 3
 
 class PureComponent extends Component {
     shouldComponentUpdate (props) {
-        for (const key in props)
-            if (this.props[key] !== props[key])
+        for (const key in props) {
+            if (this.props[key] !== props[key]) {
                 return true;
+            }
+        }
 
-        for (const key in props)
-            if (!(key in props))
+        for (const key in props) {
+            if (!(key in props)) {
                 return true;
+            }
+        }
 
         return false;
     }
@@ -48,8 +52,9 @@ class Account extends PureComponent {
     onSubmit = event => {
         event.preventDefault();
 
-        if (!this.email || !this.password)
+        if (!this.email || !this.password) {
             return;
+        }
 
         onLogin(this.email.value, this.password.value);
     };
@@ -96,37 +101,45 @@ class Account extends PureComponent {
 class Editable extends Component {
     onRef = element => this.element = element;
     onChange = () => {
-        if (!this.props.onChange)
+        if (!this.props.onChange) {
             return;
+        }
 
-        if (!this.element)
+        if (!this.element) {
             return;
+        }
 
-        if (this.element.innerHTML === this.props.html)
+        if (this.element.innerHTML === this.props.html) {
             return;
+        }
 
         this.props.onChange(this.element.innerHTML);
     };
 
     shouldComponentUpdate (props) {
-        if (!this.element)
+        if (!this.element) {
             return true;
+        }
 
-        if (this.props.disabled !== props.disabled)
+        if (this.props.disabled !== props.disabled) {
             return true;
+        }
 
-        if (this.props.html !== props.html && this.element.innerHTML !== props.html)
+        if (this.props.html !== props.html && this.element.innerHTML !== props.html) {
             return true;
+        }
 
-        if ((props.tag === 'ol' || props.tag === 'ul') && !this.element.innerHTML.startsWith('<li>'))
+        if ((props.tag === 'ol' || props.tag === 'ul') && !this.element.innerHTML.startsWith('<li>')) {
             return true;
+        }
 
         return false;
     }
 
     componentDidUpdate () {
-        if (this.element && this.element.innerHTML !== this.props.html)
+        if (this.element && this.element.innerHTML !== this.props.html) {
             this.element.innerHTML = getContent(this.props.disabled, this.props.html, this.props.placeholder);
+        }
     }
 
     render ({disabled, html, placeholder, tag, ...props}) {
@@ -153,14 +166,16 @@ class Description extends PureComponent {
 }
 
 class LabelsLabel extends PureComponent {
-    onFilter = () => onFilter(this.props.label.name);
+    onFilter = () => {
+        onFilter(this.props.label.name);
+    };
 
     render (props) {
         return (
             <li>
-                <label class="flex hover-gray items-baseline link ph2 pointer" htmlFor={props.label.name}>
-                    <input checked={props.label.active} class="mr2" id={props.label.name} onChange={this.onFilter} type="checkbox" />
-                    <div class="flex-auto truncate">
+                <label class="flex hover-gray items-center link ph2 pointer" htmlFor={props.label.name}>
+                    <input checked={props.label.active} id={props.label.name} onChange={this.onFilter} type="checkbox" />
+                    <div class="flex-auto mh2 truncate">
                         {props.label.name}
                     </div>
                     <div>
@@ -229,8 +244,9 @@ class Proof extends PureComponent {
     };
 
     onEnsure = key => () => {
-        if (!this.props.proof[key].length)
+        if (!this.props.proof[key].length) {
             onChange(this.props.proof._id, key, ['']);
+        }
     };
 
     onExpect = this.onChange('expect');
@@ -246,16 +262,16 @@ class Proof extends PureComponent {
         return (
             <dl class="fl h-100 ma0 overflow-auto pa4 w-50">
                 <dt><b>Name:</b></dt>
-                <dd class="ml3"><Editable disabled={props.view} html={props.proof.name} onChange={this.onName} placeholder="(untitled)" /></dd>
+                <dd class="ml4"><Editable disabled={props.view} html={props.proof.name} onChange={this.onName} placeholder="(untitled)" /></dd>
 
                 <dt class="mt3"><b>Labels:</b></dt>
                 <dd class="ml4"><Editable class="mv0 pl0" disabled={props.view} html={stepsToList(props.proof.labels)} onChange={this.onLabels} onFocus={this.onLabelsFocus} placeholder="(no labels)" tag="ul" /></dd>
 
                 <dt class="mt3"><b>Description:</b></dt>
-                <dd class="ml3"><Editable disabled={props.view} html={props.proof.target} onChange={this.onTarget} placeholder="(no description)" /></dd>
+                <dd class="ml4"><Editable disabled={props.view} html={props.proof.target} onChange={this.onTarget} placeholder="(no description)" /></dd>
 
                 <dt class="mt3"><b>Expected result:</b></dt>
-                <dd class="ml3"><Editable disabled={props.view} html={props.proof.expect} onChange={this.onExpect} placeholder="(no expected result)" /></dd>
+                <dd class="ml4"><Editable disabled={props.view} html={props.proof.expect} onChange={this.onExpect} placeholder="(no expected result)" /></dd>
 
                 <dt class="mt3"><b>Steps:</b></dt>
                 <dd class="ml4"><Editable class="mv0 pl0" disabled={props.view} html={stepsToList(props.proof.steps)} onChange={this.onSteps} onFocus={this.onStepsFocus} placeholder="(no steps)" tag="ol" /></dd>

@@ -3,8 +3,9 @@ export function bulkPatch (collection, patch, userId) {
     const udsR = patch.removed;
     const udsU = Object.keys(patch.updated);
 
-    if (!udsC.length && !udsR.length && !udsU.length)
+    if (!udsC.length && !udsR.length && !udsU.length) {
         return;
+    }
 
     const hand = collection.rawCollection();
     const bulk = hand.initializeUnorderedBulkOp();
