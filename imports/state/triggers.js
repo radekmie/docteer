@@ -87,9 +87,17 @@ function bindCursorToPath (cursor, path) {
     const base = tree.select([path]);
 
     cursor.observe({
-        added:   doc => base.set(base.get().concat(doc)),
-        changed: doc => base.set(base.get().map(obj => obj._id === doc._id ? doc : obj)),
-        removed: doc => base.set(base.get().filter(obj => obj._id !== doc._id))
+        added (doc) {
+            base.push(doc);
+        },
+
+        changed (doc) {
+            base.set({_id: doc._id}, doc);
+        },
+
+        removed (doc) {
+            base.unset({_id: doc._id});
+        }
     });
 }
 
