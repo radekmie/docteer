@@ -92,6 +92,22 @@ export function onSave () {
         if (error) {
             tree.set(['error'], error);
         } else {
+            // Optimistic UI
+            tree.set(['proofsOrigins'], tree.get(['proofs']).reduce((proofs, doc) => {
+                if (doc._removed) {
+                    return proofs;
+                }
+
+                const  proof = Object.assign({}, doc);
+                delete proof._created;
+                delete proof._removed;
+                delete proof._updated;
+
+                proofs.push(proof);
+
+                return proofs;
+            }, []));
+
             onReset();
         }
 
