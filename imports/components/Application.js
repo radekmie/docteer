@@ -77,14 +77,14 @@ class Account extends PureComponent {
                 {!!props.user || (
                     <label class="flex mb1" htmlFor="email" title="Email">
                         <code><b>L</b></code>
-                        <input class={`bg-${props.error ? 'washed-red' : 'near-white'} bw0 flex-auto ml1 ph1`} defaultValue="admin@doctear.com" id="email" name="email" ref={this.onRefEmail} type="email" />
+                        <input class={`bg-${props.error ? 'washed-red' : 'near-white'} bw0 flex-auto ml1 ph1`} id="email" name="email" ref={this.onRefEmail} type="email" />
                     </label>
                 )}
 
                 {!!props.user || (
                     <label class="flex mb1" htmlFor="password" title="Password">
                         <code><b>P</b></code>
-                        <input class={`bg-${props.error ? 'washed-red' : 'near-white'} bw0 flex-auto ml1 ph1`} defaultValue="doctear" id="password" name="password" ref={this.onRefPassword} type="password" />
+                        <input class={`bg-${props.error ? 'washed-red' : 'near-white'} bw0 flex-auto ml1 ph1`} id="password" name="password" ref={this.onRefPassword} type="password" />
                     </label>
                 )}
 
