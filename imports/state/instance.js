@@ -86,10 +86,10 @@ export const tree = new Baobab({
     load: 0,
     view: true,
     search: '',
+    toasts: [],
 
     // User
-    user:      null,
-    userError: null
+    user: null
 }, {immutable: process.env.NODE_ENV === 'development'});
 
 function byName (a, b) {

@@ -74,3 +74,20 @@ path {
         transparent 20px
     );
 }
+
+.center-h {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.bg-near-white {
+    background-color: #f8f8f8;
+}
+
+.near-white {
+    color: #f8f8f8;
+}
+
+.tj {
+    text-align: justify;
+}

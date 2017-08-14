@@ -23,7 +23,7 @@ Meteor.subscribe('users.self', () => {
     });
 
     tree.select(['user']).on('update', () => {
-        onRefresh().then(update);
+        onRefresh(true).then(update);
     });
 });
 

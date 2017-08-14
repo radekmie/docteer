@@ -30,42 +30,49 @@ export function onFilter (_id) {
 }
 
 export function onLogin (email, password) {
-    tree.set(['error'], null);
-    tree.set(['load'], tree.get(['load']) + 1);
+    toast('info', 'Logging in...');
 
     Meteor.loginWithPassword(email, password, error => {
         if (error) {
-            tree.set(['error'], error);
+            toast('error', error);
+        } else {
+            toast('success', 'Logged in.');
         }
-
-        tree.set(['load'], tree.get(['load']) - 1);
     });
 }
 
 export function onLogout () {
-    tree.set(['load'], tree.get(['load']) + 1);
+    toast('info', 'Logging out...');
 
     Meteor.logout(error => {
         if (error) {
-            tree.set(['error'], error);
+            toast('error', error);
+        } else {
+            toast('suceess', 'Logged out.');
+            tree.set(['proofId'], null);
         }
-
-        tree.set(['proofId'], null);
-        tree.set(['load'], tree.get(['load']) - 1);
     });
 }
 
-export function onRefresh () {
+export function onRefresh (silent) {
     if (!Meteor.userId()) {
         tree.set(['proofsOrigins'], []);
 
         return Promise.resolve();
     }
 
+    if (silent === true) {
+        toast('info', 'Refreshing...');
+    }
+
     return graphQL({
         query: 'query Proofs ($session: String!, $userId: String!) { proofs (session: $session, userId: $userId) { _id expect labels name steps target } }',
         operationName: 'Proofs'
     }).then(response => {
+        if (silent === true) {
+            toast('success', 'Refreshed.');
+        }
+
         tree.set(['proofsOrigins'], response.data.proofs);
     });
 }
@@ -106,30 +113,16 @@ export function onSave () {
         return Promise.resolve();
     }
 
-    // Optimistic UI
-    tree.set(['proofsOrigins'], tree.get(['proofs']).reduce((proofs, doc) => {
-        if (doc._removed) {
-            return proofs;
-        }
-
-        const  proof = Object.assign({}, doc);
-        delete proof._created;
-        delete proof._removed;
-        delete proof._updated;
-
-        proofs.push(proof);
-
-        return proofs;
-    }, []));
-
-    onReset();
+    toast('info', 'Saving...');
 
     return graphQL({
         query: 'mutation ProofsPatch ($session: String!, $userId: String!, $created: [String!]!, $removed: [String!]!, $updated: [ProofPatch!]!) { proofsPatch (session: $session, userId: $userId, created: $created, removed: $removed, updated: $updated) { _id expect labels name steps target } }',
         operationName: 'ProofsPatch',
         variables: patch
     }).then(response => {
+        toast('success', 'Saved.');
         tree.set(['proofsOrigins'], response.data.proofsPatch);
+        onReset();
     });
 }
 
@@ -147,9 +140,6 @@ export function onView () {
 
 function graphQL (body) {
     const json = 'application/json';
-
-    tree.set(['load'], tree.get(['load']) + 1);
-    tree.set(['error'], null);
 
     return fetch('/graphql', {
         method: 'POST',
@@ -175,15 +165,28 @@ function graphQL (body) {
         }
 
         throw new Error(response.statusText);
-    }).then(response => {
-        tree.set(['load'], tree.get(['load']) - 1);
-        tree.set(['error'], null);
-
-        return response;
-    }, error => {
-        tree.set(['load'], tree.get(['load']) - 1);
-        tree.set(['error'], error);
-
+    }).catch(error => {
+        toast('error', error);
         throw error;
     });
+}
+
+function toast (type, textOrError) {
+    const _id = Math.random();
+    const text = type === 'error'
+        ? textOrError.error === 403
+            ? 'Sounds good, doesn\'t work.'
+            : textOrError.reason || textOrError.message
+        : textOrError
+    ;
+
+    tree.push(['toasts'], {_id, dead: false, text, type});
+
+    setTimeout(() => {
+        tree.set(['toasts', {_id}, 'dead'], true);
+
+        setTimeout(() => {
+            tree.unset(['toasts', {_id}]);
+        }, 250);
+    }, 1500);
 }

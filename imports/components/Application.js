@@ -63,7 +63,7 @@ class Account extends PureComponent {
 
     render (props) {
         return (
-            <form class="b--dark-gray bt bw1 pa1" onSubmit={this.onSubmit}>
+            <form class={`b--dark-gray bt bw1 pa2${props.user ? ' pt1' : ''}`} onSubmit={this.onSubmit}>
                 {!!props.user && (
                     <div class="mb1 tc w-100">
                         <b>{props.user.emails[0].address}</b>
@@ -79,14 +79,14 @@ class Account extends PureComponent {
                 {!!props.user || (
                     <label class="flex mb1" htmlFor="email" title="Email">
                         <code><b>L</b></code>
-                        <input class={`bg-${props.error ? 'washed-red' : 'near-white'} bw0 flex-auto ml1 ph1`} id="email" name="email" ref={this.onRefEmail} type="email" />
+                        <input class="bg-near-white bw0 flex-auto ml2 ph1" id="email" name="email" ref={this.onRefEmail} type="email" />
                     </label>
                 )}
 
                 {!!props.user || (
                     <label class="flex mb1" htmlFor="password" title="Password">
                         <code><b>P</b></code>
-                        <input class={`bg-${props.error ? 'washed-red' : 'near-white'} bw0 flex-auto ml1 ph1`} id="password" name="password" ref={this.onRefPassword} type="password" />
+                        <input class="bg-near-white bw0 flex-auto ml2 ph1" id="password" name="password" ref={this.onRefPassword} type="password" />
                     </label>
                 )}
 
@@ -324,6 +324,20 @@ class Proofs extends PureComponent {
     }
 }
 
+class Toasts extends PureComponent {
+    render (props) {
+        return (
+            <div class="bottom-1 center-h fixed hide-child">
+                {props.toasts.map(toast =>
+                    <div class={`bl bg-near-white bw2 b--dark-${getToastColor(toast.type)}${toast.dead ? ' child' : ''} mt1 pa1 ph2 shadow-4 tj w5`} key={toast._id}>
+                        {toast.text}
+                    </div>
+                )}
+            </div>
+        );
+    }
+}
+
 class Viewer extends PureComponent {
     render (props) {
         return (
@@ -361,12 +375,12 @@ export class Application extends Component {
         super(...arguments);
 
         const watcher = this.props.tree.watch({
-            error:  ['error'],
             filter: ['filterString'],
             labels: ['labels'],
             proof:  ['proof'],
             proofs: ['proofsFiltered'],
             search: ['search'],
+            toasts: ['toasts'],
             user:   ['user'],
             view:   ['view']
         });
@@ -390,7 +404,7 @@ export class Application extends Component {
                         <Filler />
                     )}
 
-                    <Account error={state.error} user={state.user} />
+                    <Account user={state.user} />
                 </section>
 
                 {!!state.user && (
@@ -403,6 +417,8 @@ export class Application extends Component {
                     <Description class={state.user ? 'w-50' : 'w-75'} />
                 )}
 
+                <Toasts toasts={state.toasts} />
+
                 {!!state.user && (
                     <Viewer proof={!!state.proof} view={state.view} />
                 )}
@@ -412,7 +428,7 @@ export class Application extends Component {
 }
 
 function getButtonClasses (color) {
-    return `b--dark-gray ba bg-white br-100 bw1 cf h2 hover-${color} link mb1 pointer tc w2`;
+    return `b--dark-gray ba bg-white br-100 bw1 cf h2 hover-${color} link mb1 pointer shadow-4 tc w2`;
 }
 
 function getContent (disabled, html, placeholder) {
@@ -430,6 +446,10 @@ function getProofColor (proof) {
                 ? 'blue hover-light-blue'
                 : 'dark-gray hover-gray'
     ;
+}
+
+function getToastColor (type) {
+    return {error: 'red', info: 'blue', success: 'green'}[type] || 'gray';
 }
 
 function icon (size, d) {
