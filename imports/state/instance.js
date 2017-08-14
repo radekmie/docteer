@@ -83,7 +83,7 @@ export const tree = new Baobab({
     ),
 
     // UI
-    load: true,
+    load: 0,
     view: true,
     search: '',
 

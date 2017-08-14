@@ -1,36 +1,29 @@
 import {Meteor}  from 'meteor/meteor';
 import {Tracker} from 'meteor/tracker';
 
-import {Proofs} from '/imports/api/proofs';
-import {Users}  from '/imports/api/users';
-
 import {history, tree} from './instance';
+import {onRefresh}     from './actions';
 
 // Collections
 Meteor.subscribe('users.self', () => {
-    const cursor = Proofs.find();
+    let firstRun = true;
+    const update = () => {
+        syncHistory(history.location);
+
+        if (firstRun) {
+            firstRun = false;
+            tree.set(['load'], tree.get(['load']) - 1);
+        }
+    };
 
     Tracker.autorun(() => {
-        tree.set(['proofsOrigins'], cursor.fetch());
-    });
-
-    Tracker.autorun(computation => {
-        if (Meteor.userId()) {
-            Meteor.subscribe('proofs.mine', () => {
-                tree.set(['proofsOrigins'], cursor.fetch());
-                tree.set(['load'], false);
-
-                syncHistory(history.location);
-            });
-        } else if (computation.firstRun) {
-            syncHistory(history.location);
+        if (!tree.set(['user'], Meteor.user() || null)) {
+            update();
         }
     });
 
-    Users.find().observe({
-        added:   user,
-        changed: user,
-        removed: user
+    tree.select(['user']).on('update', () => {
+        onRefresh().then(update);
     });
 });
 
@@ -67,8 +60,9 @@ tree.select(['labels']).on('update', event => {
     }
 });
 
+tree.select(['load']).set(1);
 tree.select(['load']).on('update', event => {
-    document.querySelector('#app').classList.toggle('loading', event.data.currentData);
+    document.querySelector('#app').classList.toggle('loading', !!event.data.currentData);
 });
 
 tree.select(['proofId']).on('update', event => {
@@ -111,10 +105,4 @@ function syncHistory (location) {
     if (JSON.stringify(filter) !== JSON.stringify(tree.get(['filter']))) {
         tree.set(['filter'], filter);
     }
-}
-
-function user () {
-    Tracker.afterFlush(() => {
-        tree.set(['user'], Meteor.user() || null);
-    });
 }

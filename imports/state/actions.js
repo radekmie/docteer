@@ -31,23 +31,42 @@ export function onFilter (_id) {
 
 export function onLogin (email, password) {
     tree.set(['error'], null);
-    tree.set(['load'],  true);
+    tree.set(['load'], tree.get(['load']) + 1);
 
     Meteor.loginWithPassword(email, password, error => {
         if (error) {
             tree.set(['error'], error);
         }
 
-        tree.set(['load'], false);
+        tree.set(['load'], tree.get(['load']) - 1);
     });
 }
 
 export function onLogout () {
-    tree.set(['load'], true);
+    tree.set(['load'], tree.get(['load']) + 1);
 
-    Meteor.logout(() => {
+    Meteor.logout(error => {
+        if (error) {
+            tree.set(['error'], error);
+        }
+
         tree.set(['proofId'], null);
-        tree.set(['load'], false);
+        tree.set(['load'], tree.get(['load']) - 1);
+    });
+}
+
+export function onRefresh () {
+    if (!Meteor.userId()) {
+        tree.set(['proofsOrigins'], []);
+
+        return Promise.resolve();
+    }
+
+    return graphQL({
+        query: 'query Proofs ($session: String!, $userId: String!) { proofs (session: $session, userId: $userId) { _id expect labels name steps target } }',
+        operationName: 'Proofs'
+    }).then(response => {
+        tree.set(['proofsOrigins'], response.data.proofs);
     });
 }
 
@@ -65,53 +84,52 @@ export function onReset () {
 export function onSave () {
     tree.set(['view'], true);
 
+    const created = tree.get(['proofsCreated']);
+    const removed = tree.get(['proofsRemoved']);
+    const updated = tree.get(['proofsUpdated']);
+
     const patch = {
-        created: Object.keys(tree.get(['proofsCreated'])),
-        removed: Object.keys(tree.get(['proofsRemoved'])),
-        updated: Object.assign(Object.create(null), tree.get(['proofsUpdated']))
+        created: Object.keys(created),
+        removed: Object.keys(removed),
+        updated: Object.keys(updated).map(_id => Object.assign({_id}, updated[_id]))
     };
 
     const skippable = patch.created.filter(_id => patch.removed.includes(_id));
 
     patch.created = patch.created.filter(_id => !skippable.includes(_id));
     patch.removed = patch.removed.filter(_id => !skippable.includes(_id));
+    patch.updated = patch.updated.filter(doc => !skippable.includes(doc._id));
 
-    skippable.forEach(_id => {
-        delete patch.updated[_id];
-    });
-
-    if (!patch.created.length && !patch.removed.length && !Object.keys(patch.updated).length) {
+    if (!patch.created.length && !patch.removed.length && !patch.updated.length) {
         onReset();
 
-        return;
+        return Promise.resolve();
     }
 
-    tree.set(['load'], true);
-
-    Meteor.call('proofs.patch', patch, error => {
-        if (error) {
-            tree.set(['error'], error);
-        } else {
-            // Optimistic UI
-            tree.set(['proofsOrigins'], tree.get(['proofs']).reduce((proofs, doc) => {
-                if (doc._removed) {
-                    return proofs;
-                }
-
-                const  proof = Object.assign({}, doc);
-                delete proof._created;
-                delete proof._removed;
-                delete proof._updated;
-
-                proofs.push(proof);
-
-                return proofs;
-            }, []));
-
-            onReset();
+    // Optimistic UI
+    tree.set(['proofsOrigins'], tree.get(['proofs']).reduce((proofs, doc) => {
+        if (doc._removed) {
+            return proofs;
         }
 
-        tree.set(['load'], false);
+        const  proof = Object.assign({}, doc);
+        delete proof._created;
+        delete proof._removed;
+        delete proof._updated;
+
+        proofs.push(proof);
+
+        return proofs;
+    }, []));
+
+    onReset();
+
+    return graphQL({
+        query: 'mutation ProofsPatch ($session: String!, $userId: String!, $created: [String!]!, $removed: [String!]!, $updated: [ProofPatch!]!) { proofsPatch (session: $session, userId: $userId, created: $created, removed: $removed, updated: $updated) { _id expect labels name steps target } }',
+        operationName: 'ProofsPatch',
+        variables: patch
+    }).then(response => {
+        tree.set(['proofsOrigins'], response.data.proofsPatch);
     });
 }
 
@@ -125,4 +143,47 @@ export function onView () {
     } else {
         onSave();
     }
+}
+
+function graphQL (body) {
+    const json = 'application/json';
+
+    tree.set(['load'], tree.get(['load']) + 1);
+    tree.set(['error'], null);
+
+    return fetch('/graphql', {
+        method: 'POST',
+        headers: new Headers({
+            'Accept':       json,
+            'Content-Type': json
+        }),
+        body: JSON.stringify(Object.assign({}, body, {
+            variables: Object.assign({}, body.variables, {
+                session: Meteor.connection._lastSessionId,
+                userId:  Meteor.userId()
+            })
+        }))
+    }).then(response => {
+        if (response.ok) {
+            return response.json().then(response => {
+                if (response.errors) {
+                    throw new Error(response.errors[0].message);
+                }
+
+                return response;
+            });
+        }
+
+        throw new Error(response.statusText);
+    }).then(response => {
+        tree.set(['load'], tree.get(['load']) - 1);
+        tree.set(['error'], null);
+
+        return response;
+    }, error => {
+        tree.set(['load'], tree.get(['load']) - 1);
+        tree.set(['error'], error);
+
+        throw error;
+    });
 }

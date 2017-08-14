@@ -1,22 +1,22 @@
 export function bulkPatch (collection, patch, userId) {
-    const udsC = patch.created;
-    const udsR = patch.removed;
-    const udsU = Object.keys(patch.updated);
+    const idsC = patch.created;
+    const idsR = patch.removed;
+    const docs = patch.updated;
 
-    if (!udsC.length && !udsR.length && !udsU.length) {
+    if (!idsC.length && !idsR.length && !docs.length) {
         return Promise.resolve();
     }
 
     const hand = collection.rawCollection();
     const bulk = hand.initializeUnorderedBulkOp();
 
-    udsR.forEach(_ud => bulk.find({_ud, userId}).removeOne());
-    udsU.forEach(_ud => {
-        if (!patch.removed[_ud]) {
-            if (udsC.includes(_ud)) {
-                bulk.insert(Object.assign({_ud, userId}, patch.updated[_ud]));
+    idsR.forEach(_ud => bulk.find({_ud, userId}).removeOne());
+    docs.forEach(({_id: _ud, ...doc}) => {
+        if (!patch.removed.includes(_ud)) {
+            if (idsC.includes(_ud)) {
+                bulk.insert(Object.assign({_ud, userId}, doc));
             } else {
-                bulk.find({_ud, userId}).updateOne({$set: patch.updated[_ud]});
+                bulk.find({_ud, userId}).updateOne({$set: doc});
             }
         }
     });
