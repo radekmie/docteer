@@ -12,6 +12,8 @@ export {
     optimizeStatics
 };
 
+optimizeStatics();
+
 const rawToHTML = Boilerplate.prototype.toHTML;
 Boilerplate.prototype.toHTML = function toHTML () {
     return optimizeHTML(rawToHTML.apply(this, arguments));

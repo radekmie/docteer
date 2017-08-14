@@ -4,7 +4,7 @@ export function bulkPatch (collection, patch, userId) {
     const udsU = Object.keys(patch.updated);
 
     if (!udsC.length && !udsR.length && !udsU.length) {
-        return;
+        return Promise.resolve();
     }
 
     const hand = collection.rawCollection();
@@ -21,5 +21,5 @@ export function bulkPatch (collection, patch, userId) {
         }
     });
 
-    bulk.execute();
+    return bulk.execute();
 }

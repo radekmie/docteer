@@ -14,6 +14,6 @@ Meteor.methods({
             updated: Object
         });
 
-        bulkPatch(Proofs, patch, this.userId);
+        bulkPatch(Proofs, patch, this.userId).await();
     }
 });
