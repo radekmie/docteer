@@ -9,7 +9,13 @@ import {WebAppInternals} from 'meteor/webapp';
 
 import selectors from './optimizeCSSData.json';
 
-const bundledCSSPath = Object.keys(WebAppInternals.staticFiles).find(file => WebAppInternals.staticFiles[file].type === 'css').absolutePath;
+const bundledCSSPath = Object
+    .keys(WebAppInternals.staticFiles)
+    .map(file => WebAppInternals.staticFiles[file])
+    .find(file => file.type === 'css')
+    .absolutePath
+;
+
 const bundledCSS = Meteor.wrapAsync(readFile)(bundledCSSPath, 'utf8');
 
 const processor = postcss([
