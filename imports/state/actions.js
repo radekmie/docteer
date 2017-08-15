@@ -128,10 +128,8 @@ export function onSearch (search) {
 }
 
 export function onView () {
-    if (tree.get(['view'])) {
-        tree.set(['view'], false);
-    } else {
-        onSave();
+    if (tree.set(['view'], !tree.get(['view']))) {
+        onReset();
     }
 }
 

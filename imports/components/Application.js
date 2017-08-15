@@ -174,25 +174,15 @@ class LabelsLabel extends PureComponent {
 
     render (props) {
         return (
-            <li>
-                <label class="flex hover-gray items-center link ph2 pointer" htmlFor={props.label.name}>
-                    <input checked={props.label.active} id={props.label.name} onChange={this.onFilter} type="checkbox" />
-                    <div class="flex-auto mh2 truncate">
-                        {props.label.name}
-                    </div>
-                    <div>
-                        {`${props.label.count}/${props.label.total}`}
-                    </div>
-                </label>
-            </li>
-        );
-    }
-}
-
-class Filler extends PureComponent {
-    render () {
-        return (
-            <div class="filler flex-auto near-white" />
+            <label class="flex hover-gray items-center link ph2 pointer" htmlFor={props.label.name}>
+                <input checked={props.label.active} id={props.label.name} onChange={this.onFilter} type="checkbox" />
+                <div class="flex-auto mh2 truncate">
+                    {props.label.name}
+                </div>
+                <div>
+                    {`${props.label.count}/${props.label.total}`}
+                </div>
+            </label>
         );
     }
 }
@@ -208,7 +198,7 @@ class Labels extends PureComponent {
         }
 
         return (
-            <div class="flex-auto list overflow-auto">
+            <div class="flex-auto overflow-auto">
                 {props.labels.map(label =>
                     <LabelsLabel key={label.name} label={label} />
                 )}
@@ -309,7 +299,7 @@ class Proofs extends PureComponent {
                 </div>
 
                 {props.proofs.length ? (
-                    <div class="ma0 overflow-auto">
+                    <div class="flex-auto ma0 overflow-auto">
                         {props.proofs.map(proof =>
                             <ProofsProof filter={props.filter} key={proof._id} proof={proof} />
                         )}
@@ -342,27 +332,27 @@ class Viewer extends PureComponent {
     render (props) {
         return (
             <div class="bottom-1 fixed right-1">
-                <div class={getButtonClasses('dark-pink')} onClick={onAdd} title="Create">
+                <div class={getButtonClasses('dark-pink')} onClick={onAdd} tabIndex="0" title="Create">
                     {iconAdd}
                 </div>
 
                 {props.view || props.proof && (
-                    <div class={getButtonClasses('red')} onClick={onRemove} title="Remove">
+                    <div class={getButtonClasses('red')} onClick={onRemove} tabIndex="0" title="Remove">
                         {iconRemove}
                     </div>
                 )}
 
                 {props.view || (
-                    <div class={getButtonClasses('green')} onClick={onSave} title="Save">
+                    <div class={getButtonClasses('green')} onClick={onSave} tabIndex="0" title="Save">
                         {iconOk}
                     </div>
                 )}
 
-                <div class={getButtonClasses(props.view ? 'dark-blue' : 'blue')} onClick={onView} title={props.view ? 'Edit' : 'Cancel'}>
+                <div class={getButtonClasses(props.view ? 'dark-blue' : 'blue')} onClick={onView} tabIndex="0" title={props.view ? 'Edit' : 'Cancel'}>
                     {props.view ? iconDo : iconNo}
                 </div>
 
-                <div class={getButtonClasses('orange')} onClick={onRefresh} title="Refresh">
+                <div class={getButtonClasses('orange')} onClick={onRefresh} tabIndex="0" title="Refresh">
                     {iconRefresh}
                 </div>
             </div>
@@ -401,7 +391,7 @@ export class Application extends Component {
                     {state.user ? (
                         <Labels labels={state.labels} />
                     ) : (
-                        <Filler />
+                        <div class="filler flex-auto near-white" />
                     )}
 
                     <Account user={state.user} />
