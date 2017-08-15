@@ -36,7 +36,10 @@ const processor = postcss([
                 token.type === 'element' && selectors.elements.includes(token.name)
             );
         });
-        rule.selectors.length || rule.remove();
+
+        if (rule.selectors.length === 0) {
+            rule.remove();
+        }
     })),
     autoprefixer({browsers: ['last 2 Chrome versions']}),
     cssnano({preset: 'default'})

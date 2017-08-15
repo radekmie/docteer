@@ -1,4 +1,5 @@
-import {Meteor} from 'meteor/meteor';
+import {Meteor}  from 'meteor/meteor';
+import {Tracker} from 'meteor/tracker';
 
 import {tree} from './instance';
 
@@ -48,30 +49,26 @@ export function onLogout () {
         if (error) {
             toast('error', error);
         } else {
-            toast('suceess', 'Logged out.');
+            toast('success', 'Logged out.');
             tree.set(['proofId'], null);
         }
     });
 }
 
-export function onRefresh (silent) {
+export function onRefresh (firstRun) {
     if (!Meteor.userId()) {
         tree.set(['proofsOrigins'], []);
 
         return Promise.resolve();
     }
 
-    if (silent !== true) {
-        toast('info', 'Refreshing...');
-    }
+    toast('info', firstRun === true ? 'Loading...' : 'Refreshing...');
 
     return graphQL({
         query: 'query Proofs ($session: String!, $userId: String!) { proofs (session: $session, userId: $userId) { _id expect labels name steps target } }',
         operationName: 'Proofs'
     }).then(response => {
-        if (silent !== true) {
-            toast('success', 'Refreshed.');
-        }
+        toast('success', firstRun === true ? 'Loaded.' : 'Refreshed.');
 
         tree.set(['proofsOrigins'], response.data.proofs);
     });
