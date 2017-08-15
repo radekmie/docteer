@@ -4,7 +4,8 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "start": "meteor run"
+    "start": "meteor run",
+    "test": "eslint ."
   },
   "dependencies": {
     "autoprefixer": "7.1.2",

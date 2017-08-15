@@ -1,5 +1,4 @@
-import {Meteor}  from 'meteor/meteor';
-import {Tracker} from 'meteor/tracker';
+import {Meteor} from 'meteor/meteor';
 
 import {tree} from './instance';
 
