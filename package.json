@@ -24,7 +24,7 @@
     "postcss-import": "10.0.0",
     "preact": "8.2.1",
     "prepack": "0.2.5",
-    "tachyons": "4.7.4",
+    "tachyons": "4.8.1",
     "uglify-es": "3.0.27"
   },
   "devDependencies": {
@@ -32,7 +32,7 @@
     "eslint": "4.4.1",
     "eslint-config-vazco": "3.0.0",
     "eslint-plugin-babel": "4.1.2",
-    "eslint-plugin-react": "7.2.0",
+    "eslint-plugin-react": "7.2.1",
     "eslint-plugin-vazco": "1.0.0"
   },
   "postcss": {
