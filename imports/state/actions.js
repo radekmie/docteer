@@ -61,7 +61,7 @@ export function onRefresh (silent) {
         return Promise.resolve();
     }
 
-    if (silent === true) {
+    if (silent !== true) {
         toast('info', 'Refreshing...');
     }
 
@@ -69,7 +69,7 @@ export function onRefresh (silent) {
         query: 'query Proofs ($session: String!, $userId: String!) { proofs (session: $session, userId: $userId) { _id expect labels name steps target } }',
         operationName: 'Proofs'
     }).then(response => {
-        if (silent === true) {
+        if (silent !== true) {
             toast('success', 'Refreshed.');
         }
 

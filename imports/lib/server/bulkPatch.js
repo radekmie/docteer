@@ -1,23 +1,38 @@
 export function bulkPatch (collection, patch, userId) {
-    const idsC = patch.created;
-    const idsR = patch.removed;
-    const docs = patch.updated;
-
-    if (!idsC.length && !idsR.length && !docs.length) {
+    if (!patch.created.length && !patch.removed.length && !patch.updated.length) {
         return Promise.resolve();
     }
+
+    const now = new Date();
 
     const hand = collection.rawCollection();
     const bulk = hand.initializeUnorderedBulkOp();
 
-    idsR.forEach(_ud => bulk.find({_ud, userId}).removeOne());
-    docs.forEach(({_id: _ud, ...doc}) => {
-        if (!patch.removed.includes(_ud)) {
-            if (idsC.includes(_ud)) {
-                bulk.insert(Object.assign({_ud, userId}, doc));
-            } else {
-                bulk.find({_ud, userId}).updateOne({$set: doc});
-            }
+    patch.removed.forEach(_id => bulk.find({_id_slug: _id, _user_id: userId}).updateOne({$set: {_removed: now}}));
+    patch.updated.forEach(doc => {
+        const _id = doc._id;
+
+        if (patch.removed.includes(_id)) {
+            return;
+        }
+
+        delete doc._id;
+
+        if (patch.created.includes(_id)) {
+            bulk.insert({
+                _id_slug: _id,
+                _created: now,
+                _removed: null,
+                _updated: now,
+                _user_id: userId,
+                _versions: [{_created: now, ...doc}],
+                ...doc
+            });
+        } else {
+            bulk.find({_id_slug: _id, _user_id: userId}).updateOne({
+                $set:  {_updated: now, ...doc},
+                $push: {_versions: {_created: now, ...doc}}
+            });
         }
     });
 

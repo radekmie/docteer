@@ -1,2 +1,3 @@
-import '..';
 import './publications';
+
+export {Users} from '..';
