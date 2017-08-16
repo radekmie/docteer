@@ -3,8 +3,9 @@ import graphqlHTTP         from 'express-graphql';
 import {GraphQLObjectType} from 'graphql/type/definition';
 import {GraphQLSchema}     from 'graphql/type/schema';
 
-import {Meteor} from 'meteor/meteor';
-import {WebApp} from 'meteor/webapp';
+import {Accounts} from 'meteor/accounts-base';
+import {Meteor}   from 'meteor/meteor';
+import {WebApp}   from 'meteor/webapp';
 
 import {Proofs} from '/imports/api/proofs/server';
 
@@ -31,15 +32,9 @@ const context = {
             return !!userId;
         }
 
-        // Inactive session.
-        if (Meteor.server.sessions[session] === undefined)
-            return false;
+        const token = Accounts._hashLoginToken(session);
 
-        // Invalid session OR stolen session.
-        if (Meteor.server.sessions[session].userId !== userId)
-            return false;
-
-        return true;
+        return !!Meteor.users.find({_id: userId, 'services.resume.hashedToken': token}, {fields: {_id: 1}}).count();
     }
 };
 

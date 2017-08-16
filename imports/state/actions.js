@@ -1,4 +1,5 @@
-import {Meteor} from 'meteor/meteor';
+import {Accounts} from 'meteor/accounts-base';
+import {Meteor}   from 'meteor/meteor';
 
 import {tree} from './instance';
 
@@ -143,8 +144,8 @@ function graphQL (body) {
         }),
         body: JSON.stringify(Object.assign({}, body, {
             variables: Object.assign({}, body.variables, {
-                session: Meteor.connection._lastSessionId,
-                userId:  Meteor.userId()
+                session: Accounts._storedLoginToken(),
+                userId:  Accounts._storedUserId()
             })
         }))
     }).then(response => {
