@@ -5,26 +5,9 @@ import {history, tree} from './instance';
 import {onRefresh}     from './actions';
 
 // Collections
-Meteor.subscribe('users.self', () => {
-    let firstRun = true;
-    const update = () => {
-        syncHistory(history.location);
-
-        if (firstRun) {
-            firstRun = false;
-            tree.set(['load'], tree.get(['load']) - 1);
-        }
-    };
-
-    Tracker.autorun(() => {
-        if (!tree.set(['user'], Meteor.user() || null)) {
-            update();
-        }
-    });
-
-    tree.select(['user']).on('update', () => {
-        onRefresh(true).then(update);
-    });
+Meteor.subscribe('users.self', {
+    onReady: subscribed,
+    onStop:  subscribed
 });
 
 // Events
@@ -60,11 +43,6 @@ tree.select(['labels']).on('update', event => {
     }
 });
 
-tree.select(['load']).set(1);
-tree.select(['load']).on('update', event => {
-    document.querySelector('#app').classList.toggle('loading', !!event.data.currentData);
-});
-
 tree.select(['proofId']).on('update', event => {
     const _id = event.data.currentData;
     const pathname = tree.get(['proofs']).find(proof => proof._id === _id) ? _id : '';
@@ -91,6 +69,28 @@ function filterToSearch (filter) {
 
 function searchToFilter (search) {
     return search ? search.replace(/^\?filter=/, '').split(',').sort() : [];
+}
+
+function subscribed () {
+    let firstRun = true;
+    const update = () => {
+        syncHistory(history.location);
+
+        if (firstRun) {
+            firstRun = false;
+            tree.set(['load'], tree.get(['load']) - 1);
+        }
+    };
+
+    Tracker.autorun(() => {
+        if (!tree.set(['user'], Meteor.user() || null)) {
+            update();
+        }
+    });
+
+    tree.select(['user']).on('update', () => {
+        onRefresh(true).then(update);
+    });
 }
 
 function syncHistory (location) {
