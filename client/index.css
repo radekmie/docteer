@@ -5,7 +5,7 @@
     100% { transform: scaleY(3); }
 }
 
-:root {
+html {
     font-size: 16px;
 }
 
@@ -45,17 +45,9 @@
     transform: translate(-50%, -50%);
 }
 
-.bg-near-white {
-    background-color: #f8f8f8;
-}
-
 .center-h {
     left: 50%;
     transform: translateX(-50%);
-}
-
-.dark-gray {
-    color: #444;
 }
 
 .filler {
@@ -93,10 +85,6 @@
 
 .logo.freeze path {
     animation-play-state: paused;
-}
-
-.near-white {
-    color: #f8f8f8;
 }
 
 path {

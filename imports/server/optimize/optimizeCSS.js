@@ -27,17 +27,16 @@ const processor = postcss([
                 return true;
             }
 
-            return parsed.nodes.some(token =>
-                token.name === ':root'   ||
-                token.type === 'class'   && selectors.classes.includes(token.name) ||
-                token.type === 'invalid'
-            ) || parsed.nodes.every(token =>
-                token.type === 'element' && selectors.elements.includes(token.name)
+            return (
+                parsed.nodes .some(token => token.type === 'class'   && selectors.classes .includes(token.name) || token.type === 'invalid') ||
+                parsed.nodes.every(token => token.type === 'element' && selectors.elements.includes(token.name))
             );
         });
 
         if (rule.selectors.length === 0) {
             rule.remove();
+        } else {
+            rule.selectors = rule.selectors.sort();
         }
     })),
     autoprefixer({browsers: ['last 2 Chrome versions']}),
