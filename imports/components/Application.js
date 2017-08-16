@@ -14,6 +14,7 @@ import {
     onSearch,
     onView
 } from '/imports/state/actions';
+import {tree} from '/imports/state';
 
 /* eslint-disable max-len */
 const iconAdd = icon(512, 'M417.4 224H288V94.6c0-16.9-14.3-30.6-32-30.6s-32 13.7-32 30.6V224H94.6C77.7 224 64 238.3 64 256s13.7 32 30.6 32H224v129.4c0 16.9 14.3 30.6 32 30.6s32-13.7 32-30.6V288h129.4c16.9 0 30.6-14.3 30.6-32s-13.7-32-30.6-32z');
@@ -360,26 +361,29 @@ class Viewer extends PureComponent {
     }
 }
 
+const watcher = tree.watch({
+    filter: ['filterString'],
+    labels: ['labels'],
+    proof:  ['proof'],
+    proofs: ['proofsFiltered'],
+    search: ['search'],
+    toasts: ['toasts'],
+    user:   ['user'],
+    view:   ['view']
+});
+
 export class Application extends Component {
     constructor () {
         super(...arguments);
 
-        const watcher = this.props.tree.watch({
-            filter: ['filterString'],
-            labels: ['labels'],
-            proof:  ['proof'],
-            proofs: ['proofsFiltered'],
-            search: ['search'],
-            toasts: ['toasts'],
-            user:   ['user'],
-            view:   ['view']
-        });
-
-        watcher.on('update', () => {
-            this.setState(watcher.get());
-        });
-
         this.state = watcher.get();
+        this._sync = () => this.setState(watcher.get());
+
+        watcher.on('update', this._sync);
+    }
+
+    componentWillUnmount () {
+        watcher.off('update', this._sync);
     }
 
     render (props, state) {
