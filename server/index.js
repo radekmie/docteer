@@ -1,6 +1,7 @@
 import '/imports/api/proofs/server';
 import '/imports/api/users/server';
 import '/imports/server/graphql';
+import '/imports/server/ssr';
 
 import {Accounts}       from 'meteor/accounts-base';
 import {DDPRateLimiter} from 'meteor/ddp-rate-limiter';

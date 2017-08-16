@@ -84,9 +84,10 @@ export const tree = new Baobab({
 
     // UI
     load: 1,
-    view: true,
+    pend: 0,
     search: '',
     toasts: [],
+    view: true,
 
     // User
     user: null

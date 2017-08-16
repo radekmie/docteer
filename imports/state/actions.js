@@ -175,13 +175,22 @@ function toast (type, textOrError) {
         : textOrError
     ;
 
+
     tree.push(['toasts'], {_id, dead: false, text, type});
+
+    if (type === 'info') {
+        tree.set(['pend'], tree.get(['pend']) + 1);
+    } else {
+        setTimeout(() => {
+            tree.set(['pend'], tree.get(['pend']) - 1);
+        }, 750);
+    }
 
     setTimeout(() => {
         tree.set(['toasts', {_id}, 'dead'], true);
-
-        setTimeout(() => {
-            tree.unset(['toasts', {_id}]);
-        }, 250);
     }, 1500);
+
+    setTimeout(() => {
+        tree.unset(['toasts', {_id}]);
+    }, 1750);
 }

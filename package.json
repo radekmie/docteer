@@ -23,6 +23,7 @@
     "postcss": "6.0.9",
     "postcss-import": "10.0.0",
     "preact": "8.2.1",
+    "preact-render-to-string": "3.6.3",
     "prepack": "0.2.5",
     "tachyons": "4.8.1",
     "uglify-es": "3.0.27"

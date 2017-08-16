@@ -30,7 +30,6 @@ const processor = postcss([
             return parsed.nodes.some(token =>
                 token.name === ':root'   ||
                 token.type === 'class'   && selectors.classes.includes(token.name) ||
-                token.type === 'id'      && selectors.ids.includes(token.name) ||
                 token.type === 'invalid'
             ) || parsed.nodes.every(token =>
                 token.type === 'element' && selectors.elements.includes(token.name)

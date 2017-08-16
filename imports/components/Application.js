@@ -17,6 +17,7 @@ const watcher = tree.watch({
     filter: ['filterString'],
     labels: ['labels'],
     load:   ['load'],
+    pend:   ['pend'],
     proof:  ['proof'],
     proofs: ['proofsFiltered'],
     search: ['search'],
@@ -39,17 +40,13 @@ export class Application extends Component {
         watcher.off('update', this._sync);
     }
 
-    shouldComponentUpdate () {
-        return true;
-    }
-
     render (props, state) {
         return (
-            <div id="app" class={`cf dark-gray h-100 lh-copy${state.load ? ' load' : ''} sans-serif`}>
+            <main class={`app cf dark-gray h-100 lh-copy${state.load ? ' loading' : ''} sans-serif`}>
                 <section class="b--dark-gray br bw1 fl flex flex-column h-100 w-20">
                     <header class="b--dark-gray bb bw1 cf pt1">
                         <a class="dark-gray hover-gray link" href="/">
-                            <Logo class="fl w3" />
+                            <Logo class={`fl${state.pend ? '' : ' freeze'} w3`} />
 
                             <h1 class="fl f4">
                                 DocTear
@@ -81,7 +78,7 @@ export class Application extends Component {
                 {!!state.user && (
                     <Actions proof={!!state.proof} view={state.view} />
                 )}
-            </div>
+            </main>
         );
     }
 }

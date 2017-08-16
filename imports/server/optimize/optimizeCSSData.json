@@ -1,8 +1,9 @@
 {
   "classes": [
+    "app",
     "b--dark-blue",
-    "b--dark-green",
     "b--dark-gray",
+    "b--dark-green",
     "b--dark-red",
     "ba",
     "bb",
@@ -52,6 +53,7 @@
     "link",
     "list",
     "loading",
+    "logo",
     "ma0",
     "ma1",
     "mb1",
@@ -112,9 +114,5 @@
     "span",
     "svg",
     "ul"
-  ],
-  "ids": [
-    "app",
-    "loader"
   ]
 }

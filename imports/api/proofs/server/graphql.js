@@ -47,7 +47,7 @@ Proofs.mutations = {
         },
 
         resolve (_, args, context) {
-            if (context.authenticate({session: args.session, userId: args.userId})) {
+            if (!context.authenticate({session: args.session, userId: args.userId})) {
                 return [];
             }
 
@@ -68,7 +68,7 @@ Proofs.queries = {
         },
 
         resolve (_, args, context) {
-            if (context.authenticate({session: args.session, userId: args.userId})) {
+            if (!context.authenticate({session: args.session, userId: args.userId})) {
                 return [];
             }
 
