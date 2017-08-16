@@ -27,14 +27,10 @@ const schema = new GraphQLSchema({mutation: Mutation, query: Query});
 
 const context = {
     authenticate ({session, userId}) {
-        // Allow everything in development.
-        if (process.env.NODE_ENV !== 'production') {
-            return !!userId;
-        }
-
-        const token = Accounts._hashLoginToken(session);
-
-        return !!Meteor.users.find({_id: userId, 'services.resume.hashedToken': token}, {fields: {_id: 1}}).count();
+        return !!Meteor.users.find(
+            {_id: userId, 'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(session)},
+            {fields: {_id: 1}}
+        ).count();
     }
 };
 
