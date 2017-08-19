@@ -1,8 +1,9 @@
-import UglifyJS        from 'uglify-es';
 import {prepackString} from 'prepack/lib/prepack-standalone';
 
+import {meteorJsMinify} from 'meteor/minifier-js';
+
 export const optimizeRaw = js =>
-    UglifyJS.minify(prepackString('unknown', js).code).code
+    meteorJsMinify(prepackString('unknown', js).code).code
         .replace(',TEST_METADATA:"{}"', '')
         .replace(',autoupdateVersionCordova:"none"', '')
         .replace(/meteorRelease:"METEOR@(.*?)",/, '')
