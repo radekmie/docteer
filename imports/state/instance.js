@@ -1,29 +1,41 @@
 import Baobab        from 'baobab';
+import Fuse          from 'fuse.js';
 import createHistory from 'history/createBrowserHistory';
+
+const config = {
+    findAllMatches: true,
+    includeMatches: true,
+    keys: ['name'],
+    maxPatternLength: Infinity,
+    minMatchCharLength: 2,
+    tokenize: true
+};
 
 export const history = createHistory();
 export const tree = new Baobab({
     // Data
     labels: Baobab.monkey(
         ['proofs'],
-        ['proofsFiltered'],
+        ['proofsVisible'],
         ['filter'],
-        (a, b, f) => a
-            .reduce((labels, proof) => {
-                proof.labels.forEach(label => {
-                    if (label && !labels.includes(label))
-                        labels.push(label);
-                });
+        (proofs, proofsVisible, filter) =>
+            proofs
+                .reduce((labels, proof) => {
+                    proof.labels.forEach(label => {
+                        if (label && !labels.includes(label)) {
+                            labels.push(label);
+                        }
+                    });
 
-                return labels;
-            }, [])
-            .sort()
-            .map(name => ({
-                active: f.includes(name),
-                name,
-                count: b.reduce((a, b) => a + b.labels.includes(name), 0),
-                total: a.reduce((a, b) => a + b.labels.includes(name), 0)
-            }))
+                    return labels;
+                }, [])
+                .sort()
+                .map(name => ({
+                    active: filter.includes(name),
+                    name,
+                    count: proofsVisible.reduce((count, proof) => count + proof.labels.includes(name), 0),
+                    total: proofs       .reduce((count, proof) => count + proof.labels.includes(name), 0)
+                }))
     ),
 
     proofsCreated: Object.create(null),
@@ -47,7 +59,7 @@ export const tree = new Baobab({
         (present, updated) =>
             present
                 .map(x => Object.assign({_updated: !!updated[x._id]}, x, updated[x._id]))
-                .sort(byName)
+                .sort((a, b) => a.name.localeCompare(b.name))
     ),
 
     filter: [],
@@ -59,19 +71,30 @@ export const tree = new Baobab({
     proofsFiltered: Baobab.monkey(
         ['proofs'],
         ['filter'],
+        (proofs, filter) =>
+            filter
+                ? proofs.filter(proof => filter.every(filter => proof.labels.some(label => label === filter)))
+                : proofs
+    ),
+
+    proofsVisible: Baobab.monkey(
+        ['proofsFiltered'],
         ['search'],
-        (proofs, filter, search) => {
-            if (filter) {
-                proofs = proofs.filter(proof => filter.every(filter => proof.labels.some(label => label === filter)));
-            }
-
-            if (search) {
-                search = new RegExp(search, 'i');
-                proofs = proofs.filter(proof => search.test(proof.name));
-            }
-
-            return proofs;
-        }
+        (proofs, search) =>
+            search
+                ? new Fuse(proofs, config)
+                    .search(search.trim())
+                    .slice(0, 50)
+                    .map(result => Object.assign({}, result.item, {
+                        name: result.matches[0].indices.reduceRight(
+                            (name, range) =>
+                                name.slice(0, range[0]) + '<b>' +
+                                name.slice(range[0], range[1] + 1) + '</b>' +
+                                name.slice(range[1] + 1),
+                            result.item.name
+                        )
+                    }))
+                : proofs
     ),
 
     proofId: undefined,
@@ -92,7 +115,3 @@ export const tree = new Baobab({
     // User
     user: null
 }, {immutable: process.env.NODE_ENV === 'development'});
-
-function byName (a, b) {
-    return a.name.localeCompare(b.name);
-}

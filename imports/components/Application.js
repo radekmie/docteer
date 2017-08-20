@@ -19,7 +19,7 @@ const watcher = tree.watch({
     load:   ['load'],
     pend:   ['pend'],
     proof:  ['proof'],
-    proofs: ['proofsFiltered'],
+    proofs: ['proofsVisible'],
     search: ['search'],
     toasts: ['toasts'],
     user:   ['user'],

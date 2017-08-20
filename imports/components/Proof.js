@@ -86,7 +86,7 @@ export class Proof extends Component {
 
     render (props) {
         return (
-            <dl class="fl h-100 ma0 overflow-auto pa4 w-50">
+            <dl class="fl h-100 ma0 overflow-auto pa3 w-50">
                 <dt><b>Name:</b></dt>
                 <dd class="ml4"><Editable disabled={props.view} html={props.proof.name} onChange={this.onName} placeholder="(untitled)" /></dd>
 

@@ -36,10 +36,10 @@ history.listen(syncHistory);
 // Tree
 tree.select(['labels']).on('update', event => {
     const filter = tree.get(['filter']);
-    const proofsFiltered = filter.filter(name => event.data.currentData.find(label => label.name === name));
+    const filterAvailable = filter.filter(name => event.data.currentData.find(label => label.name === name));
 
-    if (filter.length !== proofsFiltered.length) {
-        tree.set(['filter'], proofsFiltered);
+    if (filter.length !== filterAvailable.length) {
+        tree.set(['filter'], filterAvailable);
     }
 });
 

@@ -35,7 +35,7 @@ export class Labels extends Component {
         }
 
         return (
-            <div class="flex-auto overflow-auto">
+            <div class="flex-auto overflow-auto pv1">
                 {props.labels.map(label =>
                     <Label key={label.name} label={label} />
                 )}
