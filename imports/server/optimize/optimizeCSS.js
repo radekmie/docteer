@@ -39,6 +39,27 @@ const processor = postcss([
             rule.selectors = rule.selectors.sort();
         }
     })),
+    postcss.plugin('merger', () => root => root.walkRules(rule => {
+        if (rule.selector === '') {
+            return;
+        }
+
+        root.walkRules(rule.selector, same => {
+            if (rule === same) {
+                return;
+            }
+
+            rule.append(same.nodes);
+            same.remove();
+        });
+    })),
+    postcss.plugin('sorter', () => root => root.walkRules(rule => {
+        if (rule.selector === '') {
+            return;
+        }
+
+        rule.nodes.sort((a, b) => a.prop.localeCompare(b.prop));
+    })),
     autoprefixer({browsers: ['last 2 Chrome versions']}),
     cssnano({preset: 'advanced'})
 ]);

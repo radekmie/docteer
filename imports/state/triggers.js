@@ -1,8 +1,12 @@
+import createHistory from 'history/createBrowserHistory';
+
 import {Meteor}  from 'meteor/meteor';
 import {Tracker} from 'meteor/tracker';
 
-import {history, tree} from './instance';
-import {onRefresh}     from './actions';
+import {onRefresh} from './actions';
+import {tree}      from './instance';
+
+const history = createHistory();
 
 // Collections
 Meteor.subscribe('users.self', {
@@ -79,6 +83,7 @@ function subscribed () {
         if (firstRun) {
             firstRun = false;
             tree.set(['load'], tree.get(['load']) - 1);
+            tree.set(['pend'], tree.get(['pend']) - 1);
         }
     };
 

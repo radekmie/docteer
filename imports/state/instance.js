@@ -1,6 +1,5 @@
-import Baobab        from 'baobab';
-import Fuse          from 'fuse.js';
-import createHistory from 'history/createBrowserHistory';
+import Baobab from 'baobab';
+import Fuse   from 'fuse.js';
 
 const config = {
     findAllMatches: true,
@@ -11,7 +10,6 @@ const config = {
     tokenize: true
 };
 
-export const history = createHistory();
 export const tree = new Baobab({
     // Data
     labels: Baobab.monkey(
@@ -107,7 +105,7 @@ export const tree = new Baobab({
 
     // UI
     load: 1,
-    pend: 0,
+    pend: 1,
     search: '',
     toasts: [],
     view: true,

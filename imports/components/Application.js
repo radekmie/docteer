@@ -2,7 +2,7 @@
 
 import {Component, h} from 'preact';
 
-import {tree} from '/imports/state';
+import {tree} from '/imports/state/instance';
 
 import {Account}      from './Account';
 import {Actions}      from './Actions';

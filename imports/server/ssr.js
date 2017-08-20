@@ -1,18 +1,19 @@
 /** @jsx h */
 
-import {h}      from 'preact';
-import {render} from 'preact-render-to-string';
+import {h}       from 'preact';
+import {render}  from 'preact-render-to-string';
 
 import {Boilerplate} from 'meteor/boilerplate-generator';
 
-import {Logo} from '/imports/components/Logo';
+import {Application} from '/imports/components/Application';
+import {Logo}        from '/imports/components/Logo';
 
 const body = render(
     <body>
-        <main class="app loading" />
+        <Application />
         <Logo />
     </body>
-).replace('</body>', '');
+).slice(0, -7);
 
 const rawToHTML = Boilerplate.prototype.toHTML;
 Boilerplate.prototype.toHTML = function toHTML () {
