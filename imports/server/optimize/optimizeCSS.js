@@ -40,7 +40,7 @@ const processor = postcss([
         }
     })),
     autoprefixer({browsers: ['last 2 Chrome versions']}),
-    cssnano({preset: 'default'})
+    cssnano({preset: 'advanced'})
 ]);
 
 export const optimizeRaw = css => processor.process(css + bundledCSS).then().await().css;
