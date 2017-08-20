@@ -12,7 +12,10 @@ if (process.env.NODE_ENV === 'production') {
 
 Accounts.config({
     ambiguousErrorMessages:      true,
-    forbidClientAccountCreation: true
+    forbidClientAccountCreation: true,
+
+    // NOTE: Keep it limited.
+    loginExpirationInDays: 1
 });
 
 DDPRateLimiter.setErrorMessage('Slow down!');
