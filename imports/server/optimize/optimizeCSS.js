@@ -2,6 +2,7 @@ import autoprefixer from 'autoprefixer';
 import cssnano      from 'cssnano';
 import parse        from 'css-selector-tokenizer/lib/parse';
 import postcss      from 'postcss';
+import specificity  from 'specificity';
 import {readFile}   from 'fs';
 
 import {Meteor}          from 'meteor/meteor';
@@ -61,7 +62,10 @@ const processor = postcss([
         rule.nodes.sort((a, b) => a.prop.localeCompare(b.prop));
     })),
     autoprefixer({browsers: ['last 2 Chrome versions']}),
-    cssnano({preset: 'advanced'})
+    cssnano({preset: 'advanced'}),
+    postcss.plugin('tweaks', () => root => root.nodes.sort((a, b) =>
+        !a.selector || !b.selector ? 0 : specificity.compare(a.selectors[0], b.selectors[0]) || a.selector.localeCompare(b.selector)
+    ))
 ]);
 
 export const optimizeRaw = css => processor.process(css + bundledCSS).then().await().css;

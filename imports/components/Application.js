@@ -42,7 +42,7 @@ export class Application extends Component {
 
     render (props, state) {
         return (
-            <main class={`app cf dark-gray h-100 lh-copy${state.load ? ' loading' : ''} sans-serif`}>
+            <main class={`app cf dark-gray lh-copy${state.load ? ' loading' : ''} sans-serif`}>
                 <section class="b--dark-gray br bw1 fl flex flex-column h-100 w-20">
                     <header class="b--dark-gray bb bw1 cf pt1">
                         <a class="dark-gray hover-gray link" href="/">
