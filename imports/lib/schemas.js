@@ -1,9 +1,11 @@
 export const schema = {
-    name:   'div',
-    labels: 'ul',
-    target: 'div',
-    expect: 'div',
-    steps:  'ol'
+    name:              'div',
+    labels:            'ul',
+    testGoal:          'div',
+    initialConditions: 'div',
+    steps:             'ol',
+    expectedResult:    'div',
+    comment:           'div'
 };
 
 export function schemaEmpty (schema) {
@@ -15,4 +17,8 @@ export function schemaEmpty (schema) {
 
 export function schemaIsArray (tag) {
     return tag === 'ol' || tag === 'ul';
+}
+
+export function schemaKey (name) {
+    return (name[0].toUpperCase() + name.slice(1)).replace(/(.)([A-Z])/g, '$1 $2');
 }

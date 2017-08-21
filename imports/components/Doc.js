@@ -4,6 +4,7 @@ import {Component, h} from 'preact';
 
 import {onChange}      from '/imports/state/actions';
 import {schemaIsArray} from '/imports/lib/schemas';
+import {schemaKey}     from '/imports/lib/schemas';
 
 class Editable extends Component {
     onChange = () => {
@@ -92,7 +93,7 @@ export class Doc extends Component {
         return (
             <dl class="fl h-100 ma0 overflow-auto pa3 w-50">
                 {Object.keys(props.doc._outline).reduce((fields, key, index) => {
-                    fields.push(<dt class={index === 0 ? null : 'mt3'}><b>{`${key}:`}</b></dt>);
+                    fields.push(<dt class={index === 0 ? null : 'mt3'}><b>{`${schemaKey(key)}:`}</b></dt>);
                     fields.push(<dd class="ml4"><Editable class={schemaIsArray(props.doc._outline[key]) ? 'mv0 pl0' : null} disabled={props.view} html={this.transform(key, props.doc[key])} onChange={this.onChange(key)} onFocus={this.onFocus(key)} placeholder={`(no ${key})`} tag={props.doc._outline[key]} /></dd>);
 
                     return fields;
