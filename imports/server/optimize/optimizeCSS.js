@@ -64,7 +64,7 @@ const processor = postcss([
     autoprefixer({browsers: ['last 2 Chrome versions']}),
     cssnano({preset: 'advanced'}),
     postcss.plugin('tweaks', () => root => root.nodes.sort((a, b) =>
-        !a.selector || !b.selector ? 0 : specificity.compare(a.selectors[0], b.selectors[0]) || a.selector.localeCompare(b.selector)
+        a.type.localeCompare(b.type) || (!a.selector || !b.selector ? 0 : specificity.compare(a.selectors[0], b.selectors[0]) || a.selector.localeCompare(b.selector))
     ))
 ]);
 
