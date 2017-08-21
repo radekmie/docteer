@@ -1,4 +1,4 @@
 import './graphql';
 import './indexes';
 
-export {Proofs} from '..';
+export {Docs} from '..';

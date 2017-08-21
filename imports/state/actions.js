@@ -1,22 +1,25 @@
 import {Accounts} from 'meteor/accounts-base';
 import {Meteor}   from 'meteor/meteor';
 
+import {schemaEmpty} from '/imports/lib/schemas';
+import {schema}      from '/imports/lib/schemas';
+
 import {tree} from './instance';
 
 export function onAdd () {
     const _id = Math.random().toString(36).substr(2, 6);
 
-    tree.set(['proofsUpdated', _id], {expect: '', labels: [], name: '', steps: [], target: ''});
-    tree.set(['proofsCreated', _id], true);
-    tree.set(['proofId'], _id);
+    tree.set(['docsUpdated', _id], Object.assign({_outline: schema}, schemaEmpty(schema)));
+    tree.set(['docsCreated', _id], true);
+    tree.set(['docId'], _id);
     tree.set(['view'], false);
 }
 
 export function onChange (_id, key, value) {
-    if (tree.get(['proofsUpdated', _id])) {
-        tree.set(['proofsUpdated', _id, key], value);
+    if (tree.get(['docsUpdated', _id])) {
+        tree.set(['docsUpdated', _id, key], value);
     } else {
-        tree.set(['proofsUpdated', _id], {[key]: value});
+        tree.set(['docsUpdated', _id], {[key]: value});
     }
 }
 
@@ -50,14 +53,14 @@ export function onLogout () {
             toast('error', error);
         } else {
             toast('success', 'Logged out.');
-            tree.set(['proofId'], null);
+            tree.set(['docId'], null);
         }
     });
 }
 
 export function onRefresh (firstRun) {
     if (!Meteor.userId()) {
-        tree.set(['proofsOrigins'], []);
+        tree.set(['docsOrigins'], []);
 
         return Promise.resolve();
     }
@@ -65,32 +68,31 @@ export function onRefresh (firstRun) {
     toast('info', firstRun === true ? 'Loading...' : 'Refreshing...');
 
     return graphQL({
-        query: 'query Proofs ($session: String!, $userId: String!) { proofs (session: $session, userId: $userId) { _id expect labels name steps target } }',
-        operationName: 'Proofs'
+        query: 'query Docs ($session: String!, $userId: String!) { docs (session: $session, userId: $userId) }',
+        operationName: 'Docs'
     }).then(response => {
         toast('success', firstRun === true ? 'Loaded.' : 'Refreshed.');
-
-        tree.set(['proofsOrigins'], response.data.proofs);
+        tree.set(['docsOrigins'], response.data.docs);
     });
 }
 
 export function onRemove () {
-    tree.set(['proofsRemoved', tree.get(['proofId'])], true);
-    tree.set(['proofId'], null);
+    tree.set(['docsRemoved', tree.get(['docId'])], true);
+    tree.set(['docId'], null);
 }
 
 export function onReset () {
-    tree.set(['proofsCreated'], Object.create(null));
-    tree.set(['proofsRemoved'], Object.create(null));
-    tree.set(['proofsUpdated'], Object.create(null));
+    tree.set(['docsCreated'], Object.create(null));
+    tree.set(['docsRemoved'], Object.create(null));
+    tree.set(['docsUpdated'], Object.create(null));
 }
 
 export function onSave () {
     tree.set(['view'], true);
 
-    const created = tree.get(['proofsCreated']);
-    const removed = tree.get(['proofsRemoved']);
-    const updated = tree.get(['proofsUpdated']);
+    const created = tree.get(['docsCreated']);
+    const removed = tree.get(['docsRemoved']);
+    const updated = tree.get(['docsUpdated']);
 
     const patch = {
         created: Object.keys(created),
@@ -113,12 +115,12 @@ export function onSave () {
     toast('info', 'Saving...');
 
     return graphQL({
-        query: 'mutation ProofsPatch ($session: String!, $userId: String!, $created: [String!]!, $removed: [String!]!, $updated: [ProofPatch!]!) { proofsPatch (session: $session, userId: $userId, created: $created, removed: $removed, updated: $updated) { _id expect labels name steps target } }',
-        operationName: 'ProofsPatch',
+        query: 'mutation DocsPatch ($session: String!, $userId: String!, $created: [String!]!, $removed: [String!]!, $updated: [Doc!]!) { docsPatch (session: $session, userId: $userId, created: $created, removed: $removed, updated: $updated) }',
+        operationName: 'DocsPatch',
         variables: patch
     }).then(response => {
         toast('success', 'Saved.');
-        tree.set(['proofsOrigins'], response.data.proofsPatch);
+        tree.set(['docsOrigins'], response.data.docsPatch);
         onReset();
     });
 }

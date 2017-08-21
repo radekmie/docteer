@@ -47,9 +47,9 @@ tree.select(['labels']).on('update', event => {
     }
 });
 
-tree.select(['proofId']).on('update', event => {
+tree.select(['docId']).on('update', event => {
     const _id = event.data.currentData;
-    const pathname = tree.get(['proofs']).find(proof => proof._id === _id) ? _id : '';
+    const pathname = tree.get(['docs']).find(doc => doc._id === _id) ? _id : '';
 
     if (pathname !== history.location.pathname.slice(1)) {
         history.push({pathname: '/' + pathname, search: history.location.search});
@@ -101,8 +101,8 @@ function subscribed () {
 function syncHistory (location) {
     const _id = location.pathname.slice(1);
 
-    if (_id !== tree.get(['proofId'])) {
-        tree.set(['proofId'], tree.get(['proofs']).find(proof => proof._id === _id) ? _id : null);
+    if (_id !== tree.get(['docId'])) {
+        tree.set(['docId'], tree.get(['docs']).find(doc => doc._id === _id) ? _id : null);
     }
 
     const filter = searchToFilter(location.search);

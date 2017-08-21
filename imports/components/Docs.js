@@ -4,19 +4,19 @@ import {Component, h} from 'preact';
 
 import {onSearch} from '/imports/state/actions';
 
-class Proof extends Component {
+class Doc extends Component {
     render (props) {
         return (
             <a
-                class={`db ${color(props.proof)} link ph2 truncate`}
-                dangerouslySetInnerHTML={{__html: props.proof.name || '(untitled)'}}
-                href={[`/${props.proof._id}`, props.filter].filter(Boolean).join('')}
+                class={`db ${color(props.doc)} link ph2 truncate`}
+                dangerouslySetInnerHTML={{__html: props.doc.name || '(untitled)'}}
+                href={[`/${props.doc._id}`, props.filter].filter(Boolean).join('')}
             />
         );
     }
 }
 
-export class Proofs extends Component {
+export class Docs extends Component {
     onSearch = event => {
         onSearch(event.target.value);
     };
@@ -30,10 +30,10 @@ export class Proofs extends Component {
                     </label>
                 </div>
 
-                {props.proofs.length ? (
+                {props.docs.length ? (
                     <div class="flex-auto ma0 overflow-auto pv1">
-                        {props.proofs.map(proof =>
-                            <Proof filter={props.filter} key={proof._id} proof={proof} />
+                        {props.docs.map(doc =>
+                            <Doc filter={props.filter} key={doc._id} doc={doc} />
                         )}
                     </div>
                 ) : (
@@ -46,14 +46,14 @@ export class Proofs extends Component {
     }
 }
 
-function color (proof) {
-    return proof._created
-        ? proof._removed
+function color (doc) {
+    return doc._created
+        ? doc._removed
             ? 'gray hover-light-gray'
             : 'green hover-light-green'
-        : proof._removed
+        : doc._removed
             ? 'hover-light-red red'
-            : proof._updated
+            : doc._updated
                 ? 'blue hover-light-blue'
                 : 'dark-gray hover-gray'
     ;

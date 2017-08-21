@@ -1,4 +1,4 @@
-import '/imports/api/proofs/server';
+import '/imports/api/docs/server';
 import '/imports/api/users/server';
 import '/imports/server/graphql';
 import '/imports/server/ssr';

@@ -27,7 +27,7 @@ export class Actions extends Component {
                     {iconAdd}
                 </div>
 
-                {props.view || props.proof && (
+                {props.view || props.doc && (
                     <div class={button('red')} onClick={onRemove} tabIndex="0" title="Remove">
                         {iconMinus}
                     </div>

@@ -13,13 +13,13 @@ const config = {
 export const tree = new Baobab({
     // Data
     labels: Baobab.monkey(
-        ['proofs'],
-        ['proofsVisible'],
+        ['docs'],
+        ['docsVisible'],
         ['filter'],
-        (proofs, proofsVisible, filter) =>
-            proofs
-                .reduce((labels, proof) => {
-                    proof.labels.forEach(label => {
+        (docs, docsVisible, filter) =>
+            docs
+                .reduce((labels, doc) => {
+                    doc.labels.forEach(label => {
                         if (label && !labels.includes(label)) {
                             labels.push(label);
                         }
@@ -31,29 +31,29 @@ export const tree = new Baobab({
                 .map(name => ({
                     active: filter.includes(name),
                     name,
-                    count: proofsVisible.reduce((count, proof) => count + proof.labels.includes(name), 0),
-                    total: proofs       .reduce((count, proof) => count + proof.labels.includes(name), 0)
+                    count: docsVisible.reduce((count, doc) => count + doc.labels.includes(name), 0),
+                    total: docs       .reduce((count, doc) => count + doc.labels.includes(name), 0)
                 }))
     ),
 
-    proofsCreated: Object.create(null),
-    proofsRemoved: Object.create(null),
-    proofsUpdated: Object.create(null),
+    docsCreated: Object.create(null),
+    docsRemoved: Object.create(null),
+    docsUpdated: Object.create(null),
 
-    proofsOrigins: [],
-    proofsPresent: Baobab.monkey(
-        ['proofsCreated'],
-        ['proofsOrigins'],
-        ['proofsRemoved'],
+    docsOrigins: [],
+    docsPresent: Baobab.monkey(
+        ['docsCreated'],
+        ['docsOrigins'],
+        ['docsRemoved'],
         (created, origins, removed) =>
             origins
                 .concat(Object.keys(created).map(_id => ({_created: true, _id})))
                 .map(x => Object.assign({_removed: !!removed[x._id]}, x))
     ),
 
-    proofs: Baobab.monkey(
-        ['proofsPresent'],
-        ['proofsUpdated'],
+    docs: Baobab.monkey(
+        ['docsPresent'],
+        ['docsUpdated'],
         (present, updated) =>
             present
                 .map(x => Object.assign({_updated: !!updated[x._id]}, x, updated[x._id]))
@@ -66,21 +66,21 @@ export const tree = new Baobab({
         filter => filter.length ? `?filter=${filter.slice().sort().join(',')}` : ''
     ),
 
-    proofsFiltered: Baobab.monkey(
-        ['proofs'],
+    docsFiltered: Baobab.monkey(
+        ['docs'],
         ['filter'],
-        (proofs, filter) =>
+        (docs, filter) =>
             filter
-                ? proofs.filter(proof => filter.every(filter => proof.labels.some(label => label === filter)))
-                : proofs
+                ? docs.filter(doc => filter.every(filter => doc.labels.some(label => label === filter)))
+                : docs
     ),
 
-    proofsVisible: Baobab.monkey(
-        ['proofsFiltered'],
+    docsVisible: Baobab.monkey(
+        ['docsFiltered'],
         ['search'],
-        (proofs, search) =>
-            search
-                ? new Fuse(proofs, config)
+        (docs, search) =>
+            search.trim()
+                ? new Fuse(docs, config)
                     .search(search.trim())
                     .slice(0, 50)
                     .map(result => Object.assign({}, result.item, {
@@ -92,15 +92,15 @@ export const tree = new Baobab({
                             result.item.name
                         )
                     }))
-                : proofs
+                : docs
     ),
 
-    proofId: undefined,
-    proof: Baobab.monkey(
-        ['proofs'],
-        ['proofId'],
-        (proofs, proofId) =>
-            proofs.find(proof => proof._id === proofId)
+    docId: undefined,
+    doc: Baobab.monkey(
+        ['docs'],
+        ['docId'],
+        (docs, docId) =>
+            docs.find(doc => doc._id === docId)
     ),
 
     // UI

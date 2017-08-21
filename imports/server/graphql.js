@@ -7,19 +7,19 @@ import {Accounts} from 'meteor/accounts-base';
 import {Meteor}   from 'meteor/meteor';
 import {WebApp}   from 'meteor/webapp';
 
-import {Proofs} from '/imports/api/proofs/server';
+import {Docs} from '/imports/api/docs/server';
 
 const Mutation = new GraphQLObjectType({
     name: 'Mutation',
     fields: {
-        ...Proofs.mutations
+        ...Docs.mutations
     }
 });
 
 const Query = new GraphQLObjectType({
     name: 'Query',
     fields: {
-        ...Proofs.queries
+        ...Docs.queries
     }
 });
 

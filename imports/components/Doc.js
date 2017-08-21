@@ -2,7 +2,8 @@
 
 import {Component, h} from 'preact';
 
-import {onChange} from '/imports/state/actions';
+import {onChange}      from '/imports/state/actions';
+import {schemaIsArray} from '/imports/lib/schemas';
 
 class Editable extends Component {
     onChange = () => {
@@ -52,7 +53,7 @@ class Editable extends Component {
     }
 
     render ({disabled, html, placeholder, tag, ...props}) {
-        return h(tag || 'div', Object.assign(props, {
+        return h(tag, Object.assign(props, {
             class: ['ph1', props.class, disabled ? '' : 'bg-near-white'].filter(Boolean).join(' '),
             contentEditable: !disabled,
             dangerouslySetInnerHTML: {__html: content(disabled, html, placeholder)},
@@ -64,43 +65,38 @@ class Editable extends Component {
     }
 }
 
-export class Proof extends Component {
-    onChange = (key, map) => html => {
-        onChange(this.props.proof._id, key, map ? map(html) : html);
+export class Doc extends Component {
+    onChangeMap = {};
+    onChange = key => {
+        return this.onChangeMap[key] = this.onChangeMap[key] || (html => {
+            onChange(this.props.doc._id, key, schemaIsArray(this.props.doc._outline[key]) ? listToSteps(html) : html);
+        });
     };
 
-    onEnsure = key => () => {
-        if (!this.props.proof[key].length) {
-            onChange(this.props.proof._id, key, ['']);
+    onFocusMap = {};
+    onFocus = key => {
+        if (!schemaIsArray(this.props.doc._outline[key])) {
+            return undefined;
         }
+
+        return this.onFocusMap[key] = this.onFocusMap[key] || (() => {
+            if (!this.props.doc[key].length) {
+                onChange(this.props.doc._id, key, ['']);
+            }
+        });
     };
 
-    onExpect = this.onChange('expect');
-    onLabels = this.onChange('labels', listToSteps);
-    onName   = this.onChange('name');
-    onSteps  = this.onChange('steps', listToSteps);
-    onTarget = this.onChange('target');
-
-    onFocusLabels = this.onEnsure('labels');
-    onFocusSteps  = this.onEnsure('steps');
+    transform = (key, html) => schemaIsArray(this.props.doc._outline[key]) ? stepsToList(html) : html;
 
     render (props) {
         return (
             <dl class="fl h-100 ma0 overflow-auto pa3 w-50">
-                <dt><b>Name:</b></dt>
-                <dd class="ml4"><Editable disabled={props.view} html={props.proof.name} onChange={this.onName} placeholder="(untitled)" /></dd>
+                {Object.keys(props.doc._outline).reduce((fields, key, index) => {
+                    fields.push(<dt class={index === 0 ? null : 'mt3'}><b>{`${key}:`}</b></dt>);
+                    fields.push(<dd class="ml4"><Editable class={schemaIsArray(props.doc._outline[key]) ? 'mv0 pl0' : null} disabled={props.view} html={this.transform(key, props.doc[key])} onChange={this.onChange(key)} onFocus={this.onFocus(key)} placeholder={`(no ${key})`} tag={props.doc._outline[key]} /></dd>);
 
-                <dt class="mt3"><b>Labels:</b></dt>
-                <dd class="ml4"><Editable class="mv0 pl0" disabled={props.view} html={stepsToList(props.proof.labels)} onChange={this.onLabels} onFocus={this.onFocusLabels} placeholder="(no labels)" tag="ul" /></dd>
-
-                <dt class="mt3"><b>Description:</b></dt>
-                <dd class="ml4"><Editable disabled={props.view} html={props.proof.target} onChange={this.onTarget} placeholder="(no description)" /></dd>
-
-                <dt class="mt3"><b>Expected result:</b></dt>
-                <dd class="ml4"><Editable disabled={props.view} html={props.proof.expect} onChange={this.onExpect} placeholder="(no expected result)" /></dd>
-
-                <dt class="mt3"><b>Steps:</b></dt>
-                <dd class="ml4"><Editable class="mv0 pl0" disabled={props.view} html={stepsToList(props.proof.steps)} onChange={this.onSteps} onFocus={this.onFocusSteps} placeholder="(no steps)" tag="ol" /></dd>
+                    return fields;
+                }, [])}
             </dl>
         );
     }

@@ -1,4 +1,4 @@
-/** @jsx h */
+  /** @jsx h */
 
 import {Component, h} from 'preact';
 
@@ -6,20 +6,20 @@ import {tree} from '/imports/state/instance';
 
 import {Account}      from './Account';
 import {Actions}      from './Actions';
+import {Docs}         from './Docs';
+import {Doc}          from './Doc';
 import {Labels}       from './Labels';
 import {Logo}         from './Logo';
-import {Proofs}       from './Proofs';
-import {Proof}        from './Proof';
 import {Splashscreen} from './Splashscreen';
 import {Toasts}       from './Toasts';
 
 const watcher = tree.watch({
+    doc:    ['doc'],
+    docs:   ['docsVisible'],
     filter: ['filterString'],
     labels: ['labels'],
     load:   ['load'],
     pend:   ['pend'],
-    proof:  ['proof'],
-    proofs: ['proofsVisible'],
     search: ['search'],
     toasts: ['toasts'],
     user:   ['user'],
@@ -64,11 +64,11 @@ export class Application extends Component {
                 </section>
 
                 {!!state.user && (
-                    <Proofs filter={state.filter} proofs={state.proofs} search={state.search} />
+                    <Docs filter={state.filter} docs={state.docs} search={state.search} />
                 )}
 
-                {!!state.user && state.proof ? (
-                    <Proof labels={state.labels} proof={state.proof} view={state.view} />
+                {!!state.user && state.doc ? (
+                    <Doc labels={state.labels} doc={state.doc} view={state.view} />
                 ) : (
                     <Splashscreen class={state.user ? 'w-50' : 'w-75'} />
                 )}
@@ -76,7 +76,7 @@ export class Application extends Component {
                 <Toasts toasts={state.toasts} />
 
                 {!!state.user && (
-                    <Actions proof={!!state.proof} view={state.view} />
+                    <Actions doc={!!state.doc} view={state.view} />
                 )}
             </main>
         );
