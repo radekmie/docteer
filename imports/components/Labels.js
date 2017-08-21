@@ -2,24 +2,17 @@
 
 import {Component, h} from 'preact';
 
-import {onFilter} from '/imports/state/actions';
-
 class Label extends Component {
-    onFilter = () => {
-        onFilter(this.props.label.name);
-    };
-
     render (props) {
         return (
-            <label class="flex hover-gray items-center link ph2 pointer" htmlFor={props.label.name}>
-                <input checked={props.label.active} id={props.label.name} onChange={this.onFilter} type="checkbox" />
-                <div class="flex-auto mh2 truncate">
+            <a class={`${props.label.active ? 'bg-near-white bl bw2 b--dark-gray ' : ''}dark-gray flex hover-bg-near-white hover-black items-center link ph2${props.label.active ? ' pl1' : ''} pointer`} href={props.label.href}>
+                <div class="flex-auto truncate">
                     {props.label.name}
                 </div>
-                <div>
+                <div class="ml2">
                     {`${props.label.count}/${props.label.total}`}
                 </div>
-            </label>
+            </a>
         );
     }
 }
@@ -35,7 +28,7 @@ export class Labels extends Component {
         }
 
         return (
-            <div class="flex-auto overflow-auto pv1">
+            <div class="flex-auto overflow-auto">
                 {props.labels.map(label =>
                     <Label key={label.name} label={label} />
                 )}

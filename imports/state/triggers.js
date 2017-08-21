@@ -72,7 +72,7 @@ function filterToSearch (filter) {
 }
 
 function searchToFilter (search) {
-    return search ? search.replace(/^\?filter=/, '').split(',').sort() : [];
+    return search ? decodeURIComponent(search.replace(/^\?filter=/, '')).split(',').sort() : [];
 }
 
 function subscribed () {

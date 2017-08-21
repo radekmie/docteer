@@ -15,6 +15,7 @@ import {Toasts}       from './Toasts';
 
 const watcher = tree.watch({
     doc:    ['doc'],
+    docId:  ['docId'],
     docs:   ['docsVisible'],
     filter: ['filterString'],
     labels: ['labels'],
@@ -42,10 +43,10 @@ export class Application extends Component {
 
     render (props, state) {
         return (
-            <main class={`app cf dark-gray lh-copy${state.load ? ' loading' : ''} sans-serif`}>
+            <main class={`app cf dark-gray lh-copy${state.load ? ' loading' : ''}`}>
                 <section class="b--dark-gray br bw1 fl flex flex-column h-100 w-20">
                     <header class="b--dark-gray bb bw1 cf pt1">
-                        <a class="dark-gray hover-gray link" href="/">
+                        <a class="dark-gray hover-black link" href="/">
                             <Logo class={`fl${state.pend ? '' : ' freeze'} w3`} />
 
                             <h1 class="fl f4">
@@ -64,7 +65,7 @@ export class Application extends Component {
                 </section>
 
                 {!!state.user && (
-                    <Docs filter={state.filter} docs={state.docs} search={state.search} />
+                    <Docs docId={state.docId} filter={state.filter} docs={state.docs} search={state.search} />
                 )}
 
                 {!!state.user && state.doc ? (

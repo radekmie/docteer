@@ -23,27 +23,35 @@ export class Actions extends Component {
     render (props) {
         return (
             <div class="bottom-1 fixed right-1">
-                <div class={button('dark-pink')} onClick={onAdd} tabIndex="0" title="Create">
+                <div class={button('dark-pink')} key="Create" onClick={onAdd} tabIndex="0" title="Create">
                     {iconAdd}
                 </div>
 
                 {props.view || props.doc && (
-                    <div class={button('red')} onClick={onRemove} tabIndex="0" title="Remove">
+                    <div class={button('red')} key="Remove" onClick={onRemove} tabIndex="0" title="Remove">
                         {iconMinus}
                     </div>
                 )}
 
                 {props.view || (
-                    <div class={button('green')} onClick={onSave} tabIndex="0" title="Save">
+                    <div class={button('green')} key="Save" onClick={onSave} tabIndex="0" title="Save">
                         {iconOk}
                     </div>
                 )}
 
-                <div class={button(props.view ? 'dark-blue' : 'blue')} onClick={onView} tabIndex="0" title={props.view ? 'Edit' : 'Cancel'}>
-                    {props.view ? iconPen : iconNo}
-                </div>
+                {props.view && (
+                    <div class={button('dark-blue')} key="Edit" onClick={onView} tabIndex="0" title="Edit">
+                        {iconPen}
+                    </div>
+                )}
 
-                <div class={button('orange')} onClick={onRefresh} tabIndex="0" title="Refresh">
+                {props.view || (
+                    <div class={button('blue')} key="Cancel" onClick={onView} tabIndex="0" title="Cancel">
+                        {iconNo}
+                    </div>
+                )}
+
+                <div class={button('orange')} key="Refresh" onClick={onRefresh} tabIndex="0" title="Refresh">
                     {iconRefresh}
                 </div>
             </div>

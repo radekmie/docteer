@@ -13,10 +13,11 @@ const config = {
 export const tree = new Baobab({
     // Data
     labels: Baobab.monkey(
+        ['docId'],
         ['docs'],
         ['docsVisible'],
         ['filter'],
-        (docs, docsVisible, filter) =>
+        (docId, docs, docsVisible, filter) =>
             docs
                 .reduce((labels, doc) => {
                     doc.labels.forEach(label => {
@@ -28,12 +29,18 @@ export const tree = new Baobab({
                     return labels;
                 }, [])
                 .sort()
-                .map(name => ({
-                    active: filter.includes(name),
-                    name,
-                    count: docsVisible.reduce((count, doc) => count + doc.labels.includes(name), 0),
-                    total: docs       .reduce((count, doc) => count + doc.labels.includes(name), 0)
-                }))
+                .map(name => {
+                    const active = filter.includes(name);
+                    const toggle = active ? filter.filter(filter => filter !== name) : filter.concat(name);
+
+                    return {
+                        active,
+                        name,
+                        href:  `/${docId || ''}${toggle.length ? `?filter=${toggle.sort().join(',')}` : ''}`,
+                        count: docsVisible.reduce((count, doc) => count + doc.labels.includes(name), 0),
+                        total: docs       .reduce((count, doc) => count + doc.labels.includes(name), 0)
+                    };
+                })
     ),
 
     docsCreated: Object.create(null),

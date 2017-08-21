@@ -23,16 +23,6 @@ export function onChange (_id, key, value) {
     }
 }
 
-export function onFilter (_id) {
-    const index = tree.get(['filter']).indexOf(_id);
-
-    if (index === -1) {
-        tree.push(['filter'], _id);
-    } else {
-        tree.unset(['filter', index]);
-    }
-}
-
 export function onLogin (email, password) {
     toast('info', 'Logging in...');
 
