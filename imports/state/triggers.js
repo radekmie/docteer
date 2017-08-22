@@ -70,7 +70,7 @@ function subscribed () {
     };
 
     Tracker.autorun(() => {
-        if (!tree.set(['user'], Meteor.user() || null)) {
+        if (!tree.set(['user'], Meteor.user())) {
             update();
         }
     });
@@ -85,7 +85,7 @@ const pattern = /^\/(\w)?(?:\/(\w+))?.*?(?:[&?]filter=([^&?]+))?(?:[&?]search=([
 function syncHistory (location) {
     const match = pattern.exec(location.pathname + location.search);
     const state = {
-        docId:  match[1] === 'd' && match[2] || null,
+        docId:  match[1] === 'd' && match[2] || undefined,
         filter: match[3] ? decodeURIComponent(match[3]).split(',').sort() : [],
         search: match[4] ? decodeURIComponent(match[4]) : '',
         view:   match[1] || 'd'

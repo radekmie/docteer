@@ -25,7 +25,7 @@ export function onChange (_id, key, value) {
 }
 
 export function onEdit () {
-    if (tree.set(['edit'], !tree.get(['edit']))) {
+    if (!tree.set(['edit'], !tree.get(['edit']))) {
         onReset();
     }
 }

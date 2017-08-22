@@ -3,13 +3,58 @@ import fuzzysort from 'fuzzysort';
 
 export const tree = new Baobab({
     // Data
-    labels: Baobab.monkey(
-        ['docId'],
+    docsOrigins: [],
+    docsCreated: Object.create(null),
+    docsRemoved: Object.create(null),
+    docsUpdated: Object.create(null),
+
+    docs: Baobab.monkey(
+        ['docsOrigins'],
+        ['docsCreated'],
+        ['docsRemoved'],
+        ['docsUpdated'],
+        (origins, created, removed, updated) =>
+            origins
+                .concat(Object.keys(created).map(_id => ({_created: true, _id})))
+                .map(x => Object.assign({_removed: !!removed[x._id], _updated: !!updated[x._id]}, x, updated[x._id]))
+                .sort((a, b) => a.name.localeCompare(b.name))
+    ),
+
+    docsVisible: Baobab.monkey(
         ['docs'],
-        ['docsVisible'],
+        ['docId'],
         ['filter'],
         ['search'],
-        (docId, docs, docsVisible, filter, search) =>
+        (docs, docId, filter, search) => {
+            if (filter.length) {
+                docs = docs.filter(doc => filter.every(filter => doc.labels.some(label => label === filter)));
+            }
+
+            if (search.trim()) {
+                docs = docs.map(doc => ({doc, lower: doc.name.toLowerCase(), target: doc.name}));
+                docs = fuzzysort.go(search.trim(), docs).slice(0, 50);
+                docs = docs.map(result => Object.assign({}, result.doc, {name: result.highlighted}));
+            }
+
+            return docs.map(doc => Object.assign({_active: doc._id === docId, _href: stateToHref('d', doc._id !== docId && doc._id, filter, search)}, doc));
+        }
+    ),
+
+    docId: undefined,
+    doc: Baobab.monkey(
+        ['docs'],
+        ['docId'],
+        (docs, docId) =>
+            docs.find(doc => doc._id === docId)
+    ),
+
+    labels: Baobab.monkey(
+        ['docs'],
+        ['docsVisible'],
+        ['docId'],
+        ['filter'],
+        ['search'],
+        (docs, docsVisible, docId, filter, search) =>
             docs
                 .reduce((labels, doc) => {
                     doc.labels.forEach(label => {
@@ -35,91 +80,26 @@ export const tree = new Baobab({
                 })
     ),
 
-    docsCreated: Object.create(null),
-    docsRemoved: Object.create(null),
-    docsUpdated: Object.create(null),
-
-    docsOrigins: [],
-    docsPresent: Baobab.monkey(
-        ['docsCreated'],
-        ['docsOrigins'],
-        ['docsRemoved'],
-        (created, origins, removed) =>
-            origins
-                .concat(Object.keys(created).map(_id => ({_created: true, _id})))
-                .map(x => Object.assign({_removed: !!removed[x._id]}, x))
-    ),
-
-    docs: Baobab.monkey(
-        ['docsPresent'],
-        ['docsUpdated'],
-        (present, updated) =>
-            present
-                .map(x => Object.assign({_updated: !!updated[x._id]}, x, updated[x._id]))
-                .sort((a, b) => a.name.localeCompare(b.name))
-    ),
-
-    filter: [],
-
-    docsFiltered: Baobab.monkey(
-        ['docs'],
-        ['filter'],
-        (docs, filter) =>
-            filter
-                ? docs.filter(doc => filter.every(filter => doc.labels.some(label => label === filter)))
-                : docs
-    ),
-
-    docsSearched: Baobab.monkey(
-        ['docsFiltered'],
-        ['search'],
-        (docs, search) =>
-            search.trim()
-                ? fuzzysort.go(search.trim(), docs.map(doc => ({doc, lower: doc.name.toLowerCase(), target: doc.name})))
-                    .slice(0, 50)
-                    .map(result => Object.assign({}, result.doc, {name: result.highlighted}))
-                : docs
-    ),
-
-    docsVisible: Baobab.monkey(
-        ['docId'],
-        ['docsSearched'],
-        ['filter'],
-        ['search'],
-        (docId, docs, filter, search) =>
-            docs.map(doc => Object.assign({
-                _active: doc._id === docId,
-                _href: stateToHref('d', doc._id !== docId && doc._id, filter, search)
-            }, doc))
-    ),
-
-    docId: null,
-    doc: Baobab.monkey(
-        ['docs'],
-        ['docId'],
-        (docs, docId) =>
-            docs.find(doc => doc._id === docId)
-    ),
-
-    // UI
-    edit: false,
-    load: 1,
-    pend: 1,
-    search: '',
-    toasts: [],
-    view: undefined,
-
     // History
     href: Baobab.monkey(
         ['view'],
         ['docId'],
         ['filter'],
         ['search'],
-        (view, docId, filter, search) => stateToHref(view, docId, filter, search)
+        stateToHref
     ),
 
-    // User
-    user: null
+    // UI
+    load: 1,
+    pend: 1,
+
+    filter: [],
+    search: '',
+    toasts: [],
+
+    edit: false,
+    user: undefined,
+    view: undefined
 }, {immutable: process.env.NODE_ENV === 'development'});
 
 function stateToHref (view, docId, filter, search) {
