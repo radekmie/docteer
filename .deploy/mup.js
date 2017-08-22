@@ -6,7 +6,7 @@ module.exports = {
         }
     },
 
-    meteor: {
+    app: {
         name: 'doctear',
         path: '..',
 
@@ -35,7 +35,6 @@ module.exports = {
     },
 
     mongo: {
-        port: 27017,
         version: '3.4.1',
         servers: {
             one: {}
