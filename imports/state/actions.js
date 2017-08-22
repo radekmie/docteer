@@ -50,7 +50,7 @@ export function onLogout () {
             toast('error', error);
         } else {
             toast('success', 'Logged out.');
-            tree.set(['docId'], null);
+            tree.set(['docId'], undefined);
         }
     });
 }
@@ -75,10 +75,14 @@ export function onRefresh (firstRun) {
 
 export function onRemove () {
     tree.set(['docsRemoved', tree.get(['docId'])], true);
-    tree.set(['docId'], null);
+    tree.set(['docId'], undefined);
 }
 
 export function onReset () {
+    if (tree.get(['docsCreated'])[tree.get(['docId'])]) {
+        tree.set(['docId'], undefined);
+    }
+
     tree.set(['docsCreated'], Object.create(null));
     tree.set(['docsRemoved'], Object.create(null));
     tree.set(['docsUpdated'], Object.create(null));
@@ -122,8 +126,8 @@ export function onSave () {
     });
 }
 
-export function onSearch (search) {
-    tree.set(['search'], search);
+export function onSearch (event) {
+    tree.set(['search'], event.target.value);
 }
 
 function graphQL (body) {

@@ -1,6 +1,6 @@
 /** @jsx h */
 
-import {Component, h} from 'preact';
+import {h} from 'preact';
 
 import {
     onAdd,
@@ -19,44 +19,42 @@ const iconPen     = icon(128,  'M36.108 110.473l70.436-70.436-18.581-18.58-70.43
 const iconRefresh = icon(1792, 'M1639 1056q0 5-1 7-64 268-268 434.5T892 1664q-146 0-282.5-55T366 1452l-129 129q-19 19-45 19t-45-19-19-45v-448q0-26 19-45t45-19h448q26 0 45 19t19 45-19 45l-137 137q71 66 161 102t187 36q134 0 250-65t186-179q11-17 53-117 8-23 30-23h192q13 0 22.5 9.5t9.5 22.5zm25-800v448q0 26-19 45t-45 19h-448q-26 0-45-19t-19-45 19-45l138-138q-148-137-349-137-134 0-250 65T460 628q-11 17-53 117-8 23-30 23H178q-13 0-22.5-9.5T146 736v-7q65-268 270-434.5T896 128q146 0 284 55.5T1425 340l130-129q19-19 45-19t45 19 19 45z');
 /* eslint-enable max-len */
 
-export class Actions extends Component {
-    render (props) {
-        return (
-            <div class="bottom-1 fixed right-1">
-                <div class={button('dark-pink')} key="Create" onClick={onAdd} tabIndex="0" title="Create">
-                    {iconAdd}
-                </div>
-
-                {props.edit && props.doc && (
-                    <div class={button('red')} key="Remove" onClick={onRemove} tabIndex="0" title="Remove">
-                        {iconMinus}
-                    </div>
-                )}
-
-                {props.edit && (
-                    <div class={button('green')} key="Save" onClick={onSave} tabIndex="0" title="Save">
-                        {iconOk}
-                    </div>
-                )}
-
-                {props.edit || (
-                    <div class={button('dark-blue')} key="Edit" onClick={onEdit} tabIndex="0" title="Edit">
-                        {iconPen}
-                    </div>
-                )}
-
-                {props.edit && (
-                    <div class={button('blue')} key="Cancel" onClick={onEdit} tabIndex="0" title="Cancel">
-                        {iconNo}
-                    </div>
-                )}
-
-                <div class={button('orange')} key="Refresh" onClick={onRefresh} tabIndex="0" title="Refresh">
-                    {iconRefresh}
-                </div>
+export function Actions (props) {
+    return (
+        <div class="bottom-1 fixed right-1">
+            <div class={button('dark-pink')} key="Create" onClick={onAdd} tabIndex="0" title="Create">
+                {iconAdd}
             </div>
-        );
-    }
+
+            {props.edit && props.doc && (
+                <div class={button('red')} key="Remove" onClick={onRemove} tabIndex="0" title="Remove">
+                    {iconMinus}
+                </div>
+            )}
+
+            {props.edit && (
+                <div class={button('green')} key="Save" onClick={onSave} tabIndex="0" title="Save">
+                    {iconOk}
+                </div>
+            )}
+
+            {props.edit || (
+                <div class={button('dark-blue')} key="Edit" onClick={onEdit} tabIndex="0" title="Edit">
+                    {iconPen}
+                </div>
+            )}
+
+            {props.edit && (
+                <div class={button('blue')} key="Cancel" onClick={onEdit} tabIndex="0" title="Cancel">
+                    {iconNo}
+                </div>
+            )}
+
+            <div class={button('orange')} key="Refresh" onClick={onRefresh} tabIndex="0" title="Refresh">
+                {iconRefresh}
+            </div>
+        </div>
+    );
 }
 
 function button (color) {

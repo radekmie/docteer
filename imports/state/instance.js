@@ -104,7 +104,7 @@ export const tree = new Baobab({
 
 function stateToHref (view, docId, filter, search) {
     return [
-        `/${[view, view && docId].filter(Boolean).join('/')}`,
+        `#/${[view, view && docId].filter(Boolean).join('/')}`,
         [filter.length && `filter=${filter.slice().sort().join(',')}`, search && `search=${search}`].filter(Boolean).join('&')
     ].filter(Boolean).join('?');
 }

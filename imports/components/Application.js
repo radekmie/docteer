@@ -45,7 +45,7 @@ export class Application extends Component {
             <main class={`app cf dark-gray lh-copy${state.load ? ' loading' : ''}`}>
                 <section class="b--dark-gray br bw1 fl flex flex-column h-100 w-20">
                     <header class="b--dark-gray bb bw1 cf pt1">
-                        <a class="dark-gray" href="/d">
+                        <a class="dark-gray" href={`#/${state.user ? 'd' : ''}`}>
                             <Logo class={`fl${state.pend ? '' : ' freeze'} w3`} />
 
                             <h1 class="fl f4">

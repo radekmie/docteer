@@ -19,11 +19,9 @@ export class Account extends Component {
     onSubmit = event => {
         event.preventDefault();
 
-        if (!this.email || !this.password) {
-            return;
+        if (this.email && this.password) {
+            onLogin(this.email.value, this.password.value);
         }
-
-        onLogin(this.email.value, this.password.value);
     };
 
     render (props) {

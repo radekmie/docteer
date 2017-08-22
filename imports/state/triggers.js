@@ -39,11 +39,8 @@ history.listen(syncHistory);
 
 // Tree
 tree.select(['href']).on('update', event => {
-    const path = event.data.currentData.split('?');
-    const search = path[1] ? `?${path[1]}` : '';
-
-    if (history.location.pathname !== path[0] || history.location.search !== search) {
-        history.push({pathname: path[0], search});
+    if (history.location.hash !== event.data.currentData) {
+        history.push({hash: event.data.currentData});
     }
 });
 
@@ -80,18 +77,24 @@ function subscribed () {
     });
 }
 
-const pattern = /^\/(\w)?(?:\/(\w+))?.*?(?:[&?]filter=([^&?]+))?(?:[&?]search=([^&?]+))?.*$/;
+const pattern = /^#\/(\w)?(?:\/(\w+))?.*?(?:[&?]filter=([^&?]+))?(?:[&?]search=([^&?]+))?.*$/;
 
 function syncHistory (location) {
-    const match = pattern.exec(location.pathname + location.search);
+    const user = tree.get(['user']);
+
+    const match = pattern.exec(location.hash) || [];
     const state = {
         docId:  match[1] === 'd' && match[2] || undefined,
         filter: match[3] ? decodeURIComponent(match[3]).split(',').sort() : [],
         search: match[4] ? decodeURIComponent(match[4]) : '',
-        view:   match[1] || 'd'
+        view:   match[1] || (user ? 'd' : undefined)
     };
 
-    tree.set(['docId'],  tree.get(['docs']).find(doc => doc._id === state.docId) ? state.docId : null);
+    if (!user) {
+        state.view = undefined;
+    }
+
+    tree.set(['docId'],  tree.get(['docs']).find(doc => doc._id === state.docId) ? state.docId : undefined);
     tree.set(['search'], state.search);
     tree.set(['view'],   state.view);
 
