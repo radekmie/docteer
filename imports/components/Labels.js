@@ -5,7 +5,7 @@ import {Component, h} from 'preact';
 class Label extends Component {
     render (props) {
         return (
-            <a class={`${props.label.active ? 'bg-near-white bl bw2 b--dark-gray ' : ''}dark-gray flex hover-bg-near-white hover-black items-center link ph2${props.label.active ? ' pl1' : ''} pointer`} href={props.label.href}>
+            <a class={`${props.label.active ? 'bg-near-white bl bw2 b--dark-gray ' : ''}dark-gray flex hover-bg-near-white items-center link ph2${props.label.active ? ' pl1' : ''} pointer`} href={props.label.href}>
                 <div class="flex-auto truncate">
                     {props.label.name}
                 </div>

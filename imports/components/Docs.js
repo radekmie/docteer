@@ -57,6 +57,6 @@ function color (doc) {
             ? 'hover-light-red red'
             : doc._updated
                 ? 'blue hover-light-blue'
-                : 'dark-gray hover-black'
+                : 'dark-gray'
     ;
 }
