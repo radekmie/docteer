@@ -26,7 +26,7 @@
     "postcss-import": "10.0.0",
     "preact": "8.2.1",
     "preact-render-to-string": "3.6.3",
-    "prepack": "0.2.5",
+    "prepack": "0.2.6",
     "specificity": "0.3.1",
     "tachyons": "4.8.1"
   },
@@ -35,7 +35,7 @@
     "eslint": "4.5.0",
     "eslint-config-vazco": "3.0.0",
     "eslint-plugin-babel": "4.1.2",
-    "eslint-plugin-react": "7.2.1",
+    "eslint-plugin-react": "7.3.0",
     "eslint-plugin-vazco": "1.0.0"
   },
   "postcss": {
