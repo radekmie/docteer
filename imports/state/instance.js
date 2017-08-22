@@ -1,5 +1,5 @@
-import Baobab from 'baobab';
-import Fuse   from 'fuse.js';
+import Baobab    from 'baobab';
+import fuzzysort from 'fuzzysort';
 
 const config = {
     findAllMatches: true,
@@ -87,18 +87,9 @@ export const tree = new Baobab({
         ['search'],
         (docs, search) =>
             search.trim()
-                ? new Fuse(docs, config)
-                    .search(search.trim())
+                ? fuzzysort.go(search.trim(), docs.map(doc => ({doc, lower: doc.name.toLowerCase(), target: doc.name})))
                     .slice(0, 50)
-                    .map(result => Object.assign({}, result.item, {
-                        name: result.matches[0].indices.reduceRight(
-                            (name, range) =>
-                                name.slice(0, range[0]) + '<b>' +
-                                name.slice(range[0], range[1] + 1) + '</b>' +
-                                name.slice(range[1] + 1),
-                            result.item.name
-                        )
-                    }))
+                    .map(result => Object.assign({}, result.doc, {name: result.highlighted}))
                 : docs
     ),
 
