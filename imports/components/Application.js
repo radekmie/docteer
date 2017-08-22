@@ -15,9 +15,8 @@ import {Toasts}       from './Toasts';
 
 const watcher = tree.watch({
     doc:    ['doc'],
-    docId:  ['docId'],
     docs:   ['docsVisible'],
-    filter: ['filterString'],
+    edit:   ['edit'],
     labels: ['labels'],
     load:   ['load'],
     pend:   ['pend'],
@@ -46,7 +45,7 @@ export class Application extends Component {
             <main class={`app cf dark-gray lh-copy${state.load ? ' loading' : ''}`}>
                 <section class="b--dark-gray br bw1 fl flex flex-column h-100 w-20">
                     <header class="b--dark-gray bb bw1 cf pt1">
-                        <a class="dark-gray" href="/">
+                        <a class="dark-gray" href="/d">
                             <Logo class={`fl${state.pend ? '' : ' freeze'} w3`} />
 
                             <h1 class="fl f4">
@@ -65,11 +64,11 @@ export class Application extends Component {
                 </section>
 
                 {!!state.user && (
-                    <Docs docId={state.docId} filter={state.filter} docs={state.docs} search={state.search} />
+                    <Docs docs={state.docs} search={state.search} />
                 )}
 
                 {!!state.user && state.doc ? (
-                    <Doc labels={state.labels} doc={state.doc} view={state.view} />
+                    <Doc labels={state.labels} doc={state.doc} edit={state.edit} />
                 ) : (
                     <Splashscreen class={state.user ? 'w-50' : 'w-75'} />
                 )}
@@ -77,7 +76,7 @@ export class Application extends Component {
                 <Toasts toasts={state.toasts} />
 
                 {!!state.user && (
-                    <Actions doc={!!state.doc} view={state.view} />
+                    <Actions doc={!!state.doc} edit={state.edit} />
                 )}
             </main>
         );

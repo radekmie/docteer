@@ -38,6 +38,15 @@ document.addEventListener('click', event => {
 history.listen(syncHistory);
 
 // Tree
+tree.select(['href']).on('update', event => {
+    const path = event.data.currentData.split('?');
+    const search = path[1] ? `?${path[1]}` : '';
+
+    if (history.location.pathname !== path[0] || history.location.search !== search) {
+        history.push({pathname: path[0], search});
+    }
+});
+
 tree.select(['labels']).on('update', event => {
     const filter = tree.get(['filter']);
     const filterAvailable = filter.filter(name => event.data.currentData.find(label => label.name === name));
@@ -47,34 +56,7 @@ tree.select(['labels']).on('update', event => {
     }
 });
 
-tree.select(['docId']).on('update', event => {
-    const _id = event.data.currentData;
-    const pathname = tree.get(['docs']).find(doc => doc._id === _id) ? _id : '';
-
-    if (pathname !== history.location.pathname.slice(1)) {
-        history.push({pathname: '/' + pathname, search: history.location.search});
-    }
-});
-
-tree.select(['filter']).on('update', event => {
-    const search = filterToSearch(event.data.currentData.slice());
-
-    if (history.location.search === search) {
-        return;
-    }
-
-    history.push({pathname: history.location.pathname, search});
-});
-
 // Helpers
-function filterToSearch (filter) {
-    return filter.length ? `?filter=${filter.sort().join(',')}` : '';
-}
-
-function searchToFilter (search) {
-    return search ? decodeURIComponent(search.replace(/^\?filter=/, '')).split(',').sort() : [];
-}
-
 function subscribed () {
     let firstRun = true;
     const update = () => {
@@ -98,16 +80,22 @@ function subscribed () {
     });
 }
 
+const pattern = /^\/(\w)?(?:\/(\w+))?.*?(?:[&?]filter=([^&?]+))?(?:[&?]search=([^&?]+))?.*$/;
+
 function syncHistory (location) {
-    const _id = location.pathname.slice(1);
+    const match = pattern.exec(location.pathname + location.search);
+    const state = {
+        docId:  match[1] === 'd' && match[2] || null,
+        filter: match[3] ? decodeURIComponent(match[3]).split(',').sort() : [],
+        search: match[4] ? decodeURIComponent(match[4]) : '',
+        view:   match[1] || 'd'
+    };
 
-    if (_id !== tree.get(['docId'])) {
-        tree.set(['docId'], tree.get(['docs']).find(doc => doc._id === _id) ? _id : null);
-    }
+    tree.set(['docId'],  tree.get(['docs']).find(doc => doc._id === state.docId) ? state.docId : null);
+    tree.set(['search'], state.search);
+    tree.set(['view'],   state.view);
 
-    const filter = searchToFilter(location.search);
-
-    if (JSON.stringify(filter) !== JSON.stringify(tree.get(['filter']))) {
-        tree.set(['filter'], filter);
+    if (JSON.stringify(tree.get(['filter'])) !== JSON.stringify(state.filter)) {
+        tree.set(['filter'], state.filter);
     }
 }

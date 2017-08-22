@@ -13,7 +13,7 @@ export function onAdd () {
     tree.set(['docsUpdated', _id], Object.assign({_outline: schema}, schemaEmpty(schema)));
     tree.set(['docsCreated', _id], true);
     tree.set(['docId'], _id);
-    tree.set(['view'], false);
+    tree.set(['edit'], true);
 }
 
 export function onChange (_id, key, value) {
@@ -21,6 +21,12 @@ export function onChange (_id, key, value) {
         tree.set(['docsUpdated', _id, key], value);
     } else {
         tree.set(['docsUpdated', _id], {[key]: value});
+    }
+}
+
+export function onEdit () {
+    if (tree.set(['edit'], !tree.get(['edit']))) {
+        onReset();
     }
 }
 
@@ -79,7 +85,7 @@ export function onReset () {
 }
 
 export function onSave () {
-    tree.set(['view'], true);
+    tree.set(['edit'], false);
 
     const created = tree.get(['docsCreated']);
     const removed = tree.get(['docsRemoved']);
@@ -118,12 +124,6 @@ export function onSave () {
 
 export function onSearch (search) {
     tree.set(['search'], search);
-}
-
-export function onView () {
-    if (tree.set(['view'], !tree.get(['view']))) {
-        onReset();
-    }
 }
 
 function graphQL (body) {

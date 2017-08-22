@@ -93,12 +93,12 @@ export class Doc extends Component {
         return (
             <dl class="fl h-100 ma0 overflow-auto pa3 w-50">
                 {Object.keys(props.doc._outline).reduce((fields, key, index) => {
-                    if (props.view && key !== 'name' && !props.doc[key].length) {
+                    if (!props.edit && key !== 'name' && !props.doc[key].length) {
                         return fields;
                     }
 
                     fields.push(<dt key={`${key}-dt`} class={index === 0 ? null : 'mt3'}><b>{`${schemaKey(key)}:`}</b></dt>);
-                    fields.push(<dd key={`${key}-dd`} class="ml4"><Editable class={schemaIsArray(props.doc._outline[key]) ? 'mv0 pl0' : null} disabled={props.view} html={this.transform(key, props.doc[key])} onChange={this.onChange(key)} onFocus={this.onFocus(key)} tag={props.doc._outline[key]} /></dd>);
+                    fields.push(<dd key={`${key}-dd`} class="ml4"><Editable class={schemaIsArray(props.doc._outline[key]) ? 'mv0 pl0' : null} disabled={!props.edit} html={this.transform(key, props.doc[key])} onChange={this.onChange(key)} onFocus={this.onFocus(key)} tag={props.doc._outline[key]} /></dd>);
 
                     return fields;
                 }, [])}

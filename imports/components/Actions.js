@@ -4,10 +4,10 @@ import {Component, h} from 'preact';
 
 import {
     onAdd,
+    onEdit,
     onRefresh,
     onRemove,
-    onSave,
-    onView
+    onSave
 } from '/imports/state/actions';
 
 /* eslint-disable max-len */
@@ -27,26 +27,26 @@ export class Actions extends Component {
                     {iconAdd}
                 </div>
 
-                {props.view || props.doc && (
+                {props.edit && props.doc && (
                     <div class={button('red')} key="Remove" onClick={onRemove} tabIndex="0" title="Remove">
                         {iconMinus}
                     </div>
                 )}
 
-                {props.view || (
+                {props.edit && (
                     <div class={button('green')} key="Save" onClick={onSave} tabIndex="0" title="Save">
                         {iconOk}
                     </div>
                 )}
 
-                {props.view && (
-                    <div class={button('dark-blue')} key="Edit" onClick={onView} tabIndex="0" title="Edit">
+                {props.edit || (
+                    <div class={button('dark-blue')} key="Edit" onClick={onEdit} tabIndex="0" title="Edit">
                         {iconPen}
                     </div>
                 )}
 
-                {props.view || (
-                    <div class={button('blue')} key="Cancel" onClick={onView} tabIndex="0" title="Cancel">
+                {props.edit && (
+                    <div class={button('blue')} key="Cancel" onClick={onEdit} tabIndex="0" title="Cancel">
                         {iconNo}
                     </div>
                 )}

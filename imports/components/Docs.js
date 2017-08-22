@@ -6,13 +6,11 @@ import {onSearch} from '/imports/state/actions';
 
 class Doc extends Component {
     render (props) {
-        const active = props.doc._id === props.docId;
-
         return (
             <a
-                class={`${active ? 'bg-near-white bl bw2 b--dark-gray ' : ''}db ${color(props.doc)} hover-bg-near-white link ph2${active ? ' pl1' : ''} truncate`}
+                class={`${props.doc._active ? 'bg-near-white bl bw2 b--dark-gray ' : ''}db ${color(props.doc)} hover-bg-near-white link ph2${props.doc._active ? ' pl1' : ''} truncate`}
                 dangerouslySetInnerHTML={{__html: props.doc.name || '(untitled)'}}
-                href={[`/${active ? '' : props.doc._id}`, props.filter].filter(Boolean).join('')}
+                href={props.doc._href}
             />
         );
     }
@@ -35,7 +33,7 @@ export class Docs extends Component {
                 {props.docs.length ? (
                     <div class="flex-auto ma0 overflow-auto">
                         {props.docs.map(doc =>
-                            <Doc docId={props.docId} filter={props.filter} key={doc._id} doc={doc} />
+                            <Doc doc={doc} key={doc._id} />
                         )}
                     </div>
                 ) : (
