@@ -6,5 +6,5 @@ if (Meteor.users.find({}, {fields: {_id: 1}}).count() === 0) {
 }
 
 Meteor.publish('users.self', function publishUsersSelf () {
-    return Meteor.users.find({_id: this.userId}, {fields: {emails: 1}});
+    return Meteor.users.find({_id: this.userId}, {fields: {emails: 1, schemas: 1}});
 });

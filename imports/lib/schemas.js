@@ -1,13 +1,3 @@
-export const schema = {
-    name:              'div',
-    labels:            'ul',
-    testGoal:          'div',
-    initialConditions: 'div',
-    steps:             'ol',
-    expectedResult:    'div',
-    comment:           'div'
-};
-
 export function schemaEmpty (schema) {
     return Object.assign.apply(
         Object,

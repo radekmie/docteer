@@ -2,12 +2,13 @@ import {Accounts} from 'meteor/accounts-base';
 import {Meteor}   from 'meteor/meteor';
 
 import {schemaEmpty} from '/imports/lib/schemas';
-import {schema}      from '/imports/lib/schemas';
 
 import {tree} from './instance';
 
 export function onAdd () {
     const _id = Math.random().toString(36).substr(2, 6);
+
+    const schema = tree.get(['user']).schemas[0];
 
     tree.set(['docsUpdated', _id], Object.assign({_outline: schema}, schemaEmpty(schema)));
     tree.set(['docsCreated', _id], true);
