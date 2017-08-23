@@ -115,7 +115,7 @@ Docs.mutations = {
 
         resolve (_, args, context) {
             if (!context.authenticate({session: args.session, userId: args.userId})) {
-                return [];
+                return {created: [], removed: [], updated: []};
             }
 
             bulkPatch(Docs, args, args.userId).await();
@@ -137,7 +137,7 @@ Docs.queries = {
 
         resolve (_, args, context) {
             if (!context.authenticate({session: args.session, userId: args.userId})) {
-                return [];
+                return {created: [], removed: [], updated: []};
             }
 
             return docsByUser(args.userId, args.refresh);

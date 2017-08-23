@@ -67,7 +67,8 @@ function subscribed () {
     };
 
     Tracker.autorun(() => {
-        if (!tree.set(['user'], Meteor.user())) {
+        if (tree.set(['user'], Meteor.user()) !== undefined) {
+            tree.set(['last'], new Date(0));
             update();
         }
     });

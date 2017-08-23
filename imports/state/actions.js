@@ -184,7 +184,7 @@ function merge (diff) {
 }
 
 function toast (type, textOrError) {
-    const _id = Math.random();
+    const _id = Math.random().toString(36);
     const text = type === 'error'
         ? textOrError.error === 403
             ? 'Sounds good, doesn\'t work.'
@@ -192,21 +192,30 @@ function toast (type, textOrError) {
         : textOrError
     ;
 
-    tree.push(['toasts'], {_id, dead: false, text, type});
+    tree.push(['toasts'], {_id, dead: false, marked: type === 'info', text, type});
 
     if (type === 'info') {
         tree.set(['pend'], tree.get(['pend']) + 1);
     } else {
+        const info = tree.get(['toasts']).find(toast => toast.marked)._id;
+
+        tree.set(['toasts', {_id: info}, 'marked'], false);
+
         setTimeout(() => {
             tree.set(['pend'], tree.get(['pend']) - 1);
-        }, 750);
+        }, 500);
+
+        setTimeout(() => {
+            tree.set(['toasts', {_id: info}, 'dead'], true);
+        }, 1000);
+
+        setTimeout(() => {
+            tree.set(['toasts', {_id}, 'dead'], true);
+        }, 1250);
+
+        setTimeout(() => {
+            tree.unset(['toasts', {_id}]);
+            tree.unset(['toasts', {_id: info}]);
+        }, 1500);
     }
-
-    setTimeout(() => {
-        tree.set(['toasts', {_id}, 'dead'], true);
-    }, 1500);
-
-    setTimeout(() => {
-        tree.unset(['toasts', {_id}]);
-    }, 1750);
 }
