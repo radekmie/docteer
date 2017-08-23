@@ -71,7 +71,7 @@ path {
 }
 
 .logo :nth-child(-n+5) {
-    animation: infinite alternate scale-y 0.5s;
+    animation: linear infinite alternate scale-y 0.25s;
     transform-origin: center top;
 }
 
