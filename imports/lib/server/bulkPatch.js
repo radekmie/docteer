@@ -8,7 +8,7 @@ export function bulkPatch (collection, patch, userId) {
     const hand = collection.rawCollection();
     const bulk = hand.initializeOrderedBulkOp();
 
-    patch.removed.forEach(_id => bulk.find({_id_slug: _id, _id_user: userId}).updateOne({$set: {_removed: now}}));
+    patch.removed.forEach(_id => bulk.find({_id_slug: _id, _id_user: userId}).updateOne({$set: {_removed: now, _updated: now}}));
     patch.updated.forEach(doc => {
         const _id      = doc._id;
         const _outline = doc._outline;

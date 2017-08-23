@@ -64,12 +64,16 @@ export function onRefresh (firstRun) {
 
     toast('info', firstRun === true ? 'Loading...' : 'Refreshing...');
 
+    const last = new Date();
+
     return graphQL({
-        query: 'query Docs ($session: String!, $userId: String!) { docs (session: $session, userId: $userId) }',
-        operationName: 'Docs'
+        query: 'query Docs ($refresh: Date!, $session: String!, $userId: String!) { docs (refresh: $refresh, session: $session, userId: $userId) { created removed updated } }',
+        operationName: 'Docs',
+        variables: {refresh: tree.get(['last'])}
     }).then(response => {
+        tree.set(['last'], last);
         toast('success', firstRun === true ? 'Loaded.' : 'Refreshed.');
-        tree.set(['docsOrigins'], response.data.docs);
+        merge(response.data.docs);
     });
 }
 
@@ -96,6 +100,7 @@ export function onSave () {
     const updated = tree.get(['docsUpdated']);
 
     const patch = {
+        refresh: tree.get(['last']),
         created: Object.keys(created),
         removed: Object.keys(removed),
         updated: Object.keys(updated).map(_id => Object.assign({_id}, updated[_id]))
@@ -115,13 +120,16 @@ export function onSave () {
 
     toast('info', 'Saving...');
 
+    const last = new Date();
+
     return graphQL({
-        query: 'mutation DocsPatch ($session: String!, $userId: String!, $created: [String!]!, $removed: [String!]!, $updated: [Doc!]!) { docsPatch (session: $session, userId: $userId, created: $created, removed: $removed, updated: $updated) }',
+        query: 'mutation DocsPatch ($refresh: Date!, $session: String!, $userId: String!, $created: [String!]!, $removed: [String!]!, $updated: [Doc!]!) { docsPatch (refresh: $refresh, session: $session, userId: $userId, created: $created, removed: $removed, updated: $updated) { created removed updated } }',
         operationName: 'DocsPatch',
         variables: patch
     }).then(response => {
+        tree.set(['last'], last);
         toast('success', 'Saved.');
-        tree.set(['docsOrigins'], response.data.docsPatch);
+        merge(response.data.docsPatch);
         onReset();
     });
 }
@@ -163,6 +171,18 @@ function graphQL (body) {
     });
 }
 
+function merge (diff) {
+    tree.set(['docsOrigins'], tree.get(['docsOrigins'])
+        .filter(doc => !diff.removed.includes(doc._id))
+        .concat(diff.created.map(_id => ({_id})))
+        .filter((doc, index, docs) => docs.findIndex(other => other._id === doc._id) === index)
+        .map(doc => {
+            const  patch = diff.updated.find(updated => updated._id === doc._id);
+            return patch ? Object.assign({}, doc, patch) : doc;
+        })
+    );
+}
+
 function toast (type, textOrError) {
     const _id = Math.random();
     const text = type === 'error'
@@ -171,7 +191,6 @@ function toast (type, textOrError) {
             : textOrError.reason || textOrError.message
         : textOrError
     ;
-
 
     tree.push(['toasts'], {_id, dead: false, text, type});
 

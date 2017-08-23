@@ -98,6 +98,7 @@ export const tree = new Baobab({
     toasts: [],
 
     edit: false,
+    last: new Date(0),
     user: undefined,
     view: undefined
 }, {immutable: process.env.NODE_ENV === 'development'});
