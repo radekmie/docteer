@@ -25,14 +25,10 @@ path {
     transition: opacity 0.5s linear 0.1s;
 }
 
-.app + .logo,
-.loading {
-    pointer-events: none;
-}
-
 .app:not(.loading) + .logo,
 .loading {
     opacity: 0;
+    pointer-events: none;
 }
 
 .app + .logo {
@@ -66,7 +62,8 @@ path {
     transition-delay: 0s;
 }
 
-.logo.freeze path {
+.logo.freeze path,
+.app:not(.loading) + .logo path {
     animation-play-state: paused;
 }
 

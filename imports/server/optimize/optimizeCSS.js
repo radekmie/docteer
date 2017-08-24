@@ -37,7 +37,7 @@ const processor = postcss([
         if (rule.selectors.length === 0) {
             rule.remove();
         } else {
-            rule.selectors = rule.selectors.sort();
+            rule.selectors = rule.selectors.sort((a, b) => specificity.compare(a, b) || a.localeCompare(b));
         }
     })),
     postcss.plugin('merger', () => root => root.walkRules(rule => {
