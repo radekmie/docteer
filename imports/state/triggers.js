@@ -8,10 +8,29 @@ import {tree}      from './instance';
 
 const history = createHistory();
 
+let firstRun = true;
+
 // Collections
 Meteor.subscribe('users.self', {
-    onReady: subscribed,
-    onStop:  subscribed
+    onReady () {
+        if (!Meteor.userId()) {
+            update();
+        }
+    },
+
+    onStop (error) {
+        if (error) {
+            update();
+        }
+    }
+});
+
+Tracker.autorun(() => {
+    const user = Meteor.user();
+
+    if (tree.set(['user'], user && user.schemas ? user : undefined)) {
+        tree.set(['last'], new Date(0));
+    }
 });
 
 // Events
@@ -53,34 +72,18 @@ tree.select(['labels']).on('update', event => {
     }
 });
 
+tree.select(['user']).on('update', () => {
+    onRefresh(true).then(update);
+});
+
 // Helpers
-function subscribed () {
-    let firstRun = true;
-    const update = () => {
-        syncHistory(history.location);
-
-        if (firstRun) {
-            firstRun = false;
-            tree.set(['load'], tree.get(['load']) - 1);
-            tree.set(['pend'], tree.get(['pend']) - 1);
-        }
-    };
-
-    Tracker.autorun(() => {
-        if (tree.set(['user'], Meteor.user()) !== undefined) {
-            tree.set(['last'], new Date(0));
-            update();
-        }
-    });
-
-    tree.select(['user']).on('update', () => {
-        onRefresh(true).then(update);
-    });
-}
-
 const pattern = /^#\/(\w)?(?:\/(\w+))?.*?(?:[&?]filter=([^&?]+))?(?:[&?]search=([^&?]+))?.*$/;
 
 function syncHistory (location) {
+    if (firstRun) {
+        return;
+    }
+
     const user = tree.get(['user']);
 
     const match = pattern.exec(location.hash) || [];
@@ -102,4 +105,14 @@ function syncHistory (location) {
     if (JSON.stringify(tree.get(['filter'])) !== JSON.stringify(state.filter)) {
         tree.set(['filter'], state.filter);
     }
+}
+
+function update () {
+    if (firstRun) {
+        firstRun = false;
+        tree.set(['load'], tree.get(['load']) - 1);
+        tree.set(['pend'], tree.get(['pend']) - 1);
+    }
+
+    syncHistory(history.location);
 }

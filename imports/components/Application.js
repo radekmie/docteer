@@ -42,13 +42,13 @@ export class Application extends Component {
 
     render (props, state) {
         return (
-            <main class={`app cf dark-gray lh-copy${state.load ? ' loading' : ''}`}>
+            <main class={`app dark-gray lh-copy${state.load ? ' loading' : ''}`}>
                 <section class="b--dark-gray br bw1 fl flex flex-column h-100 w-20">
-                    <header class="b--dark-gray bb bw1 cf pt1">
-                        <a class="dark-gray" href={`#/${state.user ? 'd' : ''}`}>
-                            <Logo class={`fl${state.pend ? '' : ' freeze'} w3`} />
+                    <header class="b--dark-gray bb bw1">
+                        <a class="dark-gray flex link pt1" href={`#/${state.user ? 'd' : ''}`}>
+                            <Logo class={`${state.pend ? '' : 'freeze '}h3 w3`} />
 
-                            <h1 class="fl f4">
+                            <h1 class="f4">
                                 DocTear
                             </h1>
                         </a>

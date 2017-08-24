@@ -58,7 +58,7 @@ export function Actions (props) {
 }
 
 function button (color) {
-    return `b--dark-gray ba bg-white br-100 bw1 cf h2 hover-${color} link mb1 pointer shadow-4 tc w2`;
+    return `b--dark-gray ba bg-white br-100 bw1 h2 hover-${color} link mb1 pointer shadow-4 tc w2`;
 }
 
 function icon (size, d) {
