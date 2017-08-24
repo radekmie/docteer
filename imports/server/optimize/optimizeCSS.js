@@ -68,6 +68,4 @@ const processor = postcss([
     ))
 ]);
 
-export const optimizeRaw = css => processor.process(css + bundledCSS).then().await().css;
-export const optimizeCache = {};
-export const optimize = css => optimizeCache[css] || (optimizeCache[css] = optimizeRaw(css));
+export const optimize = css => processor.process(css + bundledCSS).then().await().css;
