@@ -2,11 +2,8 @@
 
 import {Component, h} from 'preact';
 
-import {onChange} from '/imports/state/actions';
-import {
-    schemaIsArray,
-    schemaKey
-} from '/imports/lib/schemas';
+import {onChange, onTypeAhead}    from '/imports/state/actions';
+import {schemaIsArray, schemaKey} from '/imports/lib/schemas';
 
 import {Editable} from './Editable';
 
@@ -52,6 +49,7 @@ export class Doc extends Component {
                                     html={this.transform(key, props.doc[key])}
                                     onChange={this.onChange(key)}
                                     onFocus={this.onFocus(key)}
+                                    onInput={key === 'labels' ? onTypeAhead : undefined}
                                     tag={props.doc._outline[key]}
                                 />
                             </dd>

@@ -1,3 +1,5 @@
+import fuzzysort from 'fuzzysort';
+
 import {Accounts} from 'meteor/accounts-base';
 import {Meteor}   from 'meteor/meteor';
 
@@ -181,6 +183,33 @@ export function onSchemaType (event) {
 
 export function onSearch (event) {
     tree.set(['search'], event.target.value);
+}
+
+export function onTypeAhead (event) {
+    if (event.inputType !== 'insertText' || !event.data || event.data.length !== 1) {
+        return;
+    }
+
+    const selection = window.getSelection();
+    const focusNode = selection.focusNode;
+    const search = (
+        focusNode.wholeText &&
+        focusNode.wholeText.trim()
+    );
+
+    if (search) {
+        const match = fuzzysort.go(search, tree.get(['labelsNames']))[0];
+
+        if (match && match.target.startsWith(search)) {
+            const start = selection.focusOffset;
+            const label = match.target.slice(start);
+
+            if (label) {
+                document.execCommand('insertText', true, label);
+                selection.setBaseAndExtent(focusNode, start, focusNode, focusNode.length);
+            }
+        }
+    }
 }
 
 function graphQL (body) {

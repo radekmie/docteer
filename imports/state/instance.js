@@ -80,6 +80,8 @@ export const tree = new Baobab({
                 })
     ),
 
+    labelsNames: Baobab.monkey(['labels'], labels => labels.map(label => label.name)),
+
     // History
     href: Baobab.monkey(
         ['view'],
