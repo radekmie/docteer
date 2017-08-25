@@ -99,8 +99,11 @@ export const tree = new Baobab({
 
     edit: false,
     last: new Date(0),
-    user: undefined,
-    view: undefined
+    view: undefined,
+
+    user: Baobab.monkey(['userData'], ['userDiff'], (data, diff) => data ? Object.assign({}, data, diff) : undefined),
+    userData: undefined,
+    userDiff: undefined
 }, {immutable: process.env.NODE_ENV === 'development'});
 
 function stateToHref (view, docId, filter, search) {

@@ -7,7 +7,8 @@ import {
     onEdit,
     onRefresh,
     onRemove,
-    onSave
+    onSave,
+    onSaveSettings
 } from '/imports/state/actions';
 
 /* eslint-disable max-len */
@@ -22,37 +23,47 @@ const iconRefresh = icon(1792, 'M1639 1056q0 5-1 7-64 268-268 434.5T892 1664q-14
 export function Actions (props) {
     return (
         <div class="bottom-1 fixed right-1">
-            <div class={button('dark-pink')} key="Create" onClick={onAdd} tabIndex="0" title="Create">
-                {iconAdd}
-            </div>
+            {props.view === 'd' && (
+                <div class={button('dark-pink')} key="Create" onClick={onAdd} tabIndex="0" title="Create">
+                    {iconAdd}
+                </div>
+            )}
 
-            {props.edit && props.doc && (
+            {props.view === 'd' && props.edit && props.doc && (
                 <div class={button('red')} key="Remove" onClick={onRemove} tabIndex="0" title="Remove">
                     {iconMinus}
                 </div>
             )}
 
-            {props.edit && (
+            {props.view === 'd' && props.edit && (
                 <div class={button('green')} key="Save" onClick={onSave} tabIndex="0" title="Save">
                     {iconOk}
                 </div>
             )}
 
-            {props.edit || (
+            {props.view === 'd' && !props.edit && (
                 <div class={button('dark-blue')} key="Edit" onClick={onEdit} tabIndex="0" title="Edit">
                     {iconPen}
                 </div>
             )}
 
-            {props.edit && (
+            {props.view === 'd' && props.edit && (
                 <div class={button('blue')} key="Cancel" onClick={onEdit} tabIndex="0" title="Cancel">
                     {iconNo}
                 </div>
             )}
 
-            <div class={button('orange')} key="Refresh" onClick={onRefresh} tabIndex="0" title="Refresh">
-                {iconRefresh}
-            </div>
+            {props.view === 'd' && (
+                <div class={button('orange')} key="Refresh" onClick={onRefresh} tabIndex="0" title="Refresh">
+                    {iconRefresh}
+                </div>
+            )}
+
+            {props.view === 's' && (
+                <div class={button('green')} key="Save" onClick={onSaveSettings} tabIndex="0" title="Save">
+                    {iconOk}
+                </div>
+            )}
         </div>
     );
 }

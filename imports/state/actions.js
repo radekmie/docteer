@@ -56,7 +56,7 @@ export function onLogout () {
 }
 
 export function onRefresh (firstRun) {
-    if (!Meteor.userId()) {
+    if (tree.get(['user']) === undefined) {
         tree.set(['docsOrigins'], []);
 
         return Promise.resolve();
@@ -132,6 +132,51 @@ export function onSave () {
         merge(response.data.docsPatch);
         onReset();
     });
+}
+
+export function onSaveSettings () {
+    toast('info', 'Saving...');
+
+    Meteor.call('users.settings', tree.get(['userDiff']), error => {
+        toast(error ? 'error' : 'success', error || 'Saved.');
+    });
+}
+
+export function onSchemaAdd () {
+    const schema = tree.get(['user', 'schemas', 0]);
+
+    tree.set(['userDiff', 'schemas'], [Object.assign({}, schema, {[`_${Object.keys(schema).length}`]: 'div'})]);
+}
+
+export function onSchemaDelete (event) {
+    const index = +event.target.parentNode.dataset.index;
+    const schema = tree.get(['user', 'schemas', 0]);
+
+    tree.set(['userDiff', 'schemas'], [Object.keys(schema).reduce((next, key, index2) => index === index2 ? next : Object.assign(next, {[key]: schema[key]}), {})]);
+}
+
+export function onSchemaKey (event) {
+    const index = +event.target.parentNode.dataset.index;
+    const schema = tree.get(['user', 'schemas', 0]);
+
+    tree.set(['userDiff', 'schemas'], [Object.keys(schema).reduce((next, key, index2) => Object.assign(next, {[index === index2 ? event.target.value : key]: schema[key]}), {})]);
+}
+
+export function onSchemaOrder (event) {
+    const index = +event.target.parentNode.dataset.index;
+    const schema = tree.get(['user', 'schemas', 0]);
+    const fields = Object.keys(schema);
+
+    fields[index] = fields.splice(index + (+event.target.dataset.order), 1, fields[index])[0];
+
+    tree.set(['userDiff', 'schemas'], [fields.reduce((next, key) => Object.assign(next, {[key]: schema[key]}), {})]);
+}
+
+export function onSchemaType (event) {
+    const index = +event.target.parentNode.dataset.index;
+    const schema = tree.get(['user', 'schemas', 0]);
+
+    tree.set(['userDiff', 'schemas'], [Object.keys(schema).reduce((next, key, index2) => Object.assign(next, {[key]: index === index2 ? event.target.value : schema[key]}), {})]);
 }
 
 export function onSearch (event) {

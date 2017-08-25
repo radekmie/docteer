@@ -27,10 +27,13 @@ const schema = new GraphQLSchema({mutation: Mutation, query: Query});
 
 const context = {
     authenticate ({session, userId}) {
-        return !!Meteor.users.find(
-            {_id: userId, 'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(session)},
-            {fields: {_id: 1}}
-        ).count();
+        return !!Meteor.users.find({
+            _id: userId,
+            'services.resume.loginTokens': {$elemMatch: {
+                hashedToken: Accounts._hashLoginToken(session),
+                when: {$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}
+            }}
+        }, {fields: {_id: 1}}).count();
     }
 };
 

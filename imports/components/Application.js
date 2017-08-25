@@ -1,4 +1,4 @@
-  /** @jsx h */
+/** @jsx h */
 
 import {Component, h} from 'preact';
 
@@ -8,8 +8,9 @@ import {Account}      from './Account';
 import {Actions}      from './Actions';
 import {Docs}         from './Docs';
 import {Doc}          from './Doc';
+import {Header}       from './Header';
 import {Labels}       from './Labels';
-import {Logo}         from './Logo';
+import {Settings}     from './Settings';
 import {Splashscreen} from './Splashscreen';
 import {Toasts}       from './Toasts';
 
@@ -44,39 +45,41 @@ export class Application extends Component {
         return (
             <main class={`app dark-gray lh-copy${state.load ? ' loading' : ''}`}>
                 <section class="b--dark-gray br bw1 fl flex flex-column h-100 w-20">
-                    <header class="b--dark-gray bb bw1">
-                        <a class="dark-gray flex link pt1" href={`#/${state.user ? 'd' : ''}`}>
-                            <Logo class={`${state.pend ? '' : 'freeze '}h3 w3`} />
+                    <Header pend={state.pend} user={state.user} />
 
-                            <h1 class="f4">
-                                DocTear
-                            </h1>
-                        </a>
-                    </header>
-
-                    {state.user ? (
+                    {!!(state.user && state.view === 'd') && (
                         <Labels labels={state.labels} />
-                    ) : (
+                    )}
+
+                    {!!(state.user && state.view === 'd') || (
                         <div class="filler flex-auto near-white" />
                     )}
 
                     <Account user={state.user} />
                 </section>
 
-                {!!state.user && (
+                {!!state.user && state.view === 'd' && (
                     <Docs docs={state.docs} search={state.search} />
                 )}
 
-                {!!state.user && state.doc ? (
+                {!!state.user && !!state.doc && state.view === 'd' && (
                     <Doc labels={state.labels} doc={state.doc} edit={state.edit} />
-                ) : (
+                )}
+
+                {!!state.user && !!state.doc || state.view === 's' && (
+                    <Settings user={state.user} />
+                )}
+
+                {!!state.doc || state.view !== 's' && (
                     <Splashscreen class={state.user ? 'w-50' : 'w-75'} />
                 )}
 
-                <Toasts toasts={state.toasts} />
+                {!!state.user && (
+                    <Actions doc={!!state.doc} edit={state.edit} view={state.view} />
+                )}
 
                 {!!state.user && (
-                    <Actions doc={!!state.doc} edit={state.edit} />
+                    <Toasts toasts={state.toasts} />
                 )}
             </main>
         );

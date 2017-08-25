@@ -28,7 +28,8 @@ Meteor.subscribe('users.self', {
 Tracker.autorun(() => {
     const user = Meteor.user();
 
-    if (tree.set(['user'], user && user.schemas ? user : undefined)) {
+    if (tree.set(['userData'], user && user.schemas ? user : undefined)) {
+        tree.set(['userDiff'], {});
         tree.set(['last'], new Date(0));
     }
 });
@@ -72,7 +73,7 @@ tree.select(['labels']).on('update', event => {
     }
 });
 
-tree.select(['user']).on('update', () => {
+tree.select(['userData']).on('update', () => {
     onRefresh(true).then(update);
 });
 
