@@ -31,6 +31,7 @@ Tracker.autorun(() => {
     if (tree.set(['userData'], user && user.schemas ? user : undefined)) {
         tree.set(['userDiff'], {});
         tree.set(['last'], new Date(0));
+        tree.set(['view'], 'd');
     }
 });
 

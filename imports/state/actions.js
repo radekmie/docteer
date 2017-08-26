@@ -18,6 +18,10 @@ export function onAdd () {
     tree.set(['edit'], true);
 }
 
+export function onBack () {
+    history.back();
+}
+
 export function onChange (_id, key, value) {
     if (tree.get(['docsUpdated', _id])) {
         tree.set(['docsUpdated', _id, key], value);
