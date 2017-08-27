@@ -30,10 +30,23 @@ export const tree = new Baobab({
                 docs = docs.filter(doc => filter.every(filter => doc.labels.some(label => label === filter)));
             }
 
-            if (search.trim()) {
-                docs = docs.map(doc => ({doc, lower: doc.name.toLowerCase(), target: doc.name}));
-                docs = fuzzysort.go(search.trim(), docs).slice(0, 50);
-                docs = docs.map(result => Object.assign({}, result.doc, {name: result.highlighted}));
+            const term = search.trim();
+
+            if (term) {
+                docs = docs
+                    .reduce((docs, doc) => {
+                        const match = fuzzysort.single(term, doc.name);
+
+                        if (match) {
+                            docs.push({doc, match});
+                        }
+
+                        return docs;
+                    }, [])
+                    .sort((a, b) => (a.match.score - b.match.score) || a.doc.name.localeCompare(b.doc.name))
+                    .slice(0, 50)
+                    .map(single => Object.assign({}, single.doc, {name: single.match.highlighted}))
+                ;
             }
 
             return docs.map(doc => Object.assign({_active: doc._id === docId, _href: stateToHref('d', doc._id !== docId && doc._id, filter, search)}, doc));
