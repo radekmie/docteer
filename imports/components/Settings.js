@@ -12,7 +12,7 @@ import {
 
 export function Settings (props) {
     return (
-        <dl class="flex-auto h-100 ma0 overflow-auto pa3">
+        <dl class="flex-1 h-100 ma0 overflow-auto pa3">
             <dt>
                 <b>Login:</b>
             </dt>
@@ -40,7 +40,7 @@ export function Settings (props) {
                             ↓
                         </button>
 
-                        <input class="flex-auto pa1" disabled={key === 'labels' || key === 'name'} onChange={onSchemaKey} value={key} />
+                        <input class="flex-1 pa1" disabled={key === 'labels' || key === 'name'} onChange={onSchemaKey} value={key} />
 
                         <select disabled={key === 'labels' || key === 'name'} onChange={onSchemaType} value={props.user.schemas[0][key]}>
                             <option value="ol">List</option>

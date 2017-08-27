@@ -44,7 +44,7 @@ export class Application extends Component {
     render (props, state) {
         return (
             <main class={`app dark-gray flex lh-copy${state.load ? ' loading' : ''}`}>
-                <div class="b--dark-gray br bw1 column flex flex-auto flex-column h-100">
+                <div class="b--dark-gray br bw1 column flex flex-1 flex-column h-100">
                     <Header pend={state.pend} user={state.user} />
 
                     {!!(state.user && state.view === 'd') && (
@@ -52,7 +52,7 @@ export class Application extends Component {
                     )}
 
                     {!!(state.user && state.view === 'd') || (
-                        <div class="filler flex-auto near-white" />
+                        <div class="filler flex-1 near-white" />
                     )}
 
                     <Account user={state.user} />

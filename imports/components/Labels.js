@@ -7,7 +7,7 @@ function Label (props) {
 
     return (
         <a class={`${label.active ? 'bg-near-white bl bw2 b--dark-gray ' : ''}dark-gray flex hover-bg-near-white items-center link ph2${label.active ? ' pl1' : ''} pointer`} href={label.href}>
-            <div class="flex-auto truncate">
+            <div class="flex-1 truncate">
                 {label.name}
             </div>
             <div class="ml2">
@@ -20,14 +20,14 @@ function Label (props) {
 export function Labels (props) {
     if (props.labels.length === 0) {
         return (
-            <div class="flex-auto pa3 tc">
+            <div class="flex-1 pa3 tc">
                 (no labels)
             </div>
         );
     }
 
     return (
-        <div class="flex-auto overflow-auto">
+        <div class="flex-1 overflow-auto">
             {props.labels.map(label =>
                 <Label key={label.name} label={label} />
             )}
