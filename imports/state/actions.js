@@ -18,10 +18,6 @@ export function onAdd () {
     tree.set(['edit'], true);
 }
 
-export function onBack () {
-    history.back();
-}
-
 export function onChange (_id, key, value) {
     if (tree.get(['docsUpdated', _id])) {
         tree.set(['docsUpdated', _id, key], value);
@@ -40,11 +36,7 @@ export function onLogin (email, password) {
     toast('info', 'Logging in...');
 
     Meteor.loginWithPassword(email, password, error => {
-        if (error) {
-            toast('error', error);
-        } else {
-            toast('success', 'Logged in.');
-        }
+        toast(error ? 'error' : 'success', error || 'Logged in.');
     });
 }
 
@@ -52,12 +44,7 @@ export function onLogout () {
     toast('info', 'Logging out...');
 
     Meteor.logout(error => {
-        if (error) {
-            toast('error', error);
-        } else {
-            toast('success', 'Logged out.');
-            tree.set(['docId'], undefined);
-        }
+        toast(error ? 'error' : 'success', error || 'Logged out.');
     });
 }
 
@@ -140,14 +127,6 @@ export function onSave () {
     });
 }
 
-export function onSaveSettings () {
-    toast('info', 'Saving...');
-
-    Meteor.call('users.settings', tree.get(['userDiff']), error => {
-        toast(error ? 'error' : 'success', error || 'Saved.');
-    });
-}
-
 export function onSchemaAdd () {
     const schema = tree.get(['user', 'schemas', 0]);
 
@@ -187,6 +166,22 @@ export function onSchemaType (event) {
 
 export function onSearch (event) {
     tree.set(['search'], event.target.value);
+}
+
+export function onSettingsReset () {
+    tree.set(['userDiff'], undefined);
+    history.back();
+}
+
+export function onSettingsSave () {
+    if (tree.get(['userDiff'])) {
+        toast('info', 'Saving...');
+
+        Meteor.call('users.settings', tree.get(['userDiff']), error => {
+            toast(error ? 'error' : 'success', error || 'Saved.');
+            onSettingsReset();
+        });
+    }
 }
 
 export function onTypeAhead (event) {

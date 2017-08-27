@@ -12,12 +12,12 @@ import {
 } from '/imports/components/Icon';
 import {
     onAdd,
-    onBack,
     onEdit,
     onRefresh,
     onRemove,
     onSave,
-    onSaveSettings
+    onSettingsReset,
+    onSettingsSave
 } from '/imports/state/actions';
 
 export function Actions (props) {
@@ -60,13 +60,13 @@ export function Actions (props) {
             )}
 
             {props.view === 's' && (
-                <div class={button('green')} key="Save" onClick={onSaveSettings} tabIndex="0" title="Save">
+                <div class={button('green', !props.user._changed)} key="Save" onClick={onSettingsSave} tabIndex="0" title="Save">
                     {iconOk}
                 </div>
             )}
 
             {props.view === 's' && (
-                <div class={button('red')} key="Cancel" onClick={onBack} tabIndex="0" title="Cancel">
+                <div class={button('red')} key="Cancel" onClick={onSettingsReset} tabIndex="0" title="Cancel">
                     {iconNo}
                 </div>
             )}
@@ -74,6 +74,6 @@ export function Actions (props) {
     );
 }
 
-function button (color) {
-    return `b--dark-gray ba bg-white br-100 bw1 h2 hover-${color} link mb1 pa1 pointer shadow-4`;
+function button (color, disabled) {
+    return `b--dark-gray ba bg${disabled ? '-near' : ''}-white br-100 bw1 h2 ${disabled ? '' : `hover-${color}`} link mb1 pa1${disabled ? '' : ' pointer'} shadow-4`;
 }

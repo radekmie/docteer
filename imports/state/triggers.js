@@ -30,9 +30,12 @@ Tracker.autorun(() => {
     const user = Meteor.user();
 
     if (tree.set(['userData'], user && user.schemas ? user : undefined)) {
-        tree.set(['userDiff'], {});
+        tree.set(['userDiff'], undefined);
         tree.set(['last'], new Date(0));
-        tree.set(['view'], 'd');
+
+        if (history.location.hash.length < 3) {
+            tree.set(['view'], 'd');
+        }
     }
 });
 

@@ -44,7 +44,7 @@ export class Application extends Component {
     render (props, state) {
         return (
             <main class={`app dark-gray flex lh-copy${state.load ? ' loading' : ''}`}>
-                <section class="b--dark-gray br bw1 column flex flex-auto flex-column h-100">
+                <div class="b--dark-gray br bw1 column flex flex-auto flex-column h-100">
                     <Header pend={state.pend} user={state.user} />
 
                     {!!(state.user && state.view === 'd') && (
@@ -56,7 +56,7 @@ export class Application extends Component {
                     )}
 
                     <Account user={state.user} />
-                </section>
+                </div>
 
                 {!!state.user && state.view === 'd' && (
                     <Docs docs={state.docs} search={state.search} />
@@ -74,7 +74,7 @@ export class Application extends Component {
                     <Splashscreen />
                 )}
 
-                <Actions doc={!!state.doc} edit={state.edit} view={state.view} />
+                <Actions doc={!!state.doc} edit={state.edit} user={state.user} view={state.view} />
 
                 <Toasts toasts={state.toasts} />
             </main>
