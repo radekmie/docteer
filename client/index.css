@@ -42,13 +42,6 @@ path {
     transform: translate(-50%, -50%);
 }
 
-.ba path {
-    fill: none;
-    stroke: currentcolor;
-    stroke-linecap: round;
-    stroke-width: 2;
-}
-
 .center-h {
     left: 50%;
     transform: translateX(-50%);
@@ -62,6 +55,17 @@ path {
         transparent 10px,
         transparent 20px
     );
+}
+
+.icon {
+    min-width: 1rem;
+}
+
+.icon path {
+    fill: none;
+    stroke: currentcolor;
+    stroke-linecap: round;
+    stroke-width: 2;
 }
 
 .loading {

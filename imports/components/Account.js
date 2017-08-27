@@ -2,10 +2,8 @@
 
 import {Component, h} from 'preact';
 
-import {
-    onLogin,
-    onLogout
-} from '/imports/state/actions';
+import {iconLock, iconUser} from '/imports/components/Icon';
+import {onLogin, onLogout}  from '/imports/state/actions';
 
 export class Account extends Component {
     onRefEmail = ref => {
@@ -40,16 +38,16 @@ export class Account extends Component {
                 )}
 
                 {!!props.user || (
-                    <label class="flex mb1" htmlFor="email" title="Email">
-                        <code><b>L</b></code>
-                        <input class="bg-near-white bw0 flex-auto ml2 ph1" id="email" name="email" ref={this.onRefEmail} type="email" />
+                    <label class="flex h1 mb1" htmlFor="email" title="Email">
+                        {iconUser}
+                        <input class="bg-near-white bw0 flex-auto ml1 ph1" id="email" name="email" ref={this.onRefEmail} type="email" />
                     </label>
                 )}
 
                 {!!props.user || (
-                    <label class="flex mb1" htmlFor="password" title="Password">
-                        <code><b>P</b></code>
-                        <input class="bg-near-white bw0 flex-auto ml2 ph1" id="password" name="password" ref={this.onRefPassword} type="password" />
+                    <label class="flex h1 mb1" htmlFor="password" title="Password">
+                        {iconLock}
+                        <input class="bg-near-white bw0 flex-auto ml1 ph1" id="password" name="password" ref={this.onRefPassword} type="password" />
                     </label>
                 )}
 

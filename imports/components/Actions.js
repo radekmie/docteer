@@ -3,6 +3,14 @@
 import {h} from 'preact';
 
 import {
+    iconAdd,
+    iconMinus,
+    iconNo,
+    iconOk,
+    iconPen,
+    iconRefresh
+} from '/imports/components/Icon';
+import {
     onAdd,
     onBack,
     onEdit,
@@ -11,15 +19,6 @@ import {
     onSave,
     onSaveSettings
 } from '/imports/state/actions';
-
-/* eslint-disable max-len */
-const iconAdd     = icon('M12 5v14m-7-7h14');
-const iconMinus   = icon('M5 12h14');
-const iconNo      = icon('M18 6L6 18M6 6l12 12');
-const iconOk      = icon('M20 6L9 17l-5-5');
-const iconPen     = icon('M16 3l5 5L8 21H3v-5L16 3z');
-const iconRefresh = icon('M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15');
-/* eslint-enable max-len */
 
 export function Actions (props) {
     return (
@@ -76,13 +75,5 @@ export function Actions (props) {
 }
 
 function button (color) {
-    return `b--dark-gray ba bg-white br-100 bw1 h2 hover-${color} link mb1 pointer shadow-4`;
-}
-
-function icon (d) {
-    return (
-        <svg class="ma1" viewBox="0 0 24 24">
-            <path d={d} />
-        </svg>
-    );
+    return `b--dark-gray ba bg-white br-100 bw1 h2 hover-${color} link mb1 pa1 pointer shadow-4`;
 }
