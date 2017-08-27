@@ -1,4 +1,5 @@
-import createHistory from 'history/createBrowserHistory';
+import createHistory    from 'history/createBrowserHistory';
+import {createLocation} from 'history/LocationUtils';
 
 import {Meteor}  from 'meteor/meteor';
 import {Tracker} from 'meteor/tracker';
@@ -48,7 +49,13 @@ document.addEventListener('click', event => {
             event.stopPropagation && event.stopPropagation();
             event.preventDefault();
 
-            history.push(node.getAttribute('href'));
+            const href = node.getAttribute('href');
+            const prev = history.createHref(history.location);
+            const next = history.createHref(createLocation(href, undefined, undefined, history.location));
+
+            if (prev !== next) {
+                history.push(href);
+            }
 
             return;
         }

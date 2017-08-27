@@ -10,6 +10,10 @@ html {
     font-family: sans-serif;
 }
 
+label {
+    min-height: 1.5rem;
+}
+
 path {
     fill: currentcolor;
 }
@@ -45,6 +49,11 @@ path {
 .center-h {
     left: 50%;
     transform: translateX(-50%);
+}
+
+.column {
+    max-width: 20%;
+    min-width: 16rem;
 }
 
 .filler {

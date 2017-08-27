@@ -32,7 +32,7 @@ export class Doc extends Component {
 
     render (props) {
         return (
-            <dl class="fl h-100 ma0 overflow-auto pa3 w-50">
+            <dl class="flex-auto h-100 ma0 overflow-auto pa3">
                 {Object.keys(props.doc._outline).reduce((fields, key, index) => {
                     if (props.edit || key === 'name' || props.doc[key].length) {
                         fields.push(

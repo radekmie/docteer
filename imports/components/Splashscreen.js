@@ -2,9 +2,9 @@
 
 import {h} from 'preact';
 
-export function Splashscreen (props) {
+export function Splashscreen () {
     return (
-        <div class={['fl pt3 tc', props.class].filter(Boolean).join(' ')}>
+        <div class="flex-auto pt3 tc">
             Some description should be placed here!
         </div>
     );

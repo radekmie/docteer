@@ -28,7 +28,7 @@ function Doc (props) {
 
 export function Docs (props) {
     return (
-        <div class="b--dark-gray br bw1 fl flex flex-column h-100 mv0 w-30">
+        <div class="b--dark-gray br bw1 column flex flex-auto flex-column h-100 mv0">
             <div class="b--dark-gray bb bw1">
                 <label class="flex" htmlFor="search" title="Search">
                     <input class="bg-near-white bw0 flex-auto pa2" id="search" name="search" placeholder="Search..." onInput={onSearch} type="search" value={props.search} />

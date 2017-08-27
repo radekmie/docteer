@@ -38,14 +38,14 @@ export class Account extends Component {
                 )}
 
                 {!!props.user || (
-                    <label class="flex h1 mb1" htmlFor="email" title="Email">
+                    <label class="flex mb1" htmlFor="email" title="Email">
                         {iconUser}
                         <input class="bg-near-white bw0 flex-auto ml1 ph1" id="email" name="email" ref={this.onRefEmail} type="email" />
                     </label>
                 )}
 
                 {!!props.user || (
-                    <label class="flex h1 mb1" htmlFor="password" title="Password">
+                    <label class="flex mb1" htmlFor="password" title="Password">
                         {iconLock}
                         <input class="bg-near-white bw0 flex-auto ml1 ph1" id="password" name="password" ref={this.onRefPassword} type="password" />
                     </label>

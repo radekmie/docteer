@@ -12,7 +12,7 @@ import {
 
 export function Settings (props) {
     return (
-        <dl class="fl h-100 ma0 overflow-auto pa3 w-50">
+        <dl class="flex-auto h-100 ma0 overflow-auto pa3">
             <dt>
                 <b>Login:</b>
             </dt>
