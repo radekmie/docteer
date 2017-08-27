@@ -1,5 +1,8 @@
 {
-  "classes": [
+  "attribute": [
+    "type=search"
+  ],
+  "class": [
     "app",
     "b--dark-blue",
     "b--dark-gray",
@@ -30,7 +33,6 @@
     "flex",
     "flex-1",
     "flex-column",
-    "fr",
     "freeze",
     "gray",
     "green",
@@ -86,27 +88,35 @@
     "w3",
     "w5"
   ],
-  "elements": [
-    "a",
-    "b",
+  "element": [
     "body",
     "button",
-    "dd",
     "div",
     "dl",
-    "dt",
     "form",
-    "h1",
-    "html",
     "html",
     "input",
     "label",
-    "li",
-    "main",
     "path",
-    "section",
-    "span",
-    "svg",
     "ul"
+  ],
+  "invalid": [
+    "%",
+    "0",
+    "1"
+  ],
+  "nested-pseudo-class": [
+    "not"
+  ],
+  "operator": [
+    "+"
+  ],
+  "pseudo-class": [
+    "focus",
+    "hover",
+    "nth-child"
+  ],
+  "spacing": [
+    " "
   ]
 }

@@ -19,20 +19,24 @@ const bundledCSSPath = Object
 
 const bundledCSS = Meteor.wrapAsync(readFile)(bundledCSSPath, 'utf8');
 
+function validNodes (node) {
+    return node === undefined || validToken(node) || node.nodes && node.nodes.every(token =>
+        validNodes(token) ||
+        validToken(token)
+    );
+}
+
+function validToken (node) {
+    return (
+        node &&
+        selectors[node.type] &&
+        selectors[node.type].includes(node.name || node.value || node.operator || node.content)
+    );
+}
+
 const processor = postcss([
     postcss.plugin('filter', () => root => root.walkRules(rule => {
-        rule.selectors = rule.selectors.filter(selector => {
-            const parsed = parse(selector).nodes[0];
-
-            if (parsed === undefined) {
-                return true;
-            }
-
-            return (
-                parsed.nodes .some(token => token.type === 'spacing' || token.type === 'class'   && selectors.classes .includes(token.name) || token.type === 'invalid') ||
-                parsed.nodes.every(token => token.type === 'spacing' || token.type === 'element' && selectors.elements.includes(token.name))
-            );
-        });
+        rule.selectors = rule.selectors.filter(selector => validNodes(parse(selector).nodes[0]));
 
         if (rule.selectors.length === 0) {
             rule.remove();
