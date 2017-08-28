@@ -199,9 +199,9 @@ export function onTypeAhead (event) {
     if (search) {
         const match = fuzzysort.go(search, tree.get(['labelsNames']))[0];
 
-        if (match && match.target.startsWith(search)) {
+        if (match && match._target.startsWith(search)) {
             const start = selection.focusOffset;
-            const label = match.target.slice(start);
+            const label = match._target.slice(start);
 
             if (label) {
                 document.execCommand('insertText', true, label);
