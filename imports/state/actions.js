@@ -185,7 +185,7 @@ export function onSettingsSave () {
 }
 
 export function onTypeAhead (event) {
-    if (event.type !== 'input' && (event.inputType !== 'insertText' || !event.data || event.data.length !== 1)) {
+    if (event.target.__skip) {
         return;
     }
 
@@ -210,6 +210,14 @@ export function onTypeAhead (event) {
         }
     }
 }
+
+onTypeAhead.pre = event => {
+    event.target.__skip = event.ctrlKey || event.metaKey || !event.key || event.key.length !== 1;
+};
+
+onTypeAhead.post = event => {
+    event.target.__skip = true;
+};
 
 function graphQL (body) {
     const json = 'application/json';

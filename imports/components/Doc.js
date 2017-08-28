@@ -50,6 +50,8 @@ export class Doc extends Component {
                                     onChange={this.onChange(key)}
                                     onFocus={this.onFocus(key)}
                                     onInput={key === 'labels' ? onTypeAhead : undefined}
+                                    onKeyDown={key === 'labels' ? onTypeAhead.pre : undefined}
+                                    onKeyUp={key === 'labels' ? onTypeAhead.post : undefined}
                                     tag={props.doc._outline[key]}
                                 />
                             </dd>
