@@ -185,7 +185,7 @@ export function onSettingsSave () {
 }
 
 export function onTypeAhead (event) {
-    if (event.inputType !== 'insertText' || !event.data || event.data.length !== 1) {
+    if (event.type !== 'input' && (event.inputType !== 'insertText' || !event.data || event.data.length !== 1)) {
         return;
     }
 
