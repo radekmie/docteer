@@ -1,6 +1,7 @@
 /** @jsx h */
 
-import {Component, h} from 'preact';
+import {Component} from 'preact';
+import {h}         from 'preact';
 
 export class Editable extends Component {
     onChange = () => {

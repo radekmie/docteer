@@ -4,32 +4,30 @@ import {Accounts} from 'meteor/accounts-base';
 import {Meteor}   from 'meteor/meteor';
 
 import {schemaEmpty} from '/imports/lib/schemas';
-
-import {tree} from './instance';
+import {tree}        from '/imports/lib/state';
 
 export function onAdd () {
   const _id = Math.random().toString(36).substr(2, 6);
 
   const schema = tree.get(['user']).schemas[0];
 
-  tree.set(['docsUpdated', _id], Object.assign({_outline: schema}, schemaEmpty(schema)));
-  tree.set(['docsCreated', _id], true);
-  tree.set(['docId'], _id);
+  tree.set(['notesUpdated', _id], Object.assign({_outline: schema}, schemaEmpty(schema)));
+  tree.set(['notesCreated', _id], true);
+  tree.set(['noteId'], _id);
   tree.set(['edit'], true);
 }
 
 export function onChange (_id, key, value) {
-  if (tree.get(['docsUpdated', _id])) {
-    tree.set(['docsUpdated', _id, key], value);
+  if (tree.get(['notesUpdated', _id])) {
+    tree.set(['notesUpdated', _id, key], value);
   } else {
-    tree.set(['docsUpdated', _id], {[key]: value});
+    tree.set(['notesUpdated', _id], {[key]: value});
   }
 }
 
 export function onEdit () {
-  if (!tree.set(['edit'], !tree.get(['edit']))) {
+  if (!tree.set(['edit'], !tree.get(['edit'])))
     onReset();
-  }
 }
 
 export function onLogin (email, password) {
@@ -50,7 +48,7 @@ export function onLogout () {
 
 export function onRefresh (firstRun) {
   if (tree.get(['user']) === undefined) {
-    tree.set(['docsOrigins'], []);
+    tree.set(['notesOrigins'], []);
 
     return Promise.resolve();
   }
@@ -60,37 +58,36 @@ export function onRefresh (firstRun) {
   const last = new Date();
 
   return graphQL({
-    query: 'query Docs ($refresh: Date!, $session: String!, $userId: String!) { docs (refresh: $refresh, session: $session, userId: $userId) { created removed updated } }',
-    operationName: 'Docs',
+    query: 'query Notes ($refresh: Date!, $session: String!, $userId: String!) { notes (refresh: $refresh, session: $session, userId: $userId) { created removed updated } }',
+    operationName: 'Notes',
     variables: {refresh: tree.get(['last'])}
   }).then(response => {
     tree.set(['last'], last);
     toast('success', firstRun === true ? 'Loaded.' : 'Refreshed.');
-    merge(response.data.docs);
+    merge(response.data.notes);
   });
 }
 
 export function onRemove () {
-  tree.set(['docsRemoved', tree.get(['docId'])], true);
-  tree.set(['docId'], undefined);
+  tree.set(['notesRemoved', tree.get(['noteId'])], true);
+  tree.set(['noteId'], undefined);
 }
 
 export function onReset () {
-  if (tree.get(['docsCreated'])[tree.get(['docId'])]) {
-    tree.set(['docId'], undefined);
-  }
+  if (tree.get(['notesCreated'])[tree.get(['noteId'])])
+    tree.set(['noteId'], undefined);
 
-  tree.set(['docsCreated'], Object.create(null));
-  tree.set(['docsRemoved'], Object.create(null));
-  tree.set(['docsUpdated'], Object.create(null));
+  tree.set(['notesCreated'], Object.create(null));
+  tree.set(['notesRemoved'], Object.create(null));
+  tree.set(['notesUpdated'], Object.create(null));
 }
 
 export function onSave () {
   tree.set(['edit'], false);
 
-  const created = tree.get(['docsCreated']);
-  const removed = tree.get(['docsRemoved']);
-  const updated = tree.get(['docsUpdated']);
+  const created = tree.get(['notesCreated']);
+  const removed = tree.get(['notesRemoved']);
+  const updated = tree.get(['notesUpdated']);
 
   const patch = {
     refresh: tree.get(['last']),
@@ -103,7 +100,7 @@ export function onSave () {
 
   patch.created = patch.created.filter(_id => !skippable.includes(_id));
   patch.removed = patch.removed.filter(_id => !skippable.includes(_id));
-  patch.updated = patch.updated.filter(doc => !skippable.includes(doc._id));
+  patch.updated = patch.updated.filter(note => !skippable.includes(note._id));
 
   if (!patch.created.length && !patch.removed.length && !patch.updated.length) {
     onReset();
@@ -116,13 +113,13 @@ export function onSave () {
   const last = new Date();
 
   return graphQL({
-    query: 'mutation DocsPatch ($refresh: Date!, $session: String!, $userId: String!, $created: [String!]!, $removed: [String!]!, $updated: [Doc!]!) { docsPatch (refresh: $refresh, session: $session, userId: $userId, created: $created, removed: $removed, updated: $updated) { created removed updated } }',
-    operationName: 'DocsPatch',
+    query: 'mutation NotesPatch ($refresh: Date!, $session: String!, $userId: String!, $created: [String!]!, $removed: [String!]!, $updated: [Note!]!) { notesPatch (refresh: $refresh, session: $session, userId: $userId, created: $created, removed: $removed, updated: $updated) { created removed updated } }',
+    operationName: 'NotesPatch',
     variables: patch
   }).then(response => {
     tree.set(['last'], last);
     toast('success', 'Saved.');
-    merge(response.data.docsPatch);
+    merge(response.data.notesPatch);
     onReset();
   });
 }
@@ -168,7 +165,7 @@ export function onSearch (event) {
   tree.set(['search'], event.target.value);
 }
 
-export function onSettingsReset () {
+export function onSettingsReset (goBack) {
   tree.set(['userDiff'], undefined);
   history.back();
 }
@@ -253,13 +250,13 @@ function graphQL (body) {
 }
 
 function merge (diff) {
-  tree.set(['docsOrigins'], tree.get(['docsOrigins'])
-    .filter(doc => !diff.removed.includes(doc._id))
+  tree.set(['notesOrigins'], tree.get(['notesOrigins'])
+    .filter(note => !diff.removed.includes(note._id))
     .concat(diff.created.map(_id => ({_id})))
-    .filter((doc, index, docs) => docs.findIndex(other => other._id === doc._id) === index)
-    .map(doc => {
-      const  patch = diff.updated.find(updated => updated._id === doc._id);
-      return patch ? Object.assign({}, doc, patch) : doc;
+    .filter((note, index, notes) => notes.findIndex(other => other._id === note._id) === index)
+    .map(note => {
+      const  patch = diff.updated.find(updated => updated._id === note._id);
+      return patch ? Object.assign({}, note, patch) : note;
     })
   );
 }

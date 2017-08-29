@@ -12,9 +12,11 @@ export {
   optimizeStatics
 };
 
-optimizeStatics();
+if (process.env.NODE_ENV !== 'development') {
+  optimizeStatics();
 
-const rawToHTML = Boilerplate.prototype.toHTML;
-Boilerplate.prototype.toHTML = function toHTML () {
-  return optimizeHTML(rawToHTML.apply(this, arguments));
-};
+  const rawToHTML = Boilerplate.prototype.toHTML;
+  Boilerplate.prototype.toHTML = function toHTML () {
+    return optimizeHTML(rawToHTML.apply(this, arguments));
+  };
+}

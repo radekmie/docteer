@@ -4,8 +4,8 @@ import {createLocation} from 'history/LocationUtils';
 import {Meteor}  from 'meteor/meteor';
 import {Tracker} from 'meteor/tracker';
 
-import {onRefresh} from './actions';
-import {tree}      from './instance';
+import {onRefresh} from '/imports/lib/stateActions';
+import {tree}      from '/imports/lib/state';
 
 const history = createHistory();
 
@@ -100,7 +100,7 @@ function syncHistory (location) {
 
   const match = pattern.exec(location.hash) || [];
   const state = {
-    docId:  match[1] === 'd' && match[2] || undefined,
+    noteId:  match[1] === 'd' && match[2] || undefined,
     filter: match[3] ? decodeURIComponent(match[3]).split(',').sort() : [],
     search: match[4] ? decodeURIComponent(match[4]) : '',
     view:   match[1] || (user ? 'd' : undefined)
@@ -110,7 +110,7 @@ function syncHistory (location) {
     state.view = undefined;
   }
 
-  tree.set(['docId'],  tree.get(['docs']).find(doc => doc._id === state.docId) ? state.docId : undefined);
+  tree.set(['noteId'],  tree.get(['notes']).find(note => note._id === state.noteId) ? state.noteId : undefined);
   tree.set(['search'], state.search);
   tree.set(['view'],   state.view);
 

@@ -7,19 +7,19 @@ import {Accounts} from 'meteor/accounts-base';
 import {Meteor}   from 'meteor/meteor';
 import {WebApp}   from 'meteor/webapp';
 
-import {Docs} from '/imports/api/docs/server';
+import {Notes} from '/imports/api/notes/server';
 
 const Mutation = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
-    ...Docs.mutations
+    ...Notes.mutations
   }
 });
 
 const Query = new GraphQLObjectType({
   name: 'Query',
   fields: {
-    ...Docs.queries
+    ...Notes.queries
   }
 });
 
@@ -38,4 +38,4 @@ const context = {
 };
 
 WebApp.rawConnectHandlers.use('/graphql', compression({threshold: false}));
-WebApp.rawConnectHandlers.use('/graphql', graphqlHTTP({context, graphiql: process.env.NODE_ENV !== 'production', schema}));
+WebApp.rawConnectHandlers.use('/graphql', graphqlHTTP({context, graphiql: process.env.NODE_ENV === 'development', schema}));

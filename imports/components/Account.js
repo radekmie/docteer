@@ -1,9 +1,12 @@
 /** @jsx h */
 
-import {Component, h} from 'preact';
+import {Component} from 'preact';
+import {h}         from 'preact';
 
-import {iconLock, iconUser} from '/imports/components/Icon';
-import {onLogin, onLogout}  from '/imports/state/actions';
+import {iconLock} from '/imports/components/Icon';
+import {iconUser} from '/imports/components/Icon';
+import {onLogin}  from '/imports/lib/stateActions';
+import {onLogout} from '/imports/lib/stateActions';
 
 export class Account extends Component {
     onRefEmail = ref => {
@@ -17,9 +20,8 @@ export class Account extends Component {
     onSubmit = event => {
       event.preventDefault();
 
-      if (this.email && this.password) {
+      if (this.email && this.password)
         onLogin(this.email.value, this.password.value);
-      }
     };
 
     render (props) {
@@ -33,7 +35,7 @@ export class Account extends Component {
 
           {!!props.user && (
             <button class="w-100" onClick={onLogout} title="Log Out">
-                        Log Out
+              Log Out
             </button>
           )}
 
@@ -53,7 +55,7 @@ export class Account extends Component {
 
           {!!props.user || (
             <button class="w-100" title="Log In">
-                        Log In
+              Log In
             </button>
           )}
         </form>

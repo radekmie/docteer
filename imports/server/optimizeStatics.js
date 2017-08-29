@@ -3,15 +3,10 @@ import {WebAppInternals} from 'meteor/webapp';
 export function optimize () {
   // NOTE: This package requires manifest.json.
   // eslint-disable-next-line no-undef
-  if (Package['bundle-visualizer']) {
+  if (Package['bundle-visualizer'])
     return;
-  }
 
-  const js = 'js';
-
-  for (const path in WebAppInternals.staticFiles) {
-    if (js !== WebAppInternals.staticFiles[path].type) {
+  for (const path in WebAppInternals.staticFiles)
+    if (WebAppInternals.staticFiles[path].type !== 'js')
       delete WebAppInternals.staticFiles[path];
-    }
-  }
 }

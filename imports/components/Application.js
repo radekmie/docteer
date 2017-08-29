@@ -1,25 +1,26 @@
 /** @jsx h */
 
-import {Component, h} from 'preact';
+import {Component} from 'preact';
+import {h}         from 'preact';
 
-import {tree} from '/imports/state/instance';
+import {tree} from '/imports/lib/state';
 
 import {Account}      from './Account';
 import {Actions}      from './Actions';
-import {Docs}         from './Docs';
-import {Doc}          from './Doc';
 import {Header}       from './Header';
 import {Labels}       from './Labels';
+import {Notes}        from './Notes';
+import {Note}         from './Note';
 import {Settings}     from './Settings';
 import {Splashscreen} from './Splashscreen';
 import {Toasts}       from './Toasts';
 
 const watcher = tree.watch({
-  doc:    ['doc'],
-  docs:   ['docsVisible'],
   edit:   ['edit'],
   labels: ['labels'],
   load:   ['load'],
+  note:   ['note'],
+  notes:  ['notesVisible'],
   pend:   ['pend'],
   search: ['search'],
   toasts: ['toasts'],
@@ -32,7 +33,9 @@ export class Application extends Component {
     super(...arguments);
 
     this.state = watcher.get();
-    this._sync = () => this.setState(watcher.get());
+    this._sync = () => {
+      this.setState(watcher.get());
+    };
 
     watcher.on('update', this._sync);
   }
@@ -59,22 +62,22 @@ export class Application extends Component {
         </div>
 
         {!!state.user && state.view === 'd' && (
-          <Docs docs={state.docs} search={state.search} />
+          <Notes notes={state.notes} search={state.search} />
         )}
 
-        {!!state.user && !!state.doc && state.view === 'd' && (
-          <Doc labels={state.labels} doc={state.doc} edit={state.edit} />
+        {!!state.user && !!state.note && state.view === 'd' && (
+          <Note labels={state.labels} note={state.note} edit={state.edit} />
         )}
 
-        {!!state.user && !!state.doc || state.view === 's' && (
+        {!!state.user && !!state.note || state.view === 's' && (
           <Settings user={state.user} />
         )}
 
-        {!!state.doc || state.view !== 's' && (
+        {!!state.note || state.view !== 's' && (
           <Splashscreen />
         )}
 
-        <Actions doc={!!state.doc} edit={state.edit} user={state.user} view={state.view} />
+        <Actions note={!!state.note} edit={state.edit} user={state.user} view={state.view} />
 
         <Toasts toasts={state.toasts} />
       </main>

@@ -7,9 +7,78 @@ import {GraphQLString}     from 'graphql/type/scalars';
 import {OBJECT}            from 'graphql/language/kinds';
 import {STRING}            from 'graphql/language/kinds';
 
-import {bulkPatch} from '/imports/lib/server/bulkPatch';
+import {Notes} from '..';
 
-import {Docs} from '..';
+function bulkPatch (collection, patch, userId) {
+  if (!patch.created.length && !patch.removed.length && !patch.updated.length) {
+    return Promise.resolve();
+  }
+
+  const now = new Date();
+
+  const hand = collection.rawCollection();
+  const bulk = hand.initializeOrderedBulkOp();
+
+  patch.removed.forEach(_id => bulk.find({_id_slug: _id, _id_user: userId}).updateOne({$set: {_removed: now, _updated: now}}));
+  patch.updated.forEach(doc => {
+    const _id      = doc._id;
+    const _outline = doc._outline;
+
+    if (patch.removed.includes(_id)) {
+      return;
+    }
+
+    delete doc._id;
+    delete doc._outline;
+
+    const keys = Object.keys(doc);
+
+    if (keys.length === 0) {
+      return;
+    }
+
+    if (patch.created.includes(_id)) {
+      bulk.insert({
+        // ID
+        _id_slug: _id,
+        _id_user: userId,
+
+        // Type
+        _outline,
+
+        // Dates
+        _created: now,
+        _removed: null,
+        _updated: now,
+
+        // History
+        _version: [{_created: now, ...doc}],
+
+        // Data
+        ...doc
+      });
+    } else {
+      // NOTE: Atomic update would be the best but there's an security issue.
+      // bulk.find({_id_slug: _id, _id_user: userId}).updateOne({
+      //     $set:  {_updated: now, ...doc},
+      //     $push: {_version: {_created: now, ...doc}}
+      // });
+
+      bulk.find({_id_slug: _id, _id_user: userId}).updateOne({
+        $set:             {_updated: now},
+        $push: {_version: {_created: now}}
+      });
+
+      keys.forEach(key => {
+        bulk.find({_id_slug: _id, _id_user: userId, [key]: {$exists: true}, '_version._created': now}).updateOne({
+          $set: {[key]: doc[key], [`_version.$.${key}`]: doc[key]}
+        });
+      });
+    }
+  });
+
+  return bulk.execute();
+}
 
 const GraphQLDate = new GraphQLScalarType({
   name: 'Date',
@@ -55,25 +124,25 @@ const GraphQLDate = new GraphQLScalarType({
   }
 });
 
-const Doc = new GraphQLScalarType({
-  name: 'Doc',
+const Note = new GraphQLScalarType({
+  name: 'Note',
 
   parseLiteral (ast) {
     if (ast.kind !== OBJECT) {
-      throw new GraphQLError(`Query error: Doc must be an object but got: ${ast.kind}`, [ast]);
+      throw new GraphQLError(`Query error: Note must be an object but got: ${ast.kind}`, [ast]);
     }
 
     if (ast.value._id === undefined) {
-      throw new GraphQLError('Query error: Doc _id must be present', [ast]);
+      throw new GraphQLError('Query error: Note _id must be present', [ast]);
     }
 
     if (ast.value._id.kind !== STRING) {
-      throw new GraphQLError(`Query error: Doc _id must be a string but got: ${ast.value._id.kind}`, [ast]);
+      throw new GraphQLError(`Query error: Note _id must be a string but got: ${ast.value._id.kind}`, [ast]);
     }
 
     for (const key of Object.keys(ast.value)) {
       if (key.substr(0, 1) === '_' && (key !== '_id' || key !== '_outline') || key.indexOf('.') !== -1 || key !== key.toLowerCase()) {
-        throw new GraphQLError(`Query error: Doc cannot have a field named: ${key}`, [ast]);
+        throw new GraphQLError(`Query error: Note cannot have a field named: ${key}`, [ast]);
       }
     }
 
@@ -89,19 +158,19 @@ const Doc = new GraphQLScalarType({
   }
 });
 
-const DocsDiff = new GraphQLNonNull(new GraphQLObjectType({
-  name: 'DocsDiff',
+const NotesDiff = new GraphQLNonNull(new GraphQLObjectType({
+  name: 'NotesDiff',
 
   fields: {
     created: {type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))},
     removed: {type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))},
-    updated: {type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Doc)))}
+    updated: {type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Note)))}
   }
 }));
 
-Docs.mutations = {
-  docsPatch: {
-    type: DocsDiff,
+Notes.mutations = {
+  notesPatch: {
+    type: NotesDiff,
 
     args: {
       refresh: {type: GraphQLDate},
@@ -110,7 +179,7 @@ Docs.mutations = {
 
       created: {type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))},
       removed: {type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString)))},
-      updated: {type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Doc)))}
+      updated: {type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Note)))}
     },
 
     resolve (_, args, context) {
@@ -118,16 +187,16 @@ Docs.mutations = {
         return {created: [], removed: [], updated: []};
       }
 
-      bulkPatch(Docs, args, args.userId).await();
+      bulkPatch(Notes, args, args.userId).await();
 
-      return docsByUser(args.userId, args.refresh);
+      return notesByUser(args.userId, args.refresh);
     }
   }
 };
 
-Docs.queries = {
-  docs: {
-    type: DocsDiff,
+Notes.queries = {
+  notes: {
+    type: NotesDiff,
 
     args: {
       refresh: {type: GraphQLDate},
@@ -140,12 +209,12 @@ Docs.queries = {
         return {created: [], removed: [], updated: []};
       }
 
-      return docsByUser(args.userId, args.refresh);
+      return notesByUser(args.userId, args.refresh);
     }
   }
 };
 
-function docsByUser (userId, after) {
+function notesByUser (userId, after) {
   const refresh = after || new Date(0);
   const fields = {
     _id:      0,
@@ -154,22 +223,22 @@ function docsByUser (userId, after) {
     _version: 0
   };
 
-  return Docs.find({_id_user: userId, _updated: {$gt: refresh}}, {fields}).fetch().reduce((diff, doc) => {
-    doc._id = doc._id_slug;
+  return Notes.find({_id_user: userId, _updated: {$gt: refresh}}, {fields}).fetch().reduce((diff, note) => {
+    note._id = note._id_slug;
 
-    if (doc._removed > refresh) {
-      diff.removed.push(doc._id);
+    if (note._removed > refresh) {
+      diff.removed.push(note._id);
     } else {
-      diff.updated.push(doc);
+      diff.updated.push(note);
 
-      if (doc._created > refresh) {
-        diff.created.push(doc._id);
+      if (note._created > refresh) {
+        diff.created.push(note._id);
       }
     }
 
-    delete doc._id_slug;
-    delete doc._created;
-    delete doc._removed;
+    delete note._id_slug;
+    delete note._created;
+    delete note._removed;
 
     return diff;
   }, {created: [], removed: [], updated: []});

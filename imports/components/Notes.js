@@ -2,31 +2,31 @@
 
 import {h} from 'preact';
 
-import {onSearch} from '/imports/state/actions';
+import {onSearch} from '/imports/lib/stateActions';
 
-function Doc (props) {
-  const doc = props.doc;
-  const color = doc._created
-    ? doc._removed
+function Note (props) {
+  const note = props.note;
+  const color = note._created
+    ? note._removed
       ? 'gray hover-light-gray'
       : 'green hover-light-green'
-    : doc._removed
+    : note._removed
       ? 'hover-light-red red'
-      : doc._updated
+      : note._updated
         ? 'blue hover-light-blue'
         : 'dark-gray'
     ;
 
   return (
     <a
-      class={`${doc._active ? 'bg-near-white bl bw2 b--dark-gray ' : ''}db ${color} hover-bg-near-white link ph2${doc._active ? ' pl1' : ''} truncate`}
-      dangerouslySetInnerHTML={{__html: doc.name || '(untitled)'}}
-      href={doc._href}
+      class={`${note._active ? 'bg-near-white bl bw2 b--dark-gray ' : ''}db ${color} hover-bg-near-white link ph2${note._active ? ' pl1' : ''} truncate`}
+      dangerouslySetInnerHTML={{__html: note.name || '(untitled)'}}
+      href={note._href}
     />
   );
 }
 
-export function Docs (props) {
+export function Notes (props) {
   return (
     <div class="b--dark-gray br bw1 column flex flex-1 flex-column h-100">
       <div class="b--dark-gray bb bw1">
@@ -35,10 +35,10 @@ export function Docs (props) {
         </label>
       </div>
 
-      {props.docs.length ? (
+      {props.notes.length ? (
         <div class="flex-1 ma0 overflow-auto">
-          {props.docs.map(doc =>
-            <Doc doc={doc} key={doc._id} />
+          {props.notes.map(note =>
+            <Note note={note} key={note._id} />
           )}
         </div>
       ) : (

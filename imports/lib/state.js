@@ -3,16 +3,16 @@ import fuzzysort from 'fuzzysort';
 
 export const tree = new Baobab({
   // Data
-  docsOrigins: [],
-  docsCreated: Object.create(null),
-  docsRemoved: Object.create(null),
-  docsUpdated: Object.create(null),
+  notesOrigins: [],
+  notesCreated: Object.create(null),
+  notesRemoved: Object.create(null),
+  notesUpdated: Object.create(null),
 
-  docs: Baobab.monkey(
-    ['docsOrigins'],
-    ['docsCreated'],
-    ['docsRemoved'],
-    ['docsUpdated'],
+  notes: Baobab.monkey(
+    ['notesOrigins'],
+    ['notesCreated'],
+    ['notesRemoved'],
+    ['notesUpdated'],
     (origins, created, removed, updated) =>
       origins
         .concat(Object.keys(created).map(_id => ({_created: true, _id})))
@@ -20,57 +20,57 @@ export const tree = new Baobab({
         .sort((a, b) => a.name.localeCompare(b.name))
   ),
 
-  docsVisible: Baobab.monkey(
-    ['docs'],
-    ['docId'],
+  notesVisible: Baobab.monkey(
+    ['notes'],
+    ['noteId'],
     ['filter'],
     ['search'],
-    (docs, docId, filter, search) => {
+    (notes, noteId, filter, search) => {
       if (filter.length) {
-        docs = docs.filter(doc => filter.every(filter => doc.labels.some(label => label === filter)));
+        notes = notes.filter(note => filter.every(filter => note.labels.some(label => label === filter)));
       }
 
       const term = search.trim();
 
       if (term) {
-        docs = docs
-          .reduce((docs, doc) => {
-            const match = fuzzysort.single(term, doc.name);
+        notes = notes
+          .reduce((notes, note) => {
+            const match = fuzzysort.single(term, note.name);
 
             if (match) {
-              docs.push({doc, match});
+              notes.push({note, match});
             }
 
-            return docs;
+            return notes;
           }, [])
-          .sort((a, b) => (a.match.score - b.match.score) || a.doc.name.localeCompare(b.doc.name))
+          .sort((a, b) => (a.match.score - b.match.score) || a.note.name.localeCompare(b.note.name))
           .slice(0, 50)
-          .map(single => Object.assign({}, single.doc, {name: single.match.highlighted}))
+          .map(single => Object.assign({}, single.note, {name: single.match.highlighted}))
         ;
       }
 
-      return docs.map(doc => Object.assign({_active: doc._id === docId, _href: stateToHref('d', doc._id !== docId && doc._id, filter, search)}, doc));
+      return notes.map(note => Object.assign({_active: note._id === noteId, _href: stateToHref('d', note._id !== noteId && note._id, filter, search)}, note));
     }
   ),
 
-  docId: undefined,
-  doc: Baobab.monkey(
-    ['docs'],
-    ['docId'],
-    (docs, docId) =>
-      docs.find(doc => doc._id === docId)
+  noteId: undefined,
+  note: Baobab.monkey(
+    ['notes'],
+    ['noteId'],
+    (notes, noteId) =>
+      notes.find(note => note._id === noteId)
   ),
 
   labels: Baobab.monkey(
-    ['docs'],
-    ['docsVisible'],
-    ['docId'],
+    ['notes'],
+    ['notesVisible'],
+    ['noteId'],
     ['filter'],
     ['search'],
-    (docs, docsVisible, docId, filter, search) =>
-      docs
-        .reduce((labels, doc) => {
-          doc.labels.forEach(label => {
+    (notes, notesVisible, noteId, filter, search) =>
+      notes
+        .reduce((labels, note) => {
+          note.labels.forEach(label => {
             if (label && !labels.includes(label)) {
               labels.push(label);
             }
@@ -86,9 +86,9 @@ export const tree = new Baobab({
           return {
             active,
             name,
-            href:  stateToHref('d', docId, toggle, search),
-            count: docsVisible.reduce((count, doc) => count + doc.labels.includes(name), 0),
-            total: docs       .reduce((count, doc) => count + doc.labels.includes(name), 0)
+            href:  stateToHref('d', noteId, toggle, search),
+            count: notesVisible.reduce((count, note) => count + note.labels.includes(name), 0),
+            total: notes       .reduce((count, note) => count + note.labels.includes(name), 0)
           };
         })
   ),
@@ -98,7 +98,7 @@ export const tree = new Baobab({
   // History
   href: Baobab.monkey(
     ['view'],
-    ['docId'],
+    ['noteId'],
     ['filter'],
     ['search'],
     stateToHref
@@ -121,9 +121,9 @@ export const tree = new Baobab({
   userDiff: undefined
 }, {immutable: process.env.NODE_ENV === 'development'});
 
-function stateToHref (view, docId, filter, search) {
+function stateToHref (view, noteId, filter, search) {
   return [
-    `#/${[view, view && docId].filter(Boolean).join('/')}`,
+    `#/${[view, view && noteId].filter(Boolean).join('/')}`,
     [filter.length && `filter=${filter.slice().sort().join(',')}`, search && `search=${search}`].filter(Boolean).join('&')
   ].filter(Boolean).join('?');
 }

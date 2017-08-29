@@ -2,23 +2,19 @@
 
 import {h} from 'preact';
 
-import {
-  iconAdd,
-  iconMinus,
-  iconNo,
-  iconOk,
-  iconPen,
-  iconRefresh
-} from '/imports/components/Icon';
-import {
-  onAdd,
-  onEdit,
-  onRefresh,
-  onRemove,
-  onSave,
-  onSettingsReset,
-  onSettingsSave
-} from '/imports/state/actions';
+import {iconAdd}         from '/imports/components/Icon';
+import {iconMinus}       from '/imports/components/Icon';
+import {iconNo}          from '/imports/components/Icon';
+import {iconOk}          from '/imports/components/Icon';
+import {iconPen}         from '/imports/components/Icon';
+import {iconRefresh}     from '/imports/components/Icon';
+import {onAdd}           from '/imports/lib/stateActions';
+import {onEdit}          from '/imports/lib/stateActions';
+import {onRefresh}       from '/imports/lib/stateActions';
+import {onRemove}        from '/imports/lib/stateActions';
+import {onSave}          from '/imports/lib/stateActions';
+import {onSettingsReset} from '/imports/lib/stateActions';
+import {onSettingsSave}  from '/imports/lib/stateActions';
 
 export function Actions (props) {
   return (
@@ -29,7 +25,7 @@ export function Actions (props) {
         </div>
       )}
 
-      {props.view === 'd' && props.edit && props.doc && (
+      {props.view === 'd' && props.edit && props.note && (
         <div class={button('red')} key="Remove" onClick={onRemove} tabIndex="0" title="Remove">
           {iconMinus}
         </div>

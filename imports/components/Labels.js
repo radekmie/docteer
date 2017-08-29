@@ -21,7 +21,7 @@ export function Labels (props) {
   if (props.labels.length === 0) {
     return (
       <div class="flex-1 pa3 tc">
-                (no labels)
+        (no labels)
       </div>
     );
   }
