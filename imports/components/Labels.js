@@ -6,7 +6,7 @@ function Label (props) {
     const label = props.label;
 
     return (
-        <a class={`${label.active ? 'bg-near-white bl bw2 b--dark-gray ' : ''}dark-gray flex hover-bg-near-white items-center link ph2${label.active ? ' pl1' : ''} pointer`} href={label.href}>
+        <a class={`${label.active ? 'bg-near-white bl bw2 b--dark-gray ' : ''}dark-gray flex hover-bg-near-white link ph2${label.active ? ' pl1' : ''} pointer`} href={label.href}>
             <div class="flex-1 truncate">
                 {label.name}
             </div>
