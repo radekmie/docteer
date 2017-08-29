@@ -1,6 +1,9 @@
 {
   "extends": "vazco",
   "rules": {
-    "max-len": "off"
+    "indent": ["error", 2],
+    "max-len": "off",
+    "react/jsx-indent": ["error", 2],
+    "react/jsx-indent-props": ["error", 2]
   }
 }

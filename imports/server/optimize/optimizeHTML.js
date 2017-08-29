@@ -5,7 +5,7 @@ import {optimize as minifyJS}  from './optimizeJS';
 
 export const optimizeOptions = {collapseWhitespace: true, minifyCSS, minifyJS};
 export const optimize = html =>
-    minify(html, optimizeOptions)
-        .replace('?meteor_js_resource=true', '')
-        .replace(/<link .*?>/, '')
+  minify(html, optimizeOptions)
+    .replace('?meteor_js_resource=true', '')
+    .replace(/<link .*?>/, '')
 ;

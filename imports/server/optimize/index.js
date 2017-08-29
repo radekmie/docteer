@@ -6,15 +6,15 @@ import {optimize as optimizeJS}      from './optimizeJS';
 import {optimize as optimizeStatics} from './optimizeStatics';
 
 export {
-    optimizeCSS,
-    optimizeHTML,
-    optimizeJS,
-    optimizeStatics
+  optimizeCSS,
+  optimizeHTML,
+  optimizeJS,
+  optimizeStatics
 };
 
 optimizeStatics();
 
 const rawToHTML = Boilerplate.prototype.toHTML;
 Boilerplate.prototype.toHTML = function toHTML () {
-    return optimizeHTML(rawToHTML.apply(this, arguments));
+  return optimizeHTML(rawToHTML.apply(this, arguments));
 };

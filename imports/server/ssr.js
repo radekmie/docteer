@@ -12,13 +12,13 @@ import {Logo}        from '/imports/components/Logo';
 WebApp.addHtmlAttributeHook(() => ({lang: 'en'}));
 
 const body = render(
-    <body>
-        <Application />
-        <Logo />
-    </body>
+  <body>
+    <Application />
+    <Logo />
+  </body>
 ).slice(0, -7);
 
 const rawToHTML = Boilerplate.prototype.toHTML;
 Boilerplate.prototype.toHTML = function toHTML () {
-    return rawToHTML.apply(this, arguments).replace('<body>', body);
+  return rawToHTML.apply(this, arguments).replace('<body>', body);
 };

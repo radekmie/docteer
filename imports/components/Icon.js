@@ -12,9 +12,9 @@ export const iconRefresh = icon('M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.3
 export const iconUser    = icon('M8,7a4,4 0 1,0 8,0a4,4 0 1,0 -8,0M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2');
 
 function icon (d) {
-    return (
-        <svg class="icon" viewBox="0 0 24 24">
-            <path d={d} />
-        </svg>
-    );
+  return (
+    <svg class="icon" viewBox="0 0 24 24">
+      <path d={d} />
+    </svg>
+  );
 }

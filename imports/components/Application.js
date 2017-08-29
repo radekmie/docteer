@@ -15,69 +15,69 @@ import {Splashscreen} from './Splashscreen';
 import {Toasts}       from './Toasts';
 
 const watcher = tree.watch({
-    doc:    ['doc'],
-    docs:   ['docsVisible'],
-    edit:   ['edit'],
-    labels: ['labels'],
-    load:   ['load'],
-    pend:   ['pend'],
-    search: ['search'],
-    toasts: ['toasts'],
-    user:   ['user'],
-    view:   ['view']
+  doc:    ['doc'],
+  docs:   ['docsVisible'],
+  edit:   ['edit'],
+  labels: ['labels'],
+  load:   ['load'],
+  pend:   ['pend'],
+  search: ['search'],
+  toasts: ['toasts'],
+  user:   ['user'],
+  view:   ['view']
 });
 
 export class Application extends Component {
-    constructor () {
-        super(...arguments);
+  constructor () {
+    super(...arguments);
 
-        this.state = watcher.get();
-        this._sync = () => this.setState(watcher.get());
+    this.state = watcher.get();
+    this._sync = () => this.setState(watcher.get());
 
-        watcher.on('update', this._sync);
-    }
+    watcher.on('update', this._sync);
+  }
 
-    componentWillUnmount () {
-        watcher.off('update', this._sync);
-    }
+  componentWillUnmount () {
+    watcher.off('update', this._sync);
+  }
 
-    render (props, state) {
-        return (
-            <main class={`app dark-gray flex lh-copy${state.load ? ' loading' : ''}`}>
-                <div class="b--dark-gray br bw1 column flex flex-1 flex-column h-100">
-                    <Header pend={state.pend} user={state.user} />
+  render (props, state) {
+    return (
+      <main class={`app dark-gray flex lh-copy${state.load ? ' loading' : ''}`}>
+        <div class="b--dark-gray br bw1 column flex flex-1 flex-column h-100">
+          <Header pend={state.pend} user={state.user} />
 
-                    {!!(state.user && state.view === 'd') && (
-                        <Labels labels={state.labels} />
-                    )}
+          {!!(state.user && state.view === 'd') && (
+            <Labels labels={state.labels} />
+          )}
 
-                    {!!(state.user && state.view === 'd') || (
-                        <div class="filler flex-1 near-white" />
-                    )}
+          {!!(state.user && state.view === 'd') || (
+            <div class="filler flex-1 near-white" />
+          )}
 
-                    <Account user={state.user} />
-                </div>
+          <Account user={state.user} />
+        </div>
 
-                {!!state.user && state.view === 'd' && (
-                    <Docs docs={state.docs} search={state.search} />
-                )}
+        {!!state.user && state.view === 'd' && (
+          <Docs docs={state.docs} search={state.search} />
+        )}
 
-                {!!state.user && !!state.doc && state.view === 'd' && (
-                    <Doc labels={state.labels} doc={state.doc} edit={state.edit} />
-                )}
+        {!!state.user && !!state.doc && state.view === 'd' && (
+          <Doc labels={state.labels} doc={state.doc} edit={state.edit} />
+        )}
 
-                {!!state.user && !!state.doc || state.view === 's' && (
-                    <Settings user={state.user} />
-                )}
+        {!!state.user && !!state.doc || state.view === 's' && (
+          <Settings user={state.user} />
+        )}
 
-                {!!state.doc || state.view !== 's' && (
-                    <Splashscreen />
-                )}
+        {!!state.doc || state.view !== 's' && (
+          <Splashscreen />
+        )}
 
-                <Actions doc={!!state.doc} edit={state.edit} user={state.user} view={state.view} />
+        <Actions doc={!!state.doc} edit={state.edit} user={state.user} view={state.view} />
 
-                <Toasts toasts={state.toasts} />
-            </main>
-        );
-    }
+        <Toasts toasts={state.toasts} />
+      </main>
+    );
+  }
 }

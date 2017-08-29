@@ -1,70 +1,70 @@
 export function bulkPatch (collection, patch, userId) {
-    if (!patch.created.length && !patch.removed.length && !patch.updated.length) {
-        return Promise.resolve();
+  if (!patch.created.length && !patch.removed.length && !patch.updated.length) {
+    return Promise.resolve();
+  }
+
+  const now = new Date();
+
+  const hand = collection.rawCollection();
+  const bulk = hand.initializeOrderedBulkOp();
+
+  patch.removed.forEach(_id => bulk.find({_id_slug: _id, _id_user: userId}).updateOne({$set: {_removed: now, _updated: now}}));
+  patch.updated.forEach(doc => {
+    const _id      = doc._id;
+    const _outline = doc._outline;
+
+    if (patch.removed.includes(_id)) {
+      return;
     }
 
-    const now = new Date();
+    delete doc._id;
+    delete doc._outline;
 
-    const hand = collection.rawCollection();
-    const bulk = hand.initializeOrderedBulkOp();
+    const keys = Object.keys(doc);
 
-    patch.removed.forEach(_id => bulk.find({_id_slug: _id, _id_user: userId}).updateOne({$set: {_removed: now, _updated: now}}));
-    patch.updated.forEach(doc => {
-        const _id      = doc._id;
-        const _outline = doc._outline;
+    if (keys.length === 0) {
+      return;
+    }
 
-        if (patch.removed.includes(_id)) {
-            return;
-        }
+    if (patch.created.includes(_id)) {
+      bulk.insert({
+        // ID
+        _id_slug: _id,
+        _id_user: userId,
 
-        delete doc._id;
-        delete doc._outline;
+        // Type
+        _outline,
 
-        const keys = Object.keys(doc);
+        // Dates
+        _created: now,
+        _removed: null,
+        _updated: now,
 
-        if (keys.length === 0) {
-            return;
-        }
+        // History
+        _version: [{_created: now, ...doc}],
 
-        if (patch.created.includes(_id)) {
-            bulk.insert({
-                // ID
-                _id_slug: _id,
-                _id_user: userId,
+        // Data
+        ...doc
+      });
+    } else {
+      // NOTE: Atomic update would be the best but there's an security issue.
+      // bulk.find({_id_slug: _id, _id_user: userId}).updateOne({
+      //     $set:  {_updated: now, ...doc},
+      //     $push: {_version: {_created: now, ...doc}}
+      // });
 
-                // Type
-                _outline,
+      bulk.find({_id_slug: _id, _id_user: userId}).updateOne({
+        $set:             {_updated: now},
+        $push: {_version: {_created: now}}
+      });
 
-                // Dates
-                _created: now,
-                _removed: null,
-                _updated: now,
+      keys.forEach(key => {
+        bulk.find({_id_slug: _id, _id_user: userId, [key]: {$exists: true}, '_version._created': now}).updateOne({
+          $set: {[key]: doc[key], [`_version.$.${key}`]: doc[key]}
+        });
+      });
+    }
+  });
 
-                // History
-                _version: [{_created: now, ...doc}],
-
-                // Data
-                ...doc
-            });
-        } else {
-            // NOTE: Atomic update would be the best but there's an security issue.
-            // bulk.find({_id_slug: _id, _id_user: userId}).updateOne({
-            //     $set:  {_updated: now, ...doc},
-            //     $push: {_version: {_created: now, ...doc}}
-            // });
-
-            bulk.find({_id_slug: _id, _id_user: userId}).updateOne({
-                $set:             {_updated: now},
-                $push: {_version: {_created: now}}
-            });
-
-            keys.forEach(key => {
-                bulk.find({_id_slug: _id, _id_user: userId, [key]: {$exists: true}, '_version._created': now}).updateOne({
-                    $set: {[key]: doc[key], [`_version.$.${key}`]: doc[key]}
-                });
-            });
-        }
-    });
-
-    return bulk.execute();
+  return bulk.execute();
 }
