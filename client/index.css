@@ -1,118 +1,118 @@
 @import 'tachyons/css/tachyons.min.css';
 
 @keyframes scale-y {
-    0%   { transform: scaleY(1); }
-    100% { transform: scaleY(3); }
+  0%   { transform: scaleY(1); }
+  100% { transform: scaleY(3); }
 }
 
 form label {
-    height: 1.5rem;
+  height: 1.5rem;
 }
 
 html {
-    font-size: 16px;
-    font-family: sans-serif;
+  font-size: 16px;
+  font-family: sans-serif;
 }
 
 path {
-    fill: currentcolor;
+  fill: currentcolor;
 }
 
 .app {
-    height: 100vh;
-    width:  100vw;
+  height: 100vh;
+  width:  100vw;
 }
 
 .app,
 .logo {
-    transition: opacity 0.5s linear 0.1s;
+  transition: opacity 0.5s linear 0.1s;
 }
 
 .app:not(.loading) + .logo,
 .loading {
-    opacity: 0;
-    pointer-events: none;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .app + .logo {
-    position: fixed;
+  position: fixed;
 
-    left: 50%;
-    top:  50%;
+  left: 50%;
+  top:  50%;
 
-    height: 20rem;
-    width:  20rem;
+  height: 20rem;
+  width:  20rem;
 
-    transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
 }
 
 .center-h {
-    left: 50%;
-    transform: translateX(-50%);
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .column {
-    max-width: 20%;
-    min-width: 16rem;
+  max-width: 20%;
+  min-width: 16rem;
 }
 
 .filler {
-    background: repeating-linear-gradient(
-        -45deg,
-        currentColor,
-        currentColor 10px,
-        transparent 10px,
-        transparent 20px
-    );
+  background: repeating-linear-gradient(
+    -45deg,
+    currentColor,
+    currentColor 10px,
+    transparent 10px,
+    transparent 20px
+  );
 }
 
 .flex-1 {
-    flex: 1;
+  flex: 1;
 }
 
 .icon {
-    min-width: 1rem;
+  min-width: 1rem;
 }
 
 .icon path {
-    fill: none;
-    stroke: currentcolor;
-    stroke-linecap: round;
-    stroke-width: 2;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-width: 2;
 }
 
 .loading {
-    transition-delay: 0s;
+  transition-delay: 0s;
 }
 
 .logo.freeze path,
 .app:not(.loading) + .logo path {
-    animation-play-state: paused;
+  animation-play-state: paused;
 }
 
 .logo :nth-child(-n+5) {
-    animation: linear infinite alternate scale-y 0.25s;
-    transform-origin: center top;
+  animation: linear infinite alternate scale-y 0.25s;
+  transform-origin: center top;
 }
 
 .logo :nth-child(2) {
-    animation-delay: 0.2s;
-    animation-duration: 0.43s;
+  animation-delay: 0.2s;
+  animation-duration: 0.43s;
 }
 
 .logo :nth-child(3) {
-    animation-delay: 0.1s;
+  animation-delay: 0.1s;
 }
 
 .logo :nth-child(4) {
-    animation-delay: 0.3s;
-    animation-duration: 0.57s;
+  animation-delay: 0.3s;
+  animation-duration: 0.57s;
 }
 
 .logo :nth-child(5) {
-    animation-delay: 0.4s;
+  animation-delay: 0.4s;
 }
 
 .overflow-auto {
-    -webkit-overflow-scrolling: touch;
+  -webkit-overflow-scrolling: touch;
 }
