@@ -11,7 +11,7 @@ export function Header (props) {
         <Logo class={`${props.pend ? '' : 'freeze '}h3 w3`} />
 
         <h1 class="f4">
-          DocTear
+          DocTeer
         </h1>
       </a>
     </div>

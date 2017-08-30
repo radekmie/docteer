@@ -7,7 +7,7 @@ module.exports = {
     },
 
     app: {
-        name: 'doctear',
+        name: 'docteer',
         path: '..',
 
         servers: {
