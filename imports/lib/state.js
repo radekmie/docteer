@@ -35,7 +35,7 @@ export const tree = new Baobab({
       if (term) {
         notes = notes
           .reduce((notes, note) => {
-            const match = fuzzysort.single(term, note.name);
+            const match = fuzzysort.single(term, note.name || '\0');
 
             if (match) {
               notes.push({note, match});
