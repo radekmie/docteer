@@ -35,8 +35,9 @@ function bulkPatch (collection, patch, userId) {
     if (patch.removed.includes(_id))
       return;
 
-    delete doc._id;
-    delete doc._outline;
+    for (const key in doc)
+      if (key.slice(0, 1) === '_')
+        delete doc[key];
 
     if (Object.keys(doc).length === 0)
       return;
@@ -68,7 +69,7 @@ function bulkPatch (collection, patch, userId) {
         updateOne: {
           filter: {_id_slug: _id, _id_user: userId},
           update: {
-            $set:             {_updated: now},
+            $set:             {_updated: now, ...doc},
             $push: {_version: {_created: now, ...doc}}
           }
         }
