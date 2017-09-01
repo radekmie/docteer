@@ -1,10 +1,21 @@
-/** @jsx h */
+// @flow
+// @jsx h
 
 import {h} from 'preact';
 
-const COLOR = {error: 'red', info: 'blue', success: 'green'};
+import type {TToast} from '/imports/types.flow';
 
-export function Toasts (props) {
+const COLOR = {
+  error:   'red',
+  info:    'blue',
+  success: 'green'
+};
+
+type Toasts$Props = {
+  toasts: TToast[]
+};
+
+export function Toasts (props: Toasts$Props) {
   return (
     <div class="bottom-1 center-h fixed hide-child">
       {props.toasts.map(toast =>

@@ -1,3 +1,5 @@
+// @flow
+
 import Baobab    from 'baobab';
 import fuzzysort from 'fuzzysort';
 

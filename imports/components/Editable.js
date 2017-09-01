@@ -1,66 +1,71 @@
-/** @jsx h */
+// @flow
+// @jsx h
 
 import {Component} from 'preact';
 import {h}         from 'preact';
 
-export class Editable extends Component {
-    onChange = () => {
-      if (!this.props.onChange) {
-        return;
-      }
+type Editable$Props = {
+  disabled: ?bool,
+  html: string,
+  onChange: string => void,
+  tag: string
+};
 
-      if (!this.element) {
-        return;
-      }
+export class Editable extends Component<Editable$Props> {
+  element: ?HTMLElement;
 
-      if (this.element.innerHTML === this.props.html) {
-        return;
-      }
+  onChange = () => {
+    if (!this.props.onChange)
+      return;
 
-      this.props.onChange(this.element.innerHTML);
-    };
+    if (!this.element)
+      return;
 
-    onElement = element => {
-      this.element = element;
-    };
+    if (this.element.innerHTML === this.props.html)
+      return;
 
-    shouldComponentUpdate (props) {
-      if (!this.element) {
-        return true;
-      }
+    this.props.onChange(this.element.innerHTML);
+  };
 
-      if (this.props.disabled !== props.disabled) {
-        return true;
-      }
+  onElement = (element: ?HTMLElement) => {
+    this.element = element;
+  };
 
-      if (this.props.html !== props.html && this.element.innerHTML !== props.html) {
-        return true;
-      }
+  shouldComponentUpdate (props: Editable$Props) {
+    if (!this.element)
+      return true;
 
-      if ((props.tag === 'ol' || props.tag === 'ul') && !this.element.innerHTML.startsWith('<li>')) {
-        return true;
-      }
+    if (this.props.disabled !== props.disabled)
+      return true;
 
-      return false;
-    }
+    if (this.props.html !== props.html && this.element.innerHTML !== props.html)
+      return true;
 
-    componentDidUpdate () {
-      if (this.element && this.element.innerHTML !== this.props.html) {
-        this.element.innerHTML = content(this.props.disabled, this.props.html);
-      }
-    }
+    if ((props.tag === 'ol' || props.tag === 'ul') && !this.element.innerHTML.startsWith('<li>'))
+      return true;
 
-    render ({disabled, html, tag, ...props}) {
-      return h(tag, Object.assign(props, {
-        class: ['ph1', props.class, disabled ? '' : 'bg-near-white'].filter(Boolean).join(' '),
-        contentEditable: !disabled,
-        dangerouslySetInnerHTML: {__html: content(disabled, html)},
+    return false;
+  }
 
-        onBlur:   this.onChange,
-        onChange: this.onChange,
-        ref:      this.onElement
-      }));
-    }
+  componentDidUpdate () {
+    if (this.element && this.element.innerHTML !== this.props.html)
+      // $FlowFixMe: Weird.
+      this.element.innerHTML = content(this.props.disabled, this.props.html);
+  }
+
+  render () {
+    const {disabled, html, tag, ...props} = this.props;
+
+    return h(tag, Object.assign(props, {
+      class: ['ph1', props.class, disabled ? '' : 'bg-near-white'].filter(Boolean).join(' '),
+      contentEditable: !disabled,
+      dangerouslySetInnerHTML: {__html: content(disabled, html)},
+
+      onBlur:   this.onChange,
+      onChange: this.onChange,
+      ref:      this.onElement
+    }));
+  }
 }
 
 function content (disabled, html) {

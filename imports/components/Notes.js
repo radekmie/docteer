@@ -1,11 +1,17 @@
-/** @jsx h */
+// @flow
+// @jsx h
 
 import {h} from 'preact';
 
 import {onSearch} from '/imports/lib/stateActions';
 
-function Note (props) {
-  const note = props.note;
+import type {TNote} from '/imports/types.flow';
+
+type Note$Props = {
+  note: TNote
+};
+
+function Note ({note}: Note$Props) {
   const color = note._created
     ? note._removed
       ? 'gray hover-light-gray'
@@ -26,7 +32,12 @@ function Note (props) {
   );
 }
 
-export function Notes (props) {
+type Notes$Props = {
+  notes: TNote[],
+  search: string
+};
+
+export function Notes (props: Notes$Props) {
   return (
     <div class="b--dark-gray br bw1 column flex flex-1 flex-column h-100">
       <div class="b--dark-gray bb bw1">

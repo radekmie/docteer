@@ -1,3 +1,5 @@
+// @flow
+
 import {Meteor} from 'meteor/meteor';
 
 Meteor.publish('users.self', function publishUsersSelf () {

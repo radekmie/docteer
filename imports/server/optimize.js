@@ -1,3 +1,5 @@
+// @flow
+
 import {Boilerplate} from 'meteor/boilerplate-generator';
 
 import {optimize as optimizeCSS}     from './optimizeCSS';

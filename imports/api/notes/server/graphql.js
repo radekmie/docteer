@@ -1,18 +1,22 @@
+// @flow
+
 import {GraphQLError}      from 'graphql/error/GraphQLError';
 import {GraphQLList}       from 'graphql/type/definition';
 import {GraphQLNonNull}    from 'graphql/type/definition';
 import {GraphQLObjectType} from 'graphql/type/definition';
 import {GraphQLScalarType} from 'graphql/type/definition';
 import {GraphQLString}     from 'graphql/type/scalars';
+import {LIST}              from 'graphql/language/kinds';
 import {OBJECT}            from 'graphql/language/kinds';
 import {STRING}            from 'graphql/language/kinds';
+
+import {Promise} from 'meteor/promise';
 
 import {Notes} from '..';
 
 function bulkPatch (collection, patch, userId) {
-  if (!patch.created.length && !patch.removed.length && !patch.updated.length) {
+  if (!patch.created.length && !patch.removed.length && !patch.updated.length)
     return Promise.resolve();
-  }
 
   const now = new Date();
 
@@ -84,41 +88,38 @@ const GraphQLDate = new GraphQLScalarType({
   name: 'Date',
 
   parseLiteral (ast) {
-    if (ast.kind !== STRING) {
+    if (ast.kind !== STRING)
       throw new GraphQLError(`Query error: Can only parse strings to dates but got: ${ast.kind}`, [ast]);
-    }
 
     const result = new Date(ast.value);
 
-    if (!result) {
+    if (!result)
       throw new GraphQLError('Query error: Invalid date', [ast]);
-    }
 
-    if (ast.value !== result.toJSON()) {
+    if (ast.value !== result.toJSON())
       throw new GraphQLError('Query error: Invalid date format, only accepts: YYYY-MM-DDTHH:MM:SS.SSSZ', [ast]);
-    }
 
     return result;
   },
 
   parseValue (value) {
+    if (typeof value !== 'number' && typeof value !== 'string' && !(value instanceof Date))
+      throw new TypeError('Field error: value is an invalid Date');
+
     const result = new Date(value);
 
-    if (!result) {
+    if (!result)
       throw new TypeError('Field error: value is an invalid Date');
-    }
 
     return result;
   },
 
   serialize (value) {
-    if (!(value instanceof Date)) {
+    if (!(value instanceof Date))
       throw new TypeError('Field error: value is not an instance of Date');
-    }
 
-    if (!value) {
+    if (!value)
       throw new TypeError('Field error: value is an invalid Date');
-    }
 
     return value.toJSON();
   }
@@ -128,25 +129,38 @@ const Note = new GraphQLScalarType({
   name: 'Note',
 
   parseLiteral (ast) {
-    if (ast.kind !== OBJECT) {
+    if (ast.kind !== OBJECT)
       throw new GraphQLError(`Query error: Note must be an object but got: ${ast.kind}`, [ast]);
-    }
 
-    if (ast.value._id === undefined) {
+    const _id = ast.fields.find(field => field.name.value === '_id');
+
+    if (!_id)
       throw new GraphQLError('Query error: Note _id must be present', [ast]);
-    }
 
-    if (ast.value._id.kind !== STRING) {
-      throw new GraphQLError(`Query error: Note _id must be a string but got: ${ast.value._id.kind}`, [ast]);
-    }
+    if (_id.kind !== STRING)
+      throw new GraphQLError(`Query error: Note _id must be a string but got: ${_id.kind}`, [ast]);
 
-    for (const key of Object.keys(ast.value)) {
-      if (key.substr(0, 1) === '_' && (key !== '_id' || key !== '_outline') || key.indexOf('.') !== -1 || key !== key.toLowerCase()) {
+    ast.fields.forEach(field => {
+      const key = field.name.value;
+
+      if (key.substr(0, 1) === '_' && (key !== '_id' || key !== '_outline') || key.indexOf('.') !== -1 || key !== key.toLowerCase())
         throw new GraphQLError(`Query error: Note cannot have a field named: ${key}`, [ast]);
-      }
-    }
+    });
 
-    return ast.value;
+    return ast.fields.reduce((value, field) => {
+      if (field.value.kind === STRING)
+        return field.value.value;
+
+      if (field.value.kind !== LIST)
+        throw new GraphQLError(`Query error: Note cannot have a field: ${field.value.kind}`, [ast]);
+
+      return Object.assign(value, {[field.name.value]: field.value.values.map(value => {
+        if (value.kind !== STRING)
+          throw new GraphQLError(`Query error: Note cannot have a field: ${value.kind}`, [ast]);
+
+        return value.value;
+      })});
+    }, Object.create(null));
   },
 
   parseValue (value) {
@@ -183,9 +197,8 @@ Notes.mutations = {
     },
 
     resolve (_, args, context) {
-      if (!context.authenticate({session: args.session, userId: args.userId})) {
+      if (!context.authenticate({session: args.session, userId: args.userId}))
         return {created: [], removed: [], updated: []};
-      }
 
       bulkPatch(Notes, args, args.userId).await();
 

@@ -1,3 +1,5 @@
+// @flow
+
 import autoprefixer from 'autoprefixer';
 import cssnano      from 'cssnano';
 import parse        from 'css-selector-tokenizer/lib/parse';
@@ -10,27 +12,26 @@ import {WebAppInternals} from 'meteor/webapp';
 
 import selectors from './optimizeCSSData.json';
 
-const bundledCSSPath = Object
+const bundledCSSFile = Object
   .keys(WebAppInternals.staticFiles)
   .map(file => WebAppInternals.staticFiles[file])
   .find(file => file.type === 'css')
-  .absolutePath
 ;
 
-const bundledCSS = Meteor.wrapAsync(readFile)(bundledCSSPath, 'utf8');
+const bundledCSS = bundledCSSFile ? Meteor.wrapAsync(readFile)(bundledCSSFile.absolutePath, 'utf8') : '';
 
 function validNodes (node) {
   return node === undefined || validToken(node) || node.nodes && node.nodes.every(token =>
     validNodes(token) ||
-        validToken(token)
+    validToken(token)
   );
 }
 
 function validToken (node) {
   return (
     node &&
-        selectors[node.type] &&
-        selectors[node.type].includes(node.name || node.value || node.operator || node.content)
+    selectors[node.type] &&
+    selectors[node.type].includes(node.name || node.value || node.operator || node.content)
   );
 }
 
@@ -45,23 +46,20 @@ const processor = postcss([
     }
   })),
   postcss.plugin('merger', () => root => root.walkRules(rule => {
-    if (rule.selector === '') {
+    if (rule.selector === '')
       return;
-    }
 
     root.walkRules(rule.selector, same => {
-      if (rule === same) {
+      if (rule === same)
         return;
-      }
 
       rule.append(same.nodes);
       same.remove();
     });
   })),
   postcss.plugin('sorter', () => root => root.walkRules(rule => {
-    if (rule.selector === '') {
+    if (rule.selector === '')
       return;
-    }
 
     rule.nodes.sort((a, b) => a.prop.localeCompare(b.prop));
   })),
@@ -72,4 +70,4 @@ const processor = postcss([
   ))
 ]);
 
-export const optimize = css => processor.process(css + bundledCSS).then().await().css;
+export const optimize = (css: string) => processor.process(css + bundledCSS).then().await().css;

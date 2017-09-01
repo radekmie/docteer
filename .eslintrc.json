@@ -5,5 +5,10 @@
     "max-len": "off",
     "react/jsx-indent": ["error", 2],
     "react/jsx-indent-props": ["error", 2]
+  },
+  "settings": {
+    "react": {
+      "pragma": "h"
+    }
   }
 }

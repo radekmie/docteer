@@ -1,3 +1,5 @@
+// @flow
+
 import {Accounts}       from 'meteor/accounts-base';
 import {DDPRateLimiter} from 'meteor/ddp-rate-limiter';
 

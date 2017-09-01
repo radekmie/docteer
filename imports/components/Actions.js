@@ -1,4 +1,5 @@
-/** @jsx h */
+// @flow
+// @jsx h
 
 import {h} from 'preact';
 
@@ -16,7 +17,16 @@ import {onSave}          from '/imports/lib/stateActions';
 import {onSettingsReset} from '/imports/lib/stateActions';
 import {onSettingsSave}  from '/imports/lib/stateActions';
 
-export function Actions (props) {
+import type {TUser} from '/imports/types.flow';
+
+type Actions$Props = {
+  note: bool,
+  edit: bool,
+  user: ?TUser,
+  view: ?string
+};
+
+export function Actions (props: Actions$Props) {
   return (
     <div class="bottom-1 fixed right-1 w2">
       {props.view === 'd' && (
@@ -55,7 +65,7 @@ export function Actions (props) {
         </div>
       )}
 
-      {props.view === 's' && (
+      {props.view === 's' && props.user && (
         <div class={button('green', !props.user._changed)} key="Save" onClick={onSettingsSave} tabIndex="0" title="Save">
           {iconOk}
         </div>

@@ -1,8 +1,13 @@
-/** @jsx h */
+// @flow
+// @jsx h
 
 import {h} from 'preact';
 
-export function Logo (props) {
+type Logo$Props = {
+  class?: string
+};
+
+export function Logo (props: Logo$Props) {
   return (
     <svg class={['dark-gray logo', props.class].filter(Boolean).join(' ').split(' ').sort().join(' ')} viewBox="0 0 32 32">
       <path d="M7 21v2h1v-2zm10 0v2h1v-2" />

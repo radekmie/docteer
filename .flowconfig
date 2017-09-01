@@ -1,0 +1,13 @@
+[ignore]
+.*/.meteor/local/plugin-cache/.*
+.*/.meteor/packages/meteor-tool/.*
+.*/.meteor/packages/npm-bcrypt/.*
+.*/node_modules/express-graphql/dist/index.js.flow
+.*/node_modules/express-graphql/dist/parseBody.js.flow
+.*/node_modules/preact/dist/preact.js.flow
+.*/node_modules/preact/src/preact.js.flow
+
+[options]
+module.name_mapper='^\/\(.*\)$' -> '<PROJECT_ROOT>/\1'
+module.name_mapper='^meteor\/\(.*\)$' -> '<PROJECT_ROOT>/.meteor/local/build/programs/server/packages/\1'
+module.name_mapper='^meteor\/\(.*\):\(.*\)$' -> '<PROJECT_ROOT>/.meteor/local/build/programs/server/packages/\1_\2'

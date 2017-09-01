@@ -1,4 +1,5 @@
-/** @jsx h */
+// @flow
+// @jsx h
 
 import {h} from 'preact';
 

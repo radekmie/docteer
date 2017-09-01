@@ -1,3 +1,5 @@
+// @flow
+
 import createHistory    from 'history/createBrowserHistory';
 import {createLocation} from 'history/LocationUtils';
 
@@ -14,15 +16,13 @@ let firstRun = true;
 // Collections
 Meteor.subscribe('users.self', {
   onReady () {
-    if (!Meteor.userId()) {
+    if (!Meteor.userId())
       update();
-    }
   },
 
   onStop (error) {
-    if (error) {
+    if (error)
       update();
-    }
   }
 });
 
@@ -33,17 +33,15 @@ Tracker.autorun(() => {
     tree.set(['userDiff'], undefined);
     tree.set(['last'], new Date(0));
 
-    if (history.location.hash.length < 3) {
+    if (history.location.hash.length < 3)
       tree.set(['view'], 'd');
-    }
   }
 });
 
 // Events
-document.addEventListener('click', event => {
-  if (event.altKey || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey) {
+window.document.addEventListener('click', event => {
+  if (event.altKey || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey)
     return;
-  }
 
   let node = event.target;
   do {
@@ -56,9 +54,8 @@ document.addEventListener('click', event => {
       const prev = history.createHref(history.location);
       const next = history.createHref(createLocation(href, undefined, undefined, history.location));
 
-      if (prev !== next) {
+      if (prev !== next)
         history.push(href);
-      }
 
       return;
     }
@@ -70,18 +67,16 @@ history.listen(syncHistory);
 
 // Tree
 tree.select(['href']).on('update', event => {
-  if (history.location.hash !== event.data.currentData) {
+  if (history.location.hash !== event.data.currentData)
     history.push({hash: event.data.currentData});
-  }
 });
 
 tree.select(['labels']).on('update', event => {
   const filter = tree.get(['filter']);
   const filterAvailable = filter.filter(name => event.data.currentData.find(label => label.name === name));
 
-  if (filter.length !== filterAvailable.length) {
+  if (filter.length !== filterAvailable.length)
     tree.set(['filter'], filterAvailable);
-  }
 });
 
 tree.select(['userData']).on('update', () => {
@@ -92,31 +87,28 @@ tree.select(['userData']).on('update', () => {
 const pattern = /^#\/(\w)?(?:\/(\w+))?.*?(?:[&?]filter=([^&?]+))?(?:[&?]search=([^&?]+))?.*$/;
 
 function syncHistory (location) {
-  if (firstRun) {
+  if (firstRun)
     return;
-  }
 
   const user = tree.get(['user']);
 
   const match = pattern.exec(location.hash) || [];
   const state = {
-    noteId:  match[1] === 'd' && match[2] || undefined,
+    noteId: match[1] === 'd' && match[2] || undefined,
     filter: match[3] ? decodeURIComponent(match[3]).split(',').sort() : [],
     search: match[4] ? decodeURIComponent(match[4]) : '',
     view:   match[1] || (user ? 'd' : undefined)
   };
 
-  if (!user) {
+  if (!user)
     state.view = undefined;
-  }
 
   tree.set(['noteId'],  tree.get(['notes']).find(note => note._id === state.noteId) ? state.noteId : undefined);
   tree.set(['search'], state.search);
   tree.set(['view'],   state.view);
 
-  if (JSON.stringify(tree.get(['filter'])) !== JSON.stringify(state.filter)) {
+  if (JSON.stringify(tree.get(['filter'])) !== JSON.stringify(state.filter))
     tree.set(['filter'], state.filter);
-  }
 }
 
 function update () {

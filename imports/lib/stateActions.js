@@ -1,3 +1,5 @@
+// @flow
+
 import fuzzysort from 'fuzzysort';
 
 import {Accounts} from 'meteor/accounts-base';
@@ -17,7 +19,7 @@ export function onAdd () {
   tree.set(['edit'], true);
 }
 
-export function onChange (_id, key, value) {
+export function onChange (_id: string, key: string, value: string | string[]) {
   if (tree.get(['notesUpdated', _id])) {
     tree.set(['notesUpdated', _id, key], value);
   } else {
@@ -30,7 +32,7 @@ export function onEdit () {
     onReset();
 }
 
-export function onLogin (email, password) {
+export function onLogin (email: string, password: string) {
   toast('info', 'Logging in...');
 
   Meteor.loginWithPassword(email, password, error => {
@@ -46,7 +48,7 @@ export function onLogout () {
   });
 }
 
-export function onRefresh (firstRun) {
+export function onRefresh (firstRun: ?bool) {
   if (tree.get(['user']) === undefined) {
     tree.set(['notesOrigins'], []);
 
@@ -130,21 +132,24 @@ export function onSchemaAdd () {
   tree.set(['userDiff', 'schemas'], [Object.assign({}, schema, {[`_${Object.keys(schema).length}`]: 'div'})]);
 }
 
-export function onSchemaDelete (event) {
+// TODO: Should use Event instead, but Flow definition is not complete.
+type Event$ = {target: {dataset: {[string]: string}, parentNode: HTMLElement, value: string}};
+
+export function onSchemaDelete (event: Event$) {
   const index = +event.target.parentNode.dataset.index;
   const schema = tree.get(['user', 'schemas', 0]);
 
   tree.set(['userDiff', 'schemas'], [Object.keys(schema).reduce((next, key, index2) => index === index2 ? next : Object.assign(next, {[key]: schema[key]}), {})]);
 }
 
-export function onSchemaKey (event) {
+export function onSchemaKey (event: Event$) {
   const index = +event.target.parentNode.dataset.index;
   const schema = tree.get(['user', 'schemas', 0]);
 
   tree.set(['userDiff', 'schemas'], [Object.keys(schema).reduce((next, key, index2) => Object.assign(next, {[index === index2 ? event.target.value : key]: schema[key]}), {})]);
 }
 
-export function onSchemaOrder (event) {
+export function onSchemaOrder (event: Event$) {
   const index = +event.target.parentNode.dataset.index;
   const schema = tree.get(['user', 'schemas', 0]);
   const fields = Object.keys(schema);
@@ -154,18 +159,21 @@ export function onSchemaOrder (event) {
   tree.set(['userDiff', 'schemas'], [fields.reduce((next, key) => Object.assign(next, {[key]: schema[key]}), {})]);
 }
 
-export function onSchemaType (event) {
+export function onSchemaType (event: Event$) {
   const index = +event.target.parentNode.dataset.index;
   const schema = tree.get(['user', 'schemas', 0]);
 
   tree.set(['userDiff', 'schemas'], [Object.keys(schema).reduce((next, key, index2) => Object.assign(next, {[key]: index === index2 ? event.target.value : schema[key]}), {})]);
 }
 
-export function onSearch (event) {
+// TODO: Should use Event instead, but Flow definition is not complete.
+type InputEvent$ = {target: HTMLInputElement};
+
+export function onSearch (event: InputEvent$) {
   tree.set(['search'], event.target.value);
 }
 
-export function onSettingsReset (goBack) {
+export function onSettingsReset () {
   tree.set(['userDiff'], undefined);
   history.back();
 }
@@ -181,7 +189,7 @@ export function onSettingsSave () {
   }
 }
 
-export function onTypeAhead (event) {
+export function onTypeAhead (event: InputEvent$) {
   if (event.target.__skip) {
     return;
   }
@@ -190,7 +198,7 @@ export function onTypeAhead (event) {
   const focusNode = selection.focusNode;
   const search = (
     focusNode.wholeText &&
-        focusNode.wholeText.trim()
+    focusNode.wholeText.trim()
   );
 
   if (search) {
@@ -261,14 +269,14 @@ function merge (diff) {
   );
 }
 
-function toast (type, textOrError) {
+function toast (type, message) {
   const _id = Math.random().toString(36);
-  const text = type === 'error'
-    ? textOrError.error === 403
+  const text = message instanceof Error
+    ? message.error === 403
       ? 'Sounds good, doesn\'t work.'
-      : textOrError.reason || textOrError.message
-    : textOrError
-    ;
+      : message.reason || message.message
+    : message
+  ;
 
   tree.push(['toasts'], {_id, dead: false, marked: type === 'info', text, type});
 

@@ -1,4 +1,5 @@
-/** @jsx h */
+// @flow
+// @jsx h
 
 import {Component} from 'preact';
 import {h}         from 'preact';
@@ -15,6 +16,11 @@ import {Settings}     from './Settings';
 import {Splashscreen} from './Splashscreen';
 import {Toasts}       from './Toasts';
 
+import type {TLabel} from '/imports/types.flow';
+import type {TNote}  from '/imports/types.flow';
+import type {TToast} from '/imports/types.flow';
+import type {TUser}  from '/imports/types.flow';
+
 const watcher = tree.watch({
   edit:   ['edit'],
   labels: ['labels'],
@@ -28,7 +34,23 @@ const watcher = tree.watch({
   view:   ['view']
 });
 
-export class Application extends Component {
+type Application$Props = {};
+type Application$State = {
+  edit: bool,
+  labels: TLabel[],
+  load: bool,
+  note: ?TNote,
+  notes: TNote[],
+  pend: number,
+  search: string,
+  toasts: TToast[],
+  user: TUser,
+  view: ?string
+};
+
+export class Application extends Component<Application$Props, Application$State> {
+  _sync: () => void;
+
   constructor () {
     super(...arguments);
 
@@ -44,7 +66,9 @@ export class Application extends Component {
     watcher.off('update', this._sync);
   }
 
-  render (props, state) {
+  render () {
+    const state = this.state;
+
     return (
       <main class={`app dark-gray flex lh-copy${state.load ? ' loading' : ''}`}>
         <div class="b--dark-gray br bw1 column flex flex-1 flex-column h-100">

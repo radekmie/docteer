@@ -1,3 +1,5 @@
+// @flow
+
 import './graphql';
 import './indexes';
 

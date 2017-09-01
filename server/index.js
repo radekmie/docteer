@@ -1,3 +1,5 @@
+// @flow
+
 import '/imports/api/notes/server';
 import '/imports/api/users/server';
 import '/imports/server/graphql';

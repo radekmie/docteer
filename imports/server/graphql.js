@@ -1,3 +1,5 @@
+// @flow
+
 import compression         from 'compression';
 import graphqlHTTP         from 'express-graphql';
 import {GraphQLObjectType} from 'graphql/type/definition';

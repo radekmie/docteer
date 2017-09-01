@@ -1,10 +1,15 @@
-/** @jsx h */
+// @flow
+// @jsx h
 
 import {h} from 'preact';
 
-function Label (props) {
-  const label = props.label;
+import type {TLabel} from '/imports/types.flow';
 
+type Label$Props = {
+  label: TLabel
+};
+
+function Label ({label}: Label$Props) {
   return (
     <a class={`${label.active ? 'bg-near-white bl bw2 b--dark-gray ' : ''}dark-gray flex hover-bg-near-white link ph2${label.active ? ' pl1' : ''} pointer`} href={label.href}>
       <div class="flex-1 truncate">
@@ -17,7 +22,11 @@ function Label (props) {
   );
 }
 
-export function Labels (props) {
+type Labels$Props = {
+  labels: TLabel[]
+};
+
+export function Labels (props: Labels$Props) {
   if (props.labels.length === 0) {
     return (
       <div class="flex-1 pa3 tc">

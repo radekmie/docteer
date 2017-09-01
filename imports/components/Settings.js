@@ -1,4 +1,5 @@
-/** @jsx h */
+// @flow
+// @jsx h
 
 import {h} from 'preact';
 
@@ -8,7 +9,13 @@ import {onSchemaKey}    from '/imports/lib/stateActions';
 import {onSchemaOrder}  from '/imports/lib/stateActions';
 import {onSchemaType}   from '/imports/lib/stateActions';
 
-export function Settings (props) {
+import type {TUser} from '/imports/types.flow';
+
+type Settings$Props = {
+  user: TUser
+};
+
+export function Settings (props: Settings$Props) {
   return (
     <dl class="flex-1 h-100 ma0 overflow-auto pa3">
       <dt>
