@@ -90,7 +90,7 @@ export class Note extends Component<Note$Props> {
 }
 
 function listToSteps (html) {
-  return html.split('<li>').slice(1).map(element => element.slice(0, -5));
+  return html.indexOf('<li>') === 0 ? html.split('<li>').slice(1).map(element => element.slice(0, -5)) : [html];
 }
 
 function stepsToList (steps: string[]) {
