@@ -5,8 +5,17 @@
   100% { transform: scaleY(3); }
 }
 
+button,
+input {
+  line-height: 1.4;
+}
+
 form label {
   height: 1.5rem;
+}
+
+input {
+  width: 100%;
 }
 
 html {
@@ -56,6 +65,15 @@ path {
   min-width: 16rem;
 }
 
+.dim:focus,
+.dim:hover {
+  opacity: 0.8;
+}
+
+.dim:active {
+  opacity: 0.5;
+}
+
 .filler {
   background: repeating-linear-gradient(
     -45deg,
@@ -79,6 +97,10 @@ path {
   stroke: currentcolor;
   stroke-linecap: round;
   stroke-width: 2;
+}
+
+.icon.wide {
+  min-width: 1.5rem;
 }
 
 .loading {

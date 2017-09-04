@@ -27,6 +27,7 @@
     "column",
     "dark-gray",
     "db",
+    "dim",
     "f4",
     "filler",
     "fixed",
@@ -87,6 +88,7 @@
     "w5"
   ],
   "element": [
+    "a",
     "body",
     "button",
     "div",

@@ -78,11 +78,11 @@ export class Application extends Component<Application$Props, Application$State>
             <Labels labels={state.labels} />
           )}
 
-          {!!(state.user && state.view === 'd') || (
+          {!(state.user && state.view === 'd') && (
             <div class="filler flex-1 near-white" />
           )}
 
-          <Account user={state.user} />
+          <Account user={state.user} view={state.view} />
         </div>
 
         {!!state.user && state.view === 'd' && (
@@ -93,11 +93,11 @@ export class Application extends Component<Application$Props, Application$State>
           <Note labels={state.labels} note={state.note} edit={state.edit} />
         )}
 
-        {!!state.user && !!state.note || state.view === 's' && (
+        {!!state.user && !state.note && state.view === 's' && (
           <Settings user={state.user} />
         )}
 
-        {!!state.note || state.view !== 's' && (
+        {!state.note && state.view !== 's' && (
           <Splashscreen />
         )}
 

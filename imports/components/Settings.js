@@ -3,6 +3,7 @@
 
 import {h} from 'preact';
 
+import {Button}         from '/imports/components/Button';
 import {onSchemaAdd}    from '/imports/lib/stateActions';
 import {onSchemaDelete} from '/imports/lib/stateActions';
 import {onSchemaKey}    from '/imports/lib/stateActions';
@@ -31,33 +32,47 @@ export function Settings (props: Settings$Props) {
       </dt>
 
       <dd class="ml4">
-        <button class="w-100" onClick={onSchemaAdd}>
+        <Button class="w-100" onClick={onSchemaAdd}>
           +
-        </button>
+        </Button>
 
-        {Object.keys(props.user.schemas[0]).map((key, index, array) =>
-          <div class="flex hover-bg-near-white mt1" data-index={index} key={key}>
-            <button class="pa1" data-order="-1" disabled={index === 0} onClick={onSchemaOrder}>
-              ↑
-            </button>
+        {Object.keys(props.user.schemas[0]).map((key, index, array) => {
+          const disabled = key === 'labels' || key === 'name';
 
-            <button class="pa1" data-order="+1" disabled={index === array.length - 1} onClick={onSchemaOrder}>
-              ↓
-            </button>
+          return (
+            <div class="flex mt1" data-index={index} key={key}>
+              <Button class="pa1" data-order="-1" disabled={index === 0} onClick={onSchemaOrder}>
+                ↑
+              </Button>
 
-            <input class="flex-1 pa1" disabled={key === 'labels' || key === 'name'} onChange={onSchemaKey} value={key} />
+              <Button class="ml1 pa1" data-order="+1" disabled={index === array.length - 1} onClick={onSchemaOrder}>
+                ↓
+              </Button>
 
-            <select disabled={key === 'labels' || key === 'name'} onChange={onSchemaType} value={props.user.schemas[0][key]}>
-              <option value="ol">List</option>
-              <option value="ul">Tags</option>
-              <option value="div">Text</option>
-            </select>
+              <input
+                class={`b--dark-gray ${disabled ? 'bg-near-white ' : ''}bw1 ml1 flex-1 pa1`}
+                disabled={disabled}
+                onChange={onSchemaKey}
+                value={key}
+              />
 
-            <button class="pa1" disabled={key === 'labels' || key === 'name'} onClick={onSchemaDelete}>
-              ×
-            </button>
-          </div>
-        )}
+              <select
+                class={`b--dark-gray ba bg-${disabled ? 'near-' : ''}white bw1${disabled ? '' : ' dim'} ml1${disabled ? '' : ' pointer'} tc`}
+                disabled={disabled}
+                onChange={onSchemaType}
+                value={props.user.schemas[0][key]}
+              >
+                <option value="ol">List</option>
+                <option value="ul">Tags</option>
+                <option value="div">Text</option>
+              </select>
+
+              <Button class="ml1 pa1" disabled={disabled} onClick={onSchemaDelete}>
+                ×
+              </Button>
+            </div>
+          );
+        })}
       </dd>
     </dl>
   );
