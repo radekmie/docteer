@@ -41,7 +41,7 @@ export class Account extends Component<Account$Props> {
       <form class={`b--dark-gray bt bw1 pa2${props.user ? ' pt1' : ''}`} onSubmit={this.onSubmit}>
         {!!props.user && (
           <div class="mb1 tc">
-            <a class="dark-gray" href="#/s">
+            <a class="dark-gray" href="/s">
               <b>{props.user.emails[0].address}</b>
             </a>
           </div>

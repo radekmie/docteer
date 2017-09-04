@@ -33,7 +33,7 @@ Tracker.autorun(() => {
     tree.set(['userDiff'], undefined);
     tree.set(['last'], new Date(0));
 
-    if (history.location.hash.length < 3)
+    if (history.location.pathname === '/')
       tree.set(['view'], 'd');
   }
 });
@@ -67,8 +67,8 @@ history.listen(syncHistory);
 
 // Tree
 tree.select(['href']).on('update', event => {
-  if (history.location.hash !== event.data.currentData)
-    history.push({hash: event.data.currentData});
+  if (history.createHref(history.location) !== event.data.currentData)
+    history.push(event.data.currentData);
 });
 
 tree.select(['labels']).on('update', event => {
@@ -84,7 +84,7 @@ tree.select(['userData']).on('update', () => {
 });
 
 // Helpers
-const pattern = /^#\/(\w)?(?:\/(\w+))?.*?(?:[&?]filter=([^&?]+))?(?:[&?]search=([^&?]+))?.*$/;
+const pattern = /^\/(\w)?(?:\/(\w+))?.*?(?:[&?]filter=([^&?]+))?(?:[&?]search=([^&?]+))?.*$/;
 
 function syncHistory (location) {
   if (firstRun)
@@ -92,7 +92,7 @@ function syncHistory (location) {
 
   const user = tree.get(['user']);
 
-  const match = pattern.exec(location.hash) || [];
+  const match = pattern.exec(history.createHref(location)) || [];
   const state = {
     noteId: match[1] === 'd' && match[2] || undefined,
     filter: match[3] ? decodeURIComponent(match[3]).split(',').sort() : [],
@@ -100,10 +100,14 @@ function syncHistory (location) {
     view:   match[1] || (user ? 'd' : undefined)
   };
 
-  if (!user)
-    state.view = undefined;
+  if (!user) {
+    state.noteId = undefined;
+    state.filter = [];
+    state.search = '';
+    state.view   = undefined;
+  }
 
-  tree.set(['noteId'],  tree.get(['notes']).find(note => note._id === state.noteId) ? state.noteId : undefined);
+  tree.set(['noteId'], tree.get(['notes']).find(note => note._id === state.noteId) ? state.noteId : undefined);
   tree.set(['search'], state.search);
   tree.set(['view'],   state.view);
 

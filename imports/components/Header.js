@@ -15,7 +15,7 @@ type Header$Props = {
 export function Header (props: Header$Props) {
   return (
     <div class="b--dark-gray bb bw1">
-      <a class="dark-gray flex link pt1" href={`#/${props.user ? 'd' : ''}`}>
+      <a class="dark-gray flex link pt1" href={`/${props.user ? 'd' : ''}`}>
         <Logo class={`${props.pend ? '' : 'freeze '}h3 w3`} />
 
         <h1 class="f4">
