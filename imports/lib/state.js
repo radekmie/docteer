@@ -118,7 +118,15 @@ export const tree = new Baobab({
   last: new Date(0),
   view: undefined,
 
-  user: Baobab.monkey(['userData'], ['userDiff'], (data, diff) => data ? Object.assign({_changed: !!diff}, data, diff) : undefined),
+  user: Baobab.monkey(['userData'], ['userDiff'], (data, diff) => {
+    if (data === undefined)
+      return undefined;
+
+    const user = Object.assign({}, data, diff);
+    user._changed = JSON.stringify(data) !== JSON.stringify(user);
+    return user;
+  }),
+
   userData: undefined,
   userDiff: undefined
 }, {immutable: process.env.NODE_ENV === 'development'});

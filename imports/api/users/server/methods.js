@@ -11,8 +11,9 @@ Meteor.methods({
       check(settings, {schemas: [Object]});
       check(settings.schemas, Match.Where(schemas => {
         schemas.forEach(schema => {
-          Object.keys(schema).forEach(key => {
-            check(schema[key], Match.OneOf('div', 'ol', 'ul'));
+          check(schema, {name: String, fields: Object});
+          Object.keys(schema.fields).forEach(key => {
+            check(schema.fields[key], Match.OneOf('div', 'ol', 'ul'));
           });
         });
 

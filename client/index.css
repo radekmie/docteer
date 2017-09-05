@@ -103,6 +103,10 @@ path {
   min-width: 1.5rem;
 }
 
+.link:focus {
+  outline: -webkit-focus-ring-color auto 5px;
+}
+
 .loading {
   transition-delay: 0s;
 }

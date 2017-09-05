@@ -11,7 +11,7 @@ import {tree}        from '/imports/lib/state';
 export function onAdd () {
   const _id = Math.random().toString(36).substr(2, 6);
 
-  const schema = tree.get(['user']).schemas[0];
+  const schema = tree.get(['user']).schemas[0].fields;
 
   tree.set(['notesUpdated', _id], Object.assign({_outline: schema}, schemaEmpty(schema)));
   tree.set(['notesCreated', _id], true);
@@ -127,43 +127,66 @@ export function onSave () {
 }
 
 export function onSchemaAdd () {
-  const schema = tree.get(['user', 'schemas', 0]);
-
-  tree.set(['userDiff', 'schemas'], [Object.assign({}, schema, {[`_${Object.keys(schema).length}`]: 'div'})]);
+  tree.push(['userDiff', 'schemas'], {
+    name: `_${tree.get(['user', 'schemas']).length}`,
+    fields: {name: 'div', labels: 'ul'}
+  });
 }
 
 // TODO: Should use Event instead, but Flow definition is not complete.
 type Event$ = {target: {dataset: {[string]: string}, parentNode: HTMLElement, value: string}};
 
 export function onSchemaDelete (event: Event$) {
+  const name = event.target.parentNode.dataset.name;
   const index = +event.target.parentNode.dataset.index;
-  const schema = tree.get(['user', 'schemas', 0]);
+  const schema = tree.get(['user', 'schemas', {name}, 'fields']);
 
-  tree.set(['userDiff', 'schemas'], [Object.keys(schema).reduce((next, key, index2) => index === index2 ? next : Object.assign(next, {[key]: schema[key]}), {})]);
+  tree.set(['userDiff', 'schemas', {name}, 'fields'], Object.keys(schema).reduce((next, key, index2) => index === index2 ? next : Object.assign(next, {[key]: schema[key]}), {}));
+}
+
+export function onSchemaField (event: Event$) {
+  const name = event.target.parentNode.dataset.name;
+  const schema = tree.get(['user', 'schemas', {name}, 'fields']);
+
+  tree.set(['userDiff', 'schemas', {name}, 'fields'], Object.assign({}, schema, {[`_${Object.keys(schema).length}`]: 'div'}));
 }
 
 export function onSchemaKey (event: Event$) {
+  const name = event.target.parentNode.dataset.name;
   const index = +event.target.parentNode.dataset.index;
-  const schema = tree.get(['user', 'schemas', 0]);
+  const schema = tree.get(['user', 'schemas', {name}, 'fields']);
 
-  tree.set(['userDiff', 'schemas'], [Object.keys(schema).reduce((next, key, index2) => Object.assign(next, {[index === index2 ? event.target.value : key]: schema[key]}), {})]);
+  tree.set(['userDiff', 'schemas', {name}, 'fields'], Object.keys(schema).reduce((next, key, index2) => Object.assign(next, {[index === index2 ? event.target.value : key]: schema[key]}), {}));
+}
+
+export function onSchemaName (event: Event$) {
+  const name = event.target.parentNode.dataset.name;
+
+  tree.set(['userDiff', 'schemas', {name}, 'name'], event.target.value);
 }
 
 export function onSchemaOrder (event: Event$) {
+  const name = event.target.parentNode.dataset.name;
   const index = +event.target.parentNode.dataset.index;
-  const schema = tree.get(['user', 'schemas', 0]);
+  const schema = tree.get(['user', 'schemas', {name}, 'fields']);
   const fields = Object.keys(schema);
 
   fields[index] = fields.splice(index + (+event.target.dataset.order), 1, fields[index])[0];
 
-  tree.set(['userDiff', 'schemas'], [fields.reduce((next, key) => Object.assign(next, {[key]: schema[key]}), {})]);
+  tree.set(['userDiff', 'schemas', {name}, 'fields'], fields.reduce((next, key) => Object.assign(next, {[key]: schema[key]}), {}));
+}
+
+export function onSchemaRemove (event: Event$) {
+  const name = event.target.parentNode.dataset.name;
+
+  tree.unset(['userDiff', 'schemas', {name}]);
 }
 
 export function onSchemaType (event: Event$) {
-  const index = +event.target.parentNode.dataset.index;
-  const schema = tree.get(['user', 'schemas', 0]);
+  const name  = event.target.parentNode.dataset.name;
+  const field = event.target.parentNode.dataset.field;
 
-  tree.set(['userDiff', 'schemas'], [Object.keys(schema).reduce((next, key, index2) => Object.assign(next, {[key]: index === index2 ? event.target.value : schema[key]}), {})]);
+  tree.set(['userDiff', 'schemas', {name}, 'fields', field], event.target.value);
 }
 
 // TODO: Should use Event instead, but Flow definition is not complete.
@@ -174,8 +197,7 @@ export function onSearch (event: InputEvent$) {
 }
 
 export function onSettingsReset () {
-  tree.set(['userDiff'], undefined);
-  history.back();
+  tree.set(['userDiff'], {schemas: tree.get(['userData']).schemas});
 }
 
 export function onSettingsSave () {

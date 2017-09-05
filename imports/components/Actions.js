@@ -71,8 +71,8 @@ export function Actions (props: Actions$Props) {
         </div>
       )}
 
-      {props.view === 's' && (
-        <div class={button('red')} key="Cancel" onClick={onSettingsReset} tabIndex="0" title="Cancel">
+      {props.view === 's' && props.user && (
+        <div class={button('red', !props.user._changed)} key="Cancel" onClick={onSettingsReset} tabIndex="0" title="Cancel">
           {iconNo}
         </div>
       )}

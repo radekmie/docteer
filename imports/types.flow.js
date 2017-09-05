@@ -21,7 +21,7 @@ declare class TToast {
 declare class TUser {
   _changed: bool;
   emails: {address: string, verified: bool}[];
-  schemas: {[string]: 'div' | 'ol' | 'ul'}[];
+  schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[];
 }
 
 export type {

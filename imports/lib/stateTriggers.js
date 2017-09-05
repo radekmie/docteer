@@ -30,7 +30,7 @@ Tracker.autorun(() => {
   const user = Meteor.user();
 
   if (tree.set(['userData'], user && user.schemas ? user : undefined)) {
-    tree.set(['userDiff'], undefined);
+    tree.set(['userDiff'], {schemas: user.schemas});
     tree.set(['last'], new Date(0));
 
     if (history.location.pathname === '/')
@@ -60,6 +60,14 @@ window.document.addEventListener('click', event => {
       return;
     }
   } while ((node = node.parentNode));
+});
+
+window.document.addEventListener('keypress', event => {
+  if (event.charCode !== 13)
+    return;
+
+  if (event.target.__preactattr_ && event.target.__preactattr_.onClick)
+    event.target.click();
 });
 
 // History
