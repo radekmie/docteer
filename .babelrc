@@ -1,0 +1,12 @@
+{
+  "env": {
+    "production": {
+      "plugins": [
+        "closure-elimination"
+      ],
+      "presets": [
+        "minify"
+      ]
+    }
+  }
+}
