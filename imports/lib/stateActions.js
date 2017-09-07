@@ -27,6 +27,21 @@ export function onChange (_id: string, key: string, value: string | string[]) {
   }
 }
 
+export function onChangePassword (old: string, new1: string, new2: string) {
+  toast('info', 'Changing password...');
+
+  return new Promise ((resolve, reject) => {
+    Meteor.call('users.password', old, new1, new2, error => {
+      toast(error ? 'error' : 'success', error || 'Changed password.');
+      if (error) {
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
 export function onEdit () {
   if (!tree.set(['edit'], !tree.get(['edit'])))
     onReset();

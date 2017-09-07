@@ -1,19 +1,85 @@
 // @flow
 // @jsx h
 
-import {h} from 'preact';
+import {Component} from 'preact';
+import {h}         from 'preact';
 
-import {Button}         from '/imports/components/Button';
-import {onSchemaAdd}    from '/imports/lib/stateActions';
-import {onSchemaDelete} from '/imports/lib/stateActions';
-import {onSchemaField}  from '/imports/lib/stateActions';
-import {onSchemaKey}    from '/imports/lib/stateActions';
-import {onSchemaName}   from '/imports/lib/stateActions';
-import {onSchemaOrder}  from '/imports/lib/stateActions';
-import {onSchemaRemove} from '/imports/lib/stateActions';
-import {onSchemaType}   from '/imports/lib/stateActions';
+import {Button}           from '/imports/components/Button';
+import {onChangePassword} from '/imports/lib/stateActions';
+import {onSchemaAdd}      from '/imports/lib/stateActions';
+import {onSchemaDelete}   from '/imports/lib/stateActions';
+import {onSchemaField}    from '/imports/lib/stateActions';
+import {onSchemaKey}      from '/imports/lib/stateActions';
+import {onSchemaName}     from '/imports/lib/stateActions';
+import {onSchemaOrder}    from '/imports/lib/stateActions';
+import {onSchemaRemove}   from '/imports/lib/stateActions';
+import {onSchemaType}     from '/imports/lib/stateActions';
 
 import type {TUser} from '/imports/types.flow';
+
+class ChangePassword extends Component {
+  old:  ?HTMLInputElement;
+  new1: ?HTMLInputElement;
+  new2: ?HTMLInputElement;
+
+  onOld = (ref: ?HTMLInputElement) => {
+    this.old = ref;
+  };
+
+  onNew1 = (ref: ?HTMLInputElement) => {
+    this.new1 = ref;
+  };
+
+  onNew2 = (ref: ?HTMLInputElement) => {
+    this.new2 = ref;
+  };
+
+  onChangePassword = event => {
+    event.preventDefault();
+
+    if (this.old && this.new1 && this.new2) {
+      onChangePassword(this.old.value, this.new1.value, this.new2.value).then(() => {
+        if (this.old)  this.old.value  = '';
+        if (this.new1) this.new1.value = '';
+        if (this.new2) this.new2.value = '';
+      });
+    }
+  };
+
+  render () {
+    return (
+      <details class="pointer">
+        <summary>
+          Change password
+        </summary>
+
+        <form onSubmit={this.onChangePassword}>
+          <label class="dib mt1 w-100" for="old" title="Old password">
+            <b>Old password</b>
+            <br />
+            <input class="ba bg-near-white bw1 flex-1 ph1" id="old" name="old" ref={this.onOld} type="password" />
+          </label>
+
+          <label class="dib mt1 w-100" for="new1" title="New password">
+            <b>New password</b>
+            <br />
+            <input class="ba bg-near-white bw1 flex-1 ph1" id="new1" name="new1" ref={this.onNew1} type="password" />
+          </label>
+
+          <label class="dib mt1 w-100" for="new2" title="New password (again)">
+            <b>New password (again)</b>
+            <br />
+            <input class="ba bg-near-white bw1 flex-1 ph1" id="new2" name="new2" ref={this.onNew2} type="password" />
+          </label>
+
+          <Button class="mt1 w-100" title="Change password">
+            Change password
+          </Button>
+        </form>
+      </details>
+    );
+  }
+}
 
 type Settings$Props = {
   user: TUser
@@ -28,6 +94,14 @@ export function Settings (props: Settings$Props) {
 
       <dd class="ml4">
         {props.user.emails[0].address}
+      </dd>
+
+      <dt class="mt3">
+        <b>Password:</b>
+      </dt>
+
+      <dd class="ml4">
+        <ChangePassword />
       </dd>
 
       <dt class="mt3">
