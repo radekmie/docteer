@@ -142,3 +142,7 @@ path {
 .overflow-auto {
   -webkit-overflow-scrolling: touch;
 }
+
+.w5 {
+  width: 20rem;
+}
