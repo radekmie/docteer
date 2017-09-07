@@ -221,7 +221,9 @@ export function onSettingsSave () {
 
     Meteor.call('users.settings', tree.get(['userDiff']), error => {
       toast(error ? 'error' : 'success', error || 'Saved.');
-      onSettingsReset();
+
+      if (!error)
+        onSettingsReset();
     });
   }
 }

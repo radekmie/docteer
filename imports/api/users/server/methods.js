@@ -45,8 +45,17 @@ Meteor.methods({
         return true;
       }));
     } catch (error) {
-      return;
+      throw new Meteor.Error('validation-error', 'Validation error.');
     }
+
+    settings.schemas.forEach(schema => {
+      Object.keys(schema.fields).forEach(key => {
+        if (key[0] === '$')
+          throw new Meteor.Error('field-with-dollar', 'Field cannot start with a dollar sign.');
+        if (key.indexOf('.') !== -1)
+          throw new Meteor.Error('field-with-dot', 'Field cannot contain a dot.');
+      });
+    });
 
     Meteor.users.update({_id: this.userId}, {$set: settings});
   }
