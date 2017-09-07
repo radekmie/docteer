@@ -27,6 +27,10 @@ Meteor.methods({
     if (Accounts._checkPassword(user, old).error)
       throw new Meteor.Error('password-incorrect', 'Incorrect old password.');
 
+    // NOTE: Should we throw an error here?
+    if (user.emails[0].address === 'demo@docteer.com')
+      return;
+
     Accounts.setPassword(this.userId, new1);
   },
 
