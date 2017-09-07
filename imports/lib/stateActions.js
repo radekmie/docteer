@@ -27,10 +27,10 @@ export function onChange (_id: string, key: string, value: string | string[]) {
   }
 }
 
-export function onChangePassword (old: string, new1: string, new2: string) {
+export function onChangePassword (old: string, new1: string, new2: string): Promise<void> {
   toast('info', 'Changing password...');
 
-  return new Promise ((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     Meteor.call('users.password', old, new1, new2, error => {
       toast(error ? 'error' : 'success', error || 'Changed password.');
       if (error) {
@@ -63,7 +63,7 @@ export function onLogout () {
   });
 }
 
-export function onRefresh (firstRun: ?bool) {
+export function onRefresh (firstRun: ?bool): Promise<void> {
   if (tree.get(['user']) === undefined) {
     tree.set(['notesOrigins'], []);
 
@@ -99,7 +99,7 @@ export function onReset () {
   tree.set(['notesUpdated'], Object.create(null));
 }
 
-export function onSave () {
+export function onSave (): Promise<void> {
   tree.set(['edit'], false);
 
   const created = tree.get(['notesCreated']);
