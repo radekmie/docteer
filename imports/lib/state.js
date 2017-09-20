@@ -37,7 +37,7 @@ export const tree = new Baobab({
       if (term) {
         notes = notes
           .reduce((notes, note) => {
-            const match = fuzzysort.single(term, note.name || '\0');
+            const match = fuzzysort.single(term, note.name);
 
             if (match) {
               notes.push({note, match});
@@ -45,9 +45,9 @@ export const tree = new Baobab({
 
             return notes;
           }, [])
-          .sort((a, b) => (a.match.score - b.match.score) || a.note.name.localeCompare(b.note.name))
+          .sort((a, b) => (b.match.score - a.match.score) || a.note.name.localeCompare(b.note.name))
           .slice(0, 50)
-          .map(single => Object.assign({}, single.note, {name: single.match.highlighted}))
+          .map(single => Object.assign({}, single.note, {name: fuzzysort.highlight(single.match, '<b>', '</b>')}))
         ;
       }
 

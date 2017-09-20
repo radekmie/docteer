@@ -205,7 +205,7 @@ export function onSchemaType (event: Event$) {
 }
 
 // TODO: Should use Event instead, but Flow definition is not complete.
-type InputEvent$ = {target: HTMLInputElement};
+type InputEvent$ = {target: HTMLInputElement & {|__skip: ?bool|}};
 
 export function onSearch (event: InputEvent$) {
   tree.set(['search'], event.target.value);
@@ -241,13 +241,16 @@ export function onTypeAhead (event: InputEvent$) {
   );
 
   if (search) {
-    const match = fuzzysort.go(search, tree.get(['labelsNames']))[0];
+    const names = tree.get(['labelsNames']).filter(label => label !== search && label.startsWith(search));
+    const match = fuzzysort.go(search, names)[0];
 
-    if (match && match._target.startsWith(search)) {
+    if (match) {
       const start = selection.focusOffset;
-      const label = match._target.slice(start);
+      const label = match.target.slice(start);
 
       if (label) {
+        event.target.__skip = true;
+
         document.execCommand('insertText', true, label);
         selection.setBaseAndExtent(focusNode, start, focusNode, focusNode.length);
       }

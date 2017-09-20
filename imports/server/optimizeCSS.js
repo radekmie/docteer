@@ -2,6 +2,7 @@
 
 import autoprefixer from 'autoprefixer';
 import cssnano      from 'cssnano';
+import imports      from 'postcss-import';
 import parse        from 'css-selector-tokenizer/lib/parse';
 import postcss      from 'postcss';
 import specificity  from 'specificity';
@@ -36,6 +37,7 @@ function validToken (node) {
 }
 
 const processor = postcss([
+  imports(),
   postcss.plugin('filter', () => root => root.walkRules(rule => {
     rule.selectors = rule.selectors.filter(selector => validNodes(parse(selector).nodes[0]));
 
@@ -64,7 +66,7 @@ const processor = postcss([
     rule.nodes.sort((a, b) => a.prop.localeCompare(b.prop));
   })),
   autoprefixer({browsers: ['last 2 Chrome versions']}),
-  cssnano({preset: 'advanced'}),
+  cssnano({preset: ['advanced', {discardComments: {removeAll: true}}]}),
   postcss.plugin('tweaks', () => root => root.nodes.sort((a, b) =>
     a.type.localeCompare(b.type) || (!a.selector || !b.selector ? 0 : specificity.compare(a.selectors[0], b.selectors[0]) || a.selector.localeCompare(b.selector))
   ))
