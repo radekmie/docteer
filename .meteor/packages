@@ -7,3 +7,4 @@ mongo@1.3.0-beta.30
 standard-minifier-js
 static-html
 tracker@1.1.3
+universe:e2e

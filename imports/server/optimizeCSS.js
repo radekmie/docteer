@@ -37,7 +37,7 @@ function validToken (node) {
 }
 
 const processor = postcss([
-  imports(),
+  imports({addModulesDirectories: ['npm/node_modules']}),
   postcss.plugin('filter', () => root => root.walkRules(rule => {
     rule.selectors = rule.selectors.filter(selector => validNodes(parse(selector).nodes[0]));
 
