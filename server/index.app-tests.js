@@ -45,6 +45,7 @@ const action = title =>
   })
 ;
 
+// eslint-disable-next-line no-unused-vars
 const close = page =>
   it(`should close '${page}'`, async () => {
     const {targetInfos} = await browser._connection.send('Target.getTargets');

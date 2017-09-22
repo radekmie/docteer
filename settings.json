@@ -1,0 +1,10 @@
+{
+  "universe:e2e": {
+    "puppeteer": {
+      "args": [
+        "--no-sandbox"
+      ],
+      "headless": true
+    }
+  }
+}

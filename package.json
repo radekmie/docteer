@@ -4,7 +4,7 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "e2e": "meteor test --full-app --driver-package universe:e2e --raw-logs --settings .deploy/settings.json",
+    "e2e": "meteor test --full-app --driver-package universe:e2e --raw-logs --settings settings.json",
     "flow": "flow",
     "lint": "eslint .",
     "precommit": "npm run test",
