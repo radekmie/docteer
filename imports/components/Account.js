@@ -61,14 +61,14 @@ export class Account extends Component<Account$Props> {
         {!!props.user || (
           <label class="flex mb1" for="email" title="Email">
             {iconUser}
-            <input class="ba bg-near-white bw1 flex-1 ml1 ph1" id="email" name="email" ref={this.onRefEmail} type="email" />
+            <input class="ba bg-near-white bw1 flex-1 ml1 ph1" id="email" name="email" ref={this.onRefEmail} required type="email" />
           </label>
         )}
 
         {!!props.user || (
           <label class="flex mb1" for="password" title="Password">
             {iconLock}
-            <input class="ba bg-near-white bw1 flex-1 ml1 ph1" id="password" name="password" ref={this.onRefPassword} type="password" />
+            <input class="ba bg-near-white bw1 flex-1 ml1 ph1" id="password" name="password" ref={this.onRefPassword} required type="password" />
           </label>
         )}
 
