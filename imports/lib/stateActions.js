@@ -74,14 +74,10 @@ export function onRefresh (firstRun: ?bool): Promise<void> {
 
   const last = new Date();
 
-  return graphQL({
-    query: 'query Notes ($refresh: Date!, $session: String!, $userId: String!) { notes (refresh: $refresh, session: $session, userId: $userId) { created removed updated } }',
-    operationName: 'Notes',
-    variables: {refresh: tree.get(['last'])}
-  }).then(response => {
+  return rest('GET', `/api/notes?refresh=${tree.get(['last']).valueOf()}`).then(response => {
     tree.set(['last'], last);
     toast('success', firstRun === true ? 'Loaded.' : 'Refreshed.');
-    merge(response.data.notes);
+    merge(response);
   });
 }
 
@@ -107,7 +103,6 @@ export function onSave (): Promise<void> {
   const updated = tree.get(['notesUpdated']);
 
   const patch = {
-    refresh: tree.get(['last']),
     created: Object.keys(created),
     removed: Object.keys(removed),
     updated: Object.keys(updated).map(_id => Object.assign({_id}, updated[_id]))
@@ -129,14 +124,10 @@ export function onSave (): Promise<void> {
 
   const last = new Date();
 
-  return graphQL({
-    query: 'mutation NotesPatch ($refresh: Date!, $session: String!, $userId: String!, $created: [String!]!, $removed: [String!]!, $updated: [Note!]!) { notesPatch (refresh: $refresh, session: $session, userId: $userId, created: $created, removed: $removed, updated: $updated) { created removed updated } }',
-    operationName: 'NotesPatch',
-    variables: patch
-  }).then(response => {
+  return rest('POST', `/api/notes?refresh=${tree.get(['last']).valueOf()}`, JSON.stringify(patch)).then(response => {
     tree.set(['last'], last);
     toast('success', 'Saved.');
-    merge(response.data.notesPatch);
+    merge(response);
     onReset();
   });
 }
@@ -266,21 +257,27 @@ onTypeAhead.post = event => {
   event.target.__skip = true;
 };
 
-function graphQL (body) {
-  const json = 'application/json';
+function merge (diff) {
+  tree.set(['notesOrigins'], tree.get(['notesOrigins'])
+    .filter(note => !diff.removed.includes(note._id))
+    .concat(diff.created.map(_id => ({_id})))
+    .filter((note, index, notes) => notes.findIndex(other => other._id === note._id) === index)
+    .map(note => {
+      const  patch = diff.updated.find(updated => updated._id === note._id);
+      return patch ? Object.assign({}, note, patch) : note;
+    })
+  );
+}
 
-  return fetch('/graphql', {
-    method: 'POST',
+function rest (method, url, body) {
+  return fetch(url, {
+    body,
+    method,
     headers: new Headers({
-      'Accept':       json,
-      'Content-Type': json
-    }),
-    body: JSON.stringify(Object.assign({}, body, {
-      variables: Object.assign({}, body.variables, {
-        session: Accounts._storedLoginToken(),
-        userId:  Accounts._storedUserId()
-      })
-    }))
+      'Accept':        'application/json',
+      'Authorization': `Basic ${btoa([Accounts._storedUserId(), Accounts._storedLoginToken()].join(':'))}`,
+      'Content-Type':  'application/json'
+    })
   }).then(response => {
     if (response.ok) {
       return response.json().then(response => {
@@ -297,18 +294,6 @@ function graphQL (body) {
     toast('error', error);
     throw error;
   });
-}
-
-function merge (diff) {
-  tree.set(['notesOrigins'], tree.get(['notesOrigins'])
-    .filter(note => !diff.removed.includes(note._id))
-    .concat(diff.created.map(_id => ({_id})))
-    .filter((note, index, notes) => notes.findIndex(other => other._id === note._id) === index)
-    .map(note => {
-      const  patch = diff.updated.find(updated => updated._id === note._id);
-      return patch ? Object.assign({}, note, patch) : note;
-    })
-  );
 }
 
 function toast (type, message) {

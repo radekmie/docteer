@@ -31,6 +31,7 @@
     "preact": "8.2.5",
     "preact-render-to-string": "3.6.3",
     "prepack": "0.2.6",
+    "restify": "6.0.1",
     "specificity": "0.3.1",
     "tachyons": "4.8.1"
   },
