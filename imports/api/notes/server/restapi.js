@@ -135,7 +135,7 @@ Notes.register = function register (server, context) {
     }
   });
 
-  server.get('/notes', async (req, res, next) => {
+  server.get('/notes', (req, res, next) => {
     context.ajv.validate('GET /notes', req);
 
     if (context.ajv.errors) {
@@ -154,7 +154,7 @@ Notes.register = function register (server, context) {
     return next();
   });
 
-  server.post('/notes', async (req, res, next) => {
+  server.post('/notes', (req, res, next) => {
     context.ajv.validate('POST /notes', req);
 
     if (context.ajv.errors) {
