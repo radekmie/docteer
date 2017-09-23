@@ -21,8 +21,7 @@
     "cssnano": "4.0.0-rc.2",
     "cssnano-preset-advanced": "4.0.0-rc.2",
     "express-graphql": "0.6.11",
-    "fuzzysort": "1.0.0",
-    "graphql": "0.11.3",
+    "fuzzysort": "1.0.1",
     "history": "4.7.2",
     "html-minifier": "3.5.5",
     "meteor-node-stubs": "0.2.11",
@@ -37,13 +36,13 @@
   },
   "devDependencies": {
     "babel-eslint": "7.2.3",
-    "eslint": "4.7.1",
+    "eslint": "4.7.2",
     "eslint-config-vazco": "3.0.0",
     "eslint-plugin-babel": "4.1.2",
     "eslint-plugin-react": "7.3.0",
     "eslint-plugin-vazco": "1.0.0",
     "faker": "4.1.0",
-    "flow-bin": "0.54.1",
+    "flow-bin": "0.55.0",
     "husky": "0.14.3"
   }
 }
