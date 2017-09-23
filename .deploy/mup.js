@@ -19,7 +19,7 @@ module.exports = {
     },
 
     docker: {
-      image: 'abernix/meteord:node-8.3.0-base',
+      image: 'abernix/meteord:node-8.4.0-base',
       imagePort: 80
     },
 
@@ -30,7 +30,7 @@ module.exports = {
   },
 
   mongo: {
-    version: '3.4.1',
+    version: '3.4.9',
     servers: {
       first: {}
     }
