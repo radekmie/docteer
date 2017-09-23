@@ -210,23 +210,25 @@ Notes.register = function register (server, context) {
       if (patch.created.includes(_id)) {
         bulk.push({
           insertOne: {
-            // ID
-            _id_slug: _id,
-            _id_user: userId,
+            document: {
+              // ID
+              _id_slug: _id,
+              _id_user: userId,
 
-            // Type
-            _outline,
+              // Type
+              _outline,
 
-            // Dates
-            _created: now,
-            _removed: null,
-            _updated: now,
+              // Dates
+              _created: now,
+              _removed: null,
+              _updated: now,
 
-            // History
-            _version: [{_created: now, ...doc}],
+              // History
+              _version: [{_created: now, ...doc}],
 
-            // Data
-            ...doc
+              // Data
+              ...doc
+            }
           }
         });
       } else {
