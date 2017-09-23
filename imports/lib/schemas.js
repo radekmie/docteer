@@ -1,7 +1,10 @@
 // @flow
 
-export function schemaEmpty (schema: {[string]: string}) {
-  return Object.keys(schema).reduce((empty, key) => Object.assign(empty, {[key]: schemaIsArray(schema[key]) ? [] : ''}), {});
+export function schemaEmpty ({fields, name}: {fields: {[string]: string}, name: string}) {
+  return Object.keys(fields).reduce(
+    (empty, key) => Object.assign(empty, {[key]: schemaIsArray(fields[key]) ? [] : ''}),
+    {_outline: fields, _outname: name}
+  );
 }
 
 export function schemaIsArray (tag: string) {

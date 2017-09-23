@@ -11,9 +11,7 @@ import {tree}        from '/imports/lib/state';
 export function onAdd () {
   const _id = Math.random().toString(36).substr(2, 6);
 
-  const schema = tree.get(['user']).schemas[0].fields;
-
-  tree.set(['notesUpdated', _id], Object.assign({_outline: schema}, schemaEmpty(schema)));
+  tree.set(['notesUpdated', _id], schemaEmpty(tree.get(['user']).schemas[0]));
   tree.set(['notesCreated', _id], true);
   tree.set(['noteId'], _id);
   tree.set(['edit'], true);
@@ -40,6 +38,19 @@ export function onChangePassword (old: string, new1: string, new2: string): Prom
       }
     });
   });
+}
+
+export function onChangeSchema (_id: string, schema: {fields: {[string]: string}, name: string}) {
+  const doc = tree.get(['notesUpdated', _id]);
+
+  if (doc) {
+    tree.set(['notesUpdated', _id], Object.keys(schema.fields).reduce(
+      (clone, field) => doc._outline[field] && typeof clone[field] === typeof doc[field]
+        ? Object.assign(clone, {[field]: doc[field]})
+        : clone,
+      schemaEmpty(schema)
+    ));
+  }
 }
 
 export function onEdit () {

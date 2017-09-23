@@ -90,7 +90,7 @@ export class Application extends Component<Application$Props, Application$State>
         )}
 
         {!!state.user && !!state.note && state.view === 'd' && (
-          <Note labels={state.labels} note={state.note} edit={state.edit} />
+          <Note labels={state.labels} note={state.note} edit={state.edit} user={state.user} />
         )}
 
         {!!state.user && !state.note && state.view === 's' && (

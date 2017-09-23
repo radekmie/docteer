@@ -115,6 +115,9 @@ Notes.register = function register (server, context) {
                 },
                 _outline: {
                   type: 'object'
+                },
+                _outname: {
+                  type: 'string'
                 }
               }
             }
@@ -196,6 +199,7 @@ Notes.register = function register (server, context) {
     patch.updated.forEach(doc => {
       const _id      = doc._id;
       const _outline = doc._outline;
+      const _outname = doc._outname;
 
       if (patch.removed.includes(_id))
         return;
@@ -217,6 +221,7 @@ Notes.register = function register (server, context) {
 
               // Type
               _outline,
+              _outname,
 
               // Dates
               _created: now,

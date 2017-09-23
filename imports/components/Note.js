@@ -4,10 +4,11 @@
 import {Component} from 'preact';
 import {h}         from 'preact';
 
-import {onChange}      from '/imports/lib/stateActions';
-import {onTypeAhead}   from '/imports/lib/stateActions';
-import {schemaIsArray} from '/imports/lib/schemas';
-import {schemaKey}     from '/imports/lib/schemas';
+import {onChangeSchema} from '/imports/lib/stateActions';
+import {onChange}       from '/imports/lib/stateActions';
+import {onTypeAhead}    from '/imports/lib/stateActions';
+import {schemaIsArray}  from '/imports/lib/schemas';
+import {schemaKey}      from '/imports/lib/schemas';
 
 import {Editable} from './Editable';
 
@@ -43,6 +44,14 @@ export class Note extends Component<Note$Props> {
     });
   };
 
+  onSchema = (event: {target: {value: string}}) => {
+    const schema = this.props.user.schemas.find(schema => schema.name === event.target.value);
+
+    if (schema) {
+      onChangeSchema(this.props.note._id, schema);
+    }
+  };
+
   // NOTE: Keys with 'ol' or 'ul' in outline are arrays.
   transform = (key: string, html: string | string[]) =>
     schemaIsArray(this.props.note._outline[key])
@@ -54,9 +63,32 @@ export class Note extends Component<Note$Props> {
 
   render () {
     const props = this.props;
+    const other = props.user.schemas.findIndex(schema => schema.name === props.note._outname) === -1;
 
     return (
       <dl class="flex-1 h-100 ma0 overflow-auto pa3">
+        {props.user.schemas.length > 1 && (
+          <select
+            class="b--dark-gray ba bg-white bw1 h2 mb1 pointer tc w-100"
+            disabled={!props.edit && !props.note._created}
+            onChange={this.onSchema}
+            title="Schema"
+            value={props.note._outname || ''}
+          >
+            {other && (
+              <option value="">
+                {props.note._outname || '(unknown)'}
+              </option>
+            )}
+
+            {props.user.schemas.map((schema, index) =>
+              <option key={index} value={schema.name}>
+                {schema.name}
+              </option>
+            )}
+          </select>
+        )}
+
         {Object.keys(props.note._outline).reduce((fields, key, index) => {
           if (props.edit || key === 'name' || props.note[key].length) {
             fields.push(
