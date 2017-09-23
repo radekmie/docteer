@@ -13,7 +13,7 @@ import {Notes} from '/imports/api/notes/server';
 
 const ajv = new Ajv({coerceTypes: true});
 
-const server = restify.createServer({name: ''});
+const server = restify.createServer({name: '', version: '1.0.0'});
 
 server.use(restify.plugins.acceptParser(['application/json']));
 server.use(restify.plugins.authorizationParser());
