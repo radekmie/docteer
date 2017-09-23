@@ -114,7 +114,7 @@ Notes.register = function register (server, context) {
                   type: 'string'
                 },
                 _outline: {
-                  type: 'string'
+                  type: 'object'
                 }
               }
             }

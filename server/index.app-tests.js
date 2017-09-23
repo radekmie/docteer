@@ -203,6 +203,8 @@ describe('docteer.com', () => {
     field(2, 'Text', 'World!');
     note('Hello!', 'light-green');
     action('Save');
+    toast('Saving...');
+    toast('Saved.');
     note('Hello!');
     logout(user);
     toast('Logging out...');
