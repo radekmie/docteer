@@ -74,7 +74,7 @@ const context = {
 
     cache.set(hash, next ? username : null);
 
-    return next;
+    return username;
   }
 };
 
