@@ -1,6 +1,7 @@
 // @flow
 
 import Ajv     from 'ajv';
+import LRU     from 'lru-cache';
 import bunyan  from 'bunyan';
 import restify from 'restify';
 
@@ -36,17 +37,30 @@ server.use(async (req, res, next) => {
 });
 
 server.on('after', restify.plugins.metrics({server}, (error, metrics, req, res) => {
-  if (error) {
+  if (error)
     log.error({error, req, res, metrics});
-  } else {
+  else
     log.info({req, res, metrics});
-  }
 }));
+
+const users = Meteor.users.rawCollection();
+const cache = new LRU({
+  max: 100,
+  maxAge: 30 * 1000
+});
 
 const context = {
   ajv,
-  authenticate ({basic: {password, username}}) {
-    return !!Meteor.users.findOne({
+  authenticate (req) {
+    const hash = req.headers.authorization;
+    const prev = cache.get(hash);
+
+    if (prev !== undefined)
+      return prev;
+
+    const {password, username} = req.authorization.basic;
+
+    const query = {
       _id: username,
       'services.resume.loginTokens': {
         $elemMatch: {
@@ -54,7 +68,13 @@ const context = {
           when: {$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}
         }
       }
-    });
+    };
+
+    const next = users.find(query).project({_id: 1}).limit(1).hasNext().await();
+
+    cache.set(hash, next ? username : null);
+
+    return next;
   }
 };
 

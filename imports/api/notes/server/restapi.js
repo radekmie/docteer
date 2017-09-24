@@ -1,8 +1,7 @@
 // @flow
 
 import {InvalidArgumentError} from 'restify-errors';
-
-import {Promise} from 'meteor/promise';
+import {UnauthorizedError}    from 'restify-errors';
 
 import {Notes} from '..';
 
@@ -141,18 +140,17 @@ Notes.register = function register (server, context) {
   server.get('/notes', (req, res, next) => {
     context.ajv.validate('GET /notes', req);
 
-    if (context.ajv.errors) {
-      return next(new InvalidArgumentError([
-        context.ajv.errors[0].dataPath,
-        context.ajv.errors[0].message
-      ].join(' ')));
-    }
+    if (context.ajv.errors)
+      return next(new InvalidArgumentError());
 
-    if (context.authenticate(req.authorization)) {
-      res.send(notesByUser(req.authorization.basic.username, req.query.refresh));
-    } else {
-      res.send({created: [], removed: [], updated: []});
-    }
+
+    const userId = context.authenticate(req);
+
+    if (userId === null)
+      return next(new UnauthorizedError());
+
+
+    res.send(notesByUser(userId, req.query.refresh));
 
     return next();
   });
@@ -167,20 +165,22 @@ Notes.register = function register (server, context) {
       ].join(' ')));
     }
 
-    if (context.authenticate(req.authorization)) {
-      bulkPatch(Notes, req.body, req.authorization.basic.username).await();
+    const userId = context.authenticate(req);
 
-      res.send(notesByUser(req.authorization.basic.username, req.query.refresh));
-    } else {
-      res.send({created: [], removed: [], updated: []});
-    }
+    if (userId === null)
+      return next(new UnauthorizedError());
+
+
+    bulkPatch(Notes, req.body, userId);
+
+    res.send(notesByUser(userId, req.query.refresh));
 
     return next();
   });
 
   function bulkPatch (collection, patch, userId) {
     if (!patch.created.length && !patch.removed.length && !patch.updated.length)
-      return Promise.resolve();
+      return;
 
     const now = new Date();
 
@@ -204,9 +204,10 @@ Notes.register = function register (server, context) {
       if (patch.removed.includes(_id))
         return;
 
-      for (const key in doc)
+      for (const key in doc) {
         if (key.slice(0, 1) === '_')
           delete doc[key];
+      }
 
       if (Object.keys(doc).length === 0)
         return;
@@ -249,7 +250,7 @@ Notes.register = function register (server, context) {
       }
     });
 
-    return hand.bulkWrite(bulk);
+    hand.bulkWrite(bulk).await();
   }
 
   function notesByUser (userId, after) {
@@ -261,24 +262,26 @@ Notes.register = function register (server, context) {
       _version: 0
     };
 
-    return Notes.find({_id_user: userId, _updated: {$gt: refresh}}, {fields}).fetch().reduce((diff, note) => {
+    const diff = {created: [], removed: [], updated: []};
+
+    Notes.find({_id_user: userId, _updated: {$gt: refresh}}, {fields}).forEach(note => {
       note._id = note._id_slug;
 
-      if (note._removed > refresh) {
+      if (note._removed > refresh)
         diff.removed.push(note._id);
-      } else {
+      else {
         diff.updated.push(note);
 
-        if (note._created > refresh) {
+        if (note._created > refresh)
           diff.created.push(note._id);
-        }
+
       }
 
       delete note._id_slug;
       delete note._created;
       delete note._removed;
+    });
 
-      return diff;
-    }, {created: [], removed: [], updated: []});
+    return diff;
   }
 };
