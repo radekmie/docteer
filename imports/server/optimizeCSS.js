@@ -41,11 +41,10 @@ const processor = postcss([
   postcss.plugin('filter', () => root => root.walkRules(rule => {
     rule.selectors = rule.selectors.filter(selector => validNodes(parse(selector).nodes[0]));
 
-    if (rule.selectors.length === 0) {
+    if (rule.selectors.length === 0)
       rule.remove();
-    } else {
+    else
       rule.selectors = rule.selectors.sort((a, b) => specificity.compare(a, b) || a.localeCompare(b));
-    }
   })),
   postcss.plugin('merger', () => root => root.walkRules(rule => {
     if (rule.selector === '')

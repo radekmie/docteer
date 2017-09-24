@@ -14,9 +14,9 @@ export {
   optimizeStatics
 };
 
-if (process.env.NODE_ENV !== 'development') {
+if (process.env.NODE_ENV !== 'development')
   optimizeStatics();
-}
+
 
 const rawToHTML = Boilerplate.prototype.toHTML;
 Boilerplate.prototype.toHTML = function toHTML () {

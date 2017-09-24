@@ -28,9 +28,8 @@ export const tree = new Baobab({
     ['filter'],
     ['search'],
     (notes, noteId, filter, search) => {
-      if (filter.length) {
+      if (filter.length)
         notes = notes.filter(note => filter.every(filter => note.labels.some(label => label === filter)));
-      }
 
       const term = search.trim();
 
@@ -39,9 +38,8 @@ export const tree = new Baobab({
           .reduce((notes, note) => {
             const match = fuzzysort.single(term, note.name);
 
-            if (match) {
+            if (match)
               notes.push({note, match});
-            }
 
             return notes;
           }, [])
@@ -73,9 +71,8 @@ export const tree = new Baobab({
       notes
         .reduce((labels, note) => {
           note.labels.forEach(label => {
-            if (label && !labels.includes(label)) {
+            if (label && !labels.includes(label))
               labels.push(label);
-            }
           });
 
           return labels;

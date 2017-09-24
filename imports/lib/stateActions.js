@@ -18,11 +18,10 @@ export function onAdd () {
 }
 
 export function onChange (_id: string, key: string, value: string | string[]) {
-  if (tree.get(['notesUpdated', _id])) {
+  if (tree.get(['notesUpdated', _id]))
     tree.set(['notesUpdated', _id, key], value);
-  } else {
+  else
     tree.set(['notesUpdated', _id], {[key]: value});
-  }
 }
 
 export function onChangePassword (old: string, new1: string, new2: string): Promise<void> {
@@ -31,11 +30,10 @@ export function onChangePassword (old: string, new1: string, new2: string): Prom
   return new Promise((resolve, reject) => {
     Meteor.call('users.password', old, new1, new2, error => {
       toast(error ? 'error' : 'success', error || 'Changed password.');
-      if (error) {
+      if (error)
         reject(error);
-      } else {
+      else
         resolve();
-      }
     });
   });
 }
@@ -231,9 +229,8 @@ export function onSettingsSave () {
 }
 
 export function onTypeAhead (event: InputEvent$) {
-  if (event.target.__skip) {
+  if (event.target.__skip)
     return;
-  }
 
   const selection = window.getSelection();
   const focusNode = selection.focusNode;
@@ -292,9 +289,8 @@ function rest (method, url, body) {
   }).then(response => {
     if (response.ok) {
       return response.json().then(response => {
-        if (response.errors) {
+        if (response.errors)
           throw new Error(response.errors[0].message);
-        }
 
         return response;
       });
@@ -318,9 +314,9 @@ function toast (type, message) {
 
   tree.push(['toasts'], {_id, dead: false, marked: type === 'info', text, type});
 
-  if (type === 'info') {
+  if (type === 'info')
     tree.set(['pend'], tree.get(['pend']) + 1);
-  } else {
+  else {
     const info = tree.get(['toasts']).find(toast => toast.marked)._id;
 
     tree.set(['toasts', {_id: info}, 'marked'], false);

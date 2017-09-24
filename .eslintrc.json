@@ -1,6 +1,7 @@
 {
   "extends": "vazco",
   "rules": {
+    "curly": ["error", "multi-or-nest"],
     "indent": ["error", 2],
     "max-len": "off",
     "react/jsx-indent": ["error", 2],

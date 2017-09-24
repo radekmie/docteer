@@ -9,7 +9,8 @@ export const optimize = () => {
   if (global.Package['bundle-visualizer'])
     return;
 
-  for (const path in WebAppInternals.staticFiles)
+  for (const path in WebAppInternals.staticFiles) {
     if (!optimizeOptions.allowed.includes(WebAppInternals.staticFiles[path].type))
       delete WebAppInternals.staticFiles[path];
+  }
 };

@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "precommit": "npm run test",
     "start": "meteor run",
-    "test": "npm run flow && npm run lint"
+    "test": "npm run lint && npm run flow && CI=1 npm run e2e -- --once"
   },
   "dependencies": {
     "autoprefixer": "7.1.4",

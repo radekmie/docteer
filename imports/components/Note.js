@@ -47,9 +47,8 @@ export class Note extends Component<Note$Props> {
   onSchema = (event: {target: {value: string}}) => {
     const schema = this.props.user.schemas.find(schema => schema.name === event.target.value);
 
-    if (schema) {
+    if (schema)
       onChangeSchema(this.props.note._id, schema);
-    }
   };
 
   // NOTE: Keys with 'ol' or 'ul' in outline are arrays.
