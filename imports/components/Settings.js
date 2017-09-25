@@ -54,22 +54,19 @@ class ChangePassword extends Component {
         </summary>
 
         <form onSubmit={this.onChangePassword}>
-          <label class="dib mt1 w-100" for="old" title="Old password">
+          <label class="flex flex-column mt1" for="old" title="Old password">
             <b>Old password</b>
-            <br />
-            <input class="ba bg-near-white bw1 flex-1 ph1" id="old" name="old" ref={this.onOld} type="password" />
+            <input class="ba bg-near-white bw1 ph1" id="old" name="old" ref={this.onOld} type="password" />
           </label>
 
-          <label class="dib mt1 w-100" for="new1" title="New password">
+          <label class="flex flex-column mt1" for="new1" title="New password">
             <b>New password</b>
-            <br />
-            <input class="ba bg-near-white bw1 flex-1 ph1" id="new1" name="new1" ref={this.onNew1} type="password" />
+            <input class="ba bg-near-white bw1 ph1" id="new1" name="new1" ref={this.onNew1} type="password" />
           </label>
 
-          <label class="dib mt1 w-100" for="new2" title="New password (again)">
+          <label class="flex flex-column mt1" for="new2" title="New password (again)">
             <b>New password (again)</b>
-            <br />
-            <input class="ba bg-near-white bw1 flex-1 ph1" id="new2" name="new2" ref={this.onNew2} type="password" />
+            <input class="ba bg-near-white bw1 ph1" id="new2" name="new2" ref={this.onNew2} type="password" />
           </label>
 
           <Button class="mt1 w-100" title="Change password">
@@ -87,7 +84,7 @@ type Settings$Props = {
 
 export function Settings (props: Settings$Props) {
   return (
-    <dl class="h-100 ma0 overflow-auto pa3 w10">
+    <dl class="h-100 ma0 overflow-auto pa3 w10 w-100">
       <dt>
         <b>Login:</b>
       </dt>

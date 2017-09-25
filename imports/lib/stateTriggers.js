@@ -114,7 +114,7 @@ function syncHistory (location) {
     state.search = '';
   }
 
-  if (!['', !!user && 'd', !user && 'l', 's'].includes(state.view))
+  if (!['', user && 'd', !user && 'l', user && 's'].includes(state.view))
     state.view = '';
 
   tree.set(['noteId'], tree.get(['notes']).find(note => note._id === state.noteId) ? state.noteId : undefined);

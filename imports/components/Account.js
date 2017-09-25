@@ -37,17 +37,17 @@ export class Account extends Component<Account$Props> {
   render () {
     return (
       <form onSubmit={this.onSubmit}>
-        <label class="flex mb1" for="email" title="Email">
+        <label class="flex h2 mb1" for="email" title="Email">
           {iconUser}
           <input class="ba bg-near-white bw1 flex-1 ml1 ph1" id="email" name="email" ref={this.onRefEmail} required type="email" />
         </label>
 
-        <label class="flex mb1" for="password" title="Password">
+        <label class="flex h2 mb1" for="password" title="Password">
           {iconLock}
           <input class="ba bg-near-white bw1 flex-1 ml1 ph1" id="password" name="password" ref={this.onRefPassword} required type="password" />
         </label>
 
-        <Button class="w-100" title="Log In">
+        <Button class="h2 w-100" title="Log In">
           Log In
         </Button>
       </form>

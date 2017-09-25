@@ -67,14 +67,14 @@ export class Note extends Component<Note$Props> {
 
     if (!props.note) {
       return (
-        <dl class="flex-1 h-100 ma0 overflow-auto pa3" />
+        <dl class="flex-1 h-100 ma0 overflow-auto pa3 w-100" />
       );
     }
 
     const other = props.user.schemas.findIndex(schema => schema.name === props.note._outname) === -1;
 
     return (
-      <dl class="flex-1 h-100 ma0 overflow-auto pa3">
+      <dl class="h-100 ma0 overflow-auto pa3 w-100">
         {props.user.schemas.length > 1 && (
           <select
             class="b--dark-gray ba bg-white bw1 h2 mb1 pointer tc w-100"

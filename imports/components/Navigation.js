@@ -25,16 +25,16 @@ export const Navigation = (props: Navigation$Props) => (
     </a>
 
     {!!props.user && (
-      <a class="bg-hover br-100 flex flex-center square tc" href="/d">
-        <div class="h2 mb1 mt1 pa1 w2">
+      <a class="hover-bg-shade br-100 flex flex-center mb1 mt1 square tc" href="/d" title="Notes">
+        <div class="h2 pa1 w2">
           {iconNote}
         </div>
       </a>
     )}
 
     {!!props.user && (
-      <a class="bg-hover br-100 flex flex-center square tc" href="/s">
-        <div class="h2 mb1 mt1 pa1 w2">
+      <a class="hover-bg-shade br-100 flex flex-center mb1 mt1 square tc" href="/s" title="Settings">
+        <div class="h2 pa1 w2">
           {iconCog}
         </div>
       </a>
@@ -42,8 +42,8 @@ export const Navigation = (props: Navigation$Props) => (
 
     <div class="flex-1" />
 
-    <a class="bg-hover br-100 flex flex-center square tc" href="/l" onClick={props.user && onLogout}>
-      <div class="h2 mb1 mt1 pa1 w2">
+    <a class="hover-bg-shade br-100 flex flex-center mb1 mt1 square tc" href="/l" onClick={props.user && onLogout} title={props.user ? 'Log Out' : 'Log In'}>
+      <div class="h2 pa1 w2">
         {props.user ? iconLogOut : iconLogIn}
       </div>
     </a>

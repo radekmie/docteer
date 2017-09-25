@@ -12,7 +12,7 @@
     "test": "npm run lint && npm run flow && CI=1 npm run e2e -- --once"
   },
   "dependencies": {
-    "autoprefixer": "7.1.4",
+    "ajv": "5.2.3",
     "babel-runtime": "6.26.0",
     "baobab": "2.4.3",
     "bcrypt": "1.0.3",
@@ -26,6 +26,7 @@
     "lru-cache": "4.1.1",
     "meteor-node-stubs": "0.2.11",
     "postcss": "6.0.11",
+    "postcss-cssnext": "3.0.2",
     "postcss-import": "11.0.0",
     "preact": "8.2.5",
     "preact-render-to-string": "3.6.3",

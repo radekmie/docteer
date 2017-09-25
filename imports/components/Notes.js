@@ -39,7 +39,7 @@ type Notes$Props = {
 
 export function Notes (props: Notes$Props) {
   return (
-    <div class="b--dark-gray br bw1 column flex flex-1 flex-column h-100">
+    <div class="b--dark-gray br bw1 column flex flex-column h-100 overflow-auto resize">
       <div class="b--dark-gray bb bw1">
         <label class="flex" for="search" title="Search">
           <input class="bg-near-white bw0 flex-1 pa2" id="search" name="search" placeholder="Search..." onInput={onSearch} type="search" value={props.search} />
@@ -49,7 +49,7 @@ export function Notes (props: Notes$Props) {
       <div class="flex-1 ma0 overflow-auto">
         {props.notes.length === 0 && (
           <div class="pa3 tc">
-            {`(no test cases${props.search ? ' found' : ''})`}
+            {`(no notes${props.search ? ' found' : ''})`}
           </div>
         )}
 

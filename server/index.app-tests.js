@@ -9,31 +9,36 @@ import {page}     from 'meteor/universe:e2e';
 
 //
 
-const user = {
-  _id: null,
-  email: faker.internet.email(),
-  password: faker.internet.password()
+faker.user = () => {
+  const user = {
+    _id: null,
+    email: faker.internet.email(),
+    password: faker.internet.password()
+  };
+
+  return user;
 };
 
-const userNonExisting = {
-  email: faker.internet.email(),
-  password: faker.internet.password()
+faker.user.registered = () => {
+  const user = faker.user();
+
+  user._id = Accounts.createUser(user);
+
+  Meteor.users.update(user._id, {
+    $set: {
+      schemas: [{
+        name: 'Default',
+        fields: {
+          name: 'div',
+          labels: 'ul',
+          text: 'div'
+        }
+      }]
+    }
+  });
+
+  return user;
 };
-
-user._id = Accounts.createUser(user);
-
-Meteor.users.update(user._id, {
-  $set: {
-    schemas: [{
-      name: 'Default',
-      fields: {
-        name: 'div',
-        labels: 'ul',
-        text: 'div'
-      }
-    }]
-  }
-});
 
 //
 
@@ -85,6 +90,8 @@ const field = (position, name, value) => {
 
 const login = user =>
   it(`should log in as ${user.email}:${user.password}`, async () => {
+    await page.click('[title="Log In"]');
+
     await page.click('#email');
     await page.keyboard.down('Control');
     await page.keyboard.down('A');
@@ -99,13 +106,21 @@ const login = user =>
     await page.keyboard.up('Control');
     await page.type(user.password);
 
-    await page.click('[title="Log In"]');
+    await page.click('button[title="Log In"]');
   })
 ;
 
 const logout = () =>
   it('should log out', async () => {
     await page.click('[title="Log Out"]');
+  })
+;
+
+const navigate = title =>
+  it(`should click '${title}' navigation link`, async () => {
+    const selector = `.bg-dark-gray.flex.flex-center.flex-column.h-100.near-white.pa3.ph1 > [title=${title}]`;
+    await page.waitForSelector(selector);
+    await page.click(selector);
   })
 ;
 
@@ -171,13 +186,17 @@ describe('docteer.com', () => {
   resize(1024, 768);
 
   describe('Log In (fail)', () => {
-    start('/l');
-    login(userNonExisting);
+    const user = faker.user();
+
+    start('/');
+    login(user);
     toast('Logging in...');
     toast('Sounds good, doesn\'t work.');
   });
 
   describe('Log In (success) and Log Out', () => {
+    const user = faker.user.registered();
+
     start('/');
     login(user);
     toast('Logging in...');
@@ -190,22 +209,26 @@ describe('docteer.com', () => {
   });
 
   describe('Add note', () => {
+    const user = faker.user.registered();
+    const title = faker.lorem.words();
+
     start('/');
     login(user);
     toast('Logging in...');
     toast('Logged in.');
     toast('Loading...');
     toast('Loaded.');
+    navigate('Notes');
     action('Create');
     note('(untitled)', 'light-green');
-    field(0, 'Name', 'Hello!');
-    field(1, 'Labels', ['Label 1', 'Label 2']);
-    field(2, 'Text', 'World!');
-    note('Hello!', 'light-green');
+    field(0, 'Name', title);
+    field(1, 'Labels', [faker.lorem.word(), faker.lorem.word()]);
+    field(2, 'Text', faker.lorem.paragraphs());
+    note(title, 'light-green');
     action('Save');
     toast('Saving...');
     toast('Saved.');
-    note('Hello!');
+    note(title);
     logout(user);
     toast('Logging out...');
     toast('Logged out.');

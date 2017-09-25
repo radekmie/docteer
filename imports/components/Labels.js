@@ -28,7 +28,7 @@ type Labels$Props = {
 
 export function Labels (props: Labels$Props) {
   return (
-    <div class="b--dark-gray br bw1 column flex flex-1 flex-column h-100 overflow-auto">
+    <div class="b--dark-gray br bw1 column flex flex-column h-100 overflow-auto resize">
       {props.labels.length === 0 && (
         <div className="pa3 tc">
           (no labels)
