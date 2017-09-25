@@ -88,7 +88,7 @@ export class Application extends Component<Application$Props, Application$State>
         )}
 
         {state.view === 's' && (
-          <div class="flex flex-center w-100">
+          <div class="h-100 overflow-auto pa3 w-100">
             <Settings user={state.user} />
           </div>
         )}
