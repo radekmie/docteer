@@ -9,7 +9,7 @@ type Logo$Props = {
 
 export function Logo (props: Logo$Props) {
   return (
-    <svg class={['dark-gray logo', props.class].filter(Boolean).join(' ').split(' ').sort().join(' ')} viewBox="0 0 32 32">
+    <svg class={['logo', props.class].filter(Boolean).join(' ')} viewBox="0 0 32 32">
       <path d="M7 21v2h1v-2zm10 0v2h1v-2" />
       <path d="M9 21v2h1v-2zm16 0v2h1v-2" />
       <path d="M11 21v2h1v-2zm10 0v2h1v-2" />

@@ -105,15 +105,17 @@ function syncHistory (location) {
     noteId: match[1] === 'd' && match[2] || undefined,
     filter: match[3] ? decodeURIComponent(match[3]).split(',').sort() : [],
     search: match[4] ? decodeURIComponent(match[4]) : '',
-    view:   match[1] || (user ? 'd' : undefined)
+    view:   match[1] || ''
   };
 
   if (!user) {
     state.noteId = undefined;
     state.filter = [];
     state.search = '';
-    state.view   = undefined;
   }
+
+  if (!['', !!user && 'd', !user && 'l', 's'].includes(state.view))
+    state.view = '';
 
   tree.set(['noteId'], tree.get(['notes']).find(note => note._id === state.noteId) ? state.noteId : undefined);
   tree.set(['search'], state.search);

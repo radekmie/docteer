@@ -5,6 +5,10 @@
   100% { transform: scaleY(3); }
 }
 
+a {
+  color: inherit;
+}
+
 button,
 input {
   line-height: 1.4;
@@ -55,6 +59,15 @@ path {
   transform: translate(-50%, -50%);
 }
 
+.bg-hover {
+  background: none;
+  transition: background 0.1s linear;
+}
+
+.bg-hover:hover {
+  background: currentcolor;
+}
+
 .center-h {
   left: 50%;
   transform: translateX(-50%);
@@ -74,18 +87,13 @@ path {
   opacity: 0.5;
 }
 
-.filler {
-  background: repeating-linear-gradient(
-    -45deg,
-    currentColor,
-    currentColor 10px,
-    transparent 10px,
-    transparent 20px
-  );
-}
-
 .flex-1 {
   flex: 1;
+}
+
+.flex-center {
+  align-items: center;
+  justify-content: center;
 }
 
 .icon {
@@ -143,6 +151,16 @@ path {
   -webkit-overflow-scrolling: touch;
 }
 
+.square {
+  height: 2.5rem;
+  width: 2.5rem;
+}
+
 .w5 {
   width: 20rem;
+}
+
+.w10 {
+  width: 100%;
+  max-width: 40rem;
 }

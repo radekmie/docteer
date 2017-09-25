@@ -46,17 +46,17 @@ export function Notes (props: Notes$Props) {
         </label>
       </div>
 
-      {props.notes.length ? (
-        <div class="flex-1 ma0 overflow-auto">
-          {props.notes.map(note =>
-            <Note note={note} key={note._id} />
-          )}
-        </div>
-      ) : (
-        <div class="pa3 tc">
-          {`(no test cases${props.search ? ' found' : ''})`}
-        </div>
-      )}
+      <div class="flex-1 ma0 overflow-auto">
+        {props.notes.length === 0 && (
+          <div class="pa3 tc">
+            {`(no test cases${props.search ? ' found' : ''})`}
+          </div>
+        )}
+
+        {props.notes.map(note =>
+          <Note note={note} key={note._id} />
+        )}
+      </div>
     </div>
   );
 }

@@ -171,7 +171,7 @@ describe('docteer.com', () => {
   resize(1024, 768);
 
   describe('Log In (fail)', () => {
-    start('/');
+    start('/l');
     login(userNonExisting);
     toast('Logging in...');
     toast('Sounds good, doesn\'t work.');

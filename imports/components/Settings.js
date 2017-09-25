@@ -87,7 +87,7 @@ type Settings$Props = {
 
 export function Settings (props: Settings$Props) {
   return (
-    <dl class="flex-1 h-100 ma0 overflow-auto pa3">
+    <dl class="h-100 ma0 overflow-auto pa3 w10">
       <dt>
         <b>Login:</b>
       </dt>

@@ -8,8 +8,8 @@ import {tree} from '/imports/lib/state';
 
 import {Account}      from './Account';
 import {Actions}      from './Actions';
-import {Header}       from './Header';
 import {Labels}       from './Labels';
+import {Navigation}   from './Navigation';
 import {Notes}        from './Notes';
 import {Note}         from './Note';
 import {Settings}     from './Settings';
@@ -23,6 +23,7 @@ import type {TUser}  from '/imports/types.flow';
 
 const watcher = tree.watch({
   edit:   ['edit'],
+  full:   ['full'],
   labels: ['labels'],
   load:   ['load'],
   note:   ['note'],
@@ -37,6 +38,7 @@ const watcher = tree.watch({
 type Application$Props = {};
 type Application$State = {
   edit: bool,
+  full: bool,
   labels: TLabel[],
   load: bool,
   note: ?TNote,
@@ -71,34 +73,36 @@ export class Application extends Component<Application$Props, Application$State>
 
     return (
       <main class={`app dark-gray flex lh-copy${state.load ? ' loading' : ''}`}>
-        <div class="b--dark-gray br bw1 column flex flex-1 flex-column h-100">
-          <Header pend={state.pend} user={state.user} />
+        <Navigation full={state.full} pend={state.pend} user={state.user} view={state.view} />
 
-          {!!(state.user && state.view === 'd') && (
-            <Labels labels={state.labels} />
-          )}
+        {state.view === 'd' && (
+          <Labels labels={state.labels} />
+        )}
 
-          {!(state.user && state.view === 'd') && (
-            <div class="filler flex-1 near-white" />
-          )}
-
-          <Account user={state.user} view={state.view} />
-        </div>
-
-        {!!state.user && state.view === 'd' && (
+        {state.view === 'd' && (
           <Notes notes={state.notes} search={state.search} />
         )}
 
-        {!!state.user && !!state.note && state.view === 'd' && (
+        {state.view === 'd' && (
           <Note labels={state.labels} note={state.note} edit={state.edit} user={state.user} />
         )}
 
-        {!!state.user && !state.note && state.view === 's' && (
-          <Settings user={state.user} />
+        {state.view === 's' && (
+          <div class="flex flex-center w-100">
+            <Settings user={state.user} />
+          </div>
         )}
 
-        {!state.note && state.view !== 's' && (
-          <Splashscreen />
+        {state.view === 'l' && (
+          <div class="flex flex-center w-100">
+            <Account />
+          </div>
+        )}
+
+        {state.view === '' && (
+          <div class="flex flex-center w-100">
+            <Splashscreen />
+          </div>
         )}
 
         <Actions note={!!state.note} edit={state.edit} user={state.user} view={state.view} />

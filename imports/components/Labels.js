@@ -27,16 +27,14 @@ type Labels$Props = {
 };
 
 export function Labels (props: Labels$Props) {
-  if (props.labels.length === 0) {
-    return (
-      <div class="flex-1 pa3 tc">
-        (no labels)
-      </div>
-    );
-  }
-
   return (
-    <div class="flex-1 overflow-auto">
+    <div class="b--dark-gray br bw1 column flex flex-1 flex-column h-100 overflow-auto">
+      {props.labels.length === 0 && (
+        <div className="pa3 tc">
+          (no labels)
+        </div>
+      )}
+
       {props.labels.map(label =>
         <Label key={label.name} label={label} />
       )}

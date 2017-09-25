@@ -13,10 +13,12 @@ import {schemaKey}      from '/imports/lib/schemas';
 import {Editable} from './Editable';
 
 import type {TNote} from '/imports/types.flow';
+import type {TUser} from '/imports/types.flow';
 
 type Note$Props = {
   edit: bool,
-  note: TNote
+  note: ?TNote,
+  user: TUser
 };
 
 export class Note extends Component<Note$Props> {
@@ -62,6 +64,13 @@ export class Note extends Component<Note$Props> {
 
   render () {
     const props = this.props;
+
+    if (!props.note) {
+      return (
+        <dl class="flex-1 h-100 ma0 overflow-auto pa3" />
+      );
+    }
+
     const other = props.user.schemas.findIndex(schema => schema.name === props.note._outname) === -1;
 
     return (
