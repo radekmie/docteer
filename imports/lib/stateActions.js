@@ -56,6 +56,109 @@ export function onEdit () {
     onReset();
 }
 
+export function onExport () {
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(new Blob([JSON.stringify(tree.get(['notesOrigins']))], {type: 'application/json'}));
+
+  link.href = url;
+  link.download = `docteer-${tree.get(['last']).toJSON().slice(0, 16).replace(/[:-]/g, '_').replace('T', '-')}.json`;
+  link.style.display = 'none';
+
+  // $FlowFixMe: Is body really nullable?
+  document.body.appendChild(link);
+
+  link.click();
+
+  setTimeout(() => {
+    // $FlowFixMe: Is body really nullable?
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }, 0);
+}
+
+export function onImport () {
+  const input = document.createElement('input');
+
+  input.type = 'file';
+  input.accept = '.json';
+  input.style.display = 'none';
+
+  // $FlowFixMe: Is body really nullable?
+  document.body.appendChild(input);
+
+  input.click();
+  input.addEventListener('change', uploaded, false);
+
+  function remove () {
+    // $FlowFixMe: Is body really nullable?
+    document.body.removeChild(input);
+  }
+
+  const removeDelay = setTimeout(remove, 60 * 1000);
+
+  function uploaded () {
+    const reader = new FileReader();
+
+    clearTimeout(removeDelay);
+
+    toast('info', 'Importing...');
+
+    reader.readAsText(input.files[0]);
+    reader.onerror = () => {
+      toast('error', 'Import error.');
+    };
+    reader.onload = () => {
+      try {
+        const created = {};
+        const updated = {};
+
+        // $FlowFixMe: This will be a string, because of readAsText.
+        JSON.parse(reader.result).forEach(row => {
+          if (typeof row._id !== 'string' || row._id.length !== 6)
+            throw new Error();
+
+          Object.keys(row).forEach(key => {
+            if (key.slice(0, 1) === '_') {
+              if (key !== '_id' && key !== '_outline' && key !== '_outname')
+                throw new Error();
+              return;
+            }
+
+            if (row._outline[key] === 'div' && typeof row[key] === 'string')
+              return;
+
+            if ((row._outline[key] === 'ol' || row._outline[key] === 'ul') && row[key].every(line => typeof line === 'string'))
+              return;
+
+            throw new Error();
+          });
+
+          Object.keys(row._outline).forEach(key => {
+            if (row[key] === undefined)
+              throw new Error();
+          });
+
+          if (!tree.get(['notesOrigins', {_id: row._id}]))
+            created[row._id] = true;
+
+          updated[row._id] = row;
+        });
+
+        tree.merge(['notesUpdated'], updated);
+        tree.merge(['notesCreated'], created);
+        tree.set(['edit'], true);
+        tree.set(['view'], 'd');
+
+        toast('success', 'Imported.');
+      } catch (error) {
+        toast('error', 'Import error.');
+      }
+
+      remove();
+    };
+  }
+}
+
 export function onLogin (email: string, password: string) {
   toast('info', 'Logging in...');
 

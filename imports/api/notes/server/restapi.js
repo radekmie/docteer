@@ -3,7 +3,12 @@
 import {InvalidArgumentError} from 'restify-errors';
 import {UnauthorizedError}    from 'restify-errors';
 
-import {Notes} from '..';
+import {MongoInternals} from 'meteor/mongo';
+
+import {Notes}        from '.';
+import {NotesArchive} from '.';
+
+const ObjectId = MongoInternals.NpmModules.mongodb.module.ObjectId;
 
 Notes.register = function register (server, context) {
   context.ajv.addSchema({
@@ -170,21 +175,66 @@ Notes.register = function register (server, context) {
     if (userId === null)
       return next(new UnauthorizedError());
 
-
-    bulkPatch(Notes, req.body, userId);
-
+    notesPatch(req.body, userId);
     res.send(notesByUser(userId, req.query.refresh));
+    if (req.body.removed.length)
+      notesArchive();
 
     return next();
   });
 
-  function bulkPatch (collection, patch, userId) {
+  function notesArchive () {
+    const archive = Notes
+      .find({_removed: {$ne: null}})
+      .map(note => Object.assign(note, {_id: new ObjectId(note._id._str)}))
+    ;
+
+    if (archive.length === 0)
+      return;
+
+    const $in = archive.map(note => note._id);
+
+    NotesArchive.rawCollection().insertMany(archive).await();
+    Notes.rawCollection().deleteMany({_id: {$in}}).await();
+  }
+
+  function notesByUser (userId, after) {
+    const refresh = new Date(after || 0);
+    const fields = {
+      _id:      0,
+      _id_user: 0,
+      _updated: 0,
+      _version: 0
+    };
+
+    const diff = {created: [], removed: [], updated: []};
+
+    Notes.find({_id_user: userId, _updated: {$gt: refresh}}, {fields}).forEach(note => {
+      note._id = note._id_slug;
+
+      if (note._removed > refresh)
+        diff.removed.push(note._id);
+      else {
+        diff.updated.push(note);
+
+        if (note._created > refresh)
+          diff.created.push(note._id);
+
+      }
+
+      delete note._id_slug;
+      delete note._created;
+      delete note._removed;
+    });
+
+    return diff;
+  }
+
+  function notesPatch (patch, userId) {
     if (!patch.created.length && !patch.removed.length && !patch.updated.length)
       return;
 
-    const now = new Date();
-
-    const hand = collection.rawCollection();
+    const now  = new Date();
     const bulk = [];
 
     patch.removed.forEach(_id => {
@@ -250,38 +300,6 @@ Notes.register = function register (server, context) {
       }
     });
 
-    hand.bulkWrite(bulk).await();
-  }
-
-  function notesByUser (userId, after) {
-    const refresh = new Date(after || 0);
-    const fields = {
-      _id:      0,
-      _id_user: 0,
-      _updated: 0,
-      _version: 0
-    };
-
-    const diff = {created: [], removed: [], updated: []};
-
-    Notes.find({_id_user: userId, _updated: {$gt: refresh}}, {fields}).forEach(note => {
-      note._id = note._id_slug;
-
-      if (note._removed > refresh)
-        diff.removed.push(note._id);
-      else {
-        diff.updated.push(note);
-
-        if (note._created > refresh)
-          diff.created.push(note._id);
-
-      }
-
-      delete note._id_slug;
-      delete note._created;
-      delete note._removed;
-    });
-
-    return diff;
+    Notes.rawCollection().bulkWrite(bulk).await();
   }
 };

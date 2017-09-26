@@ -61,8 +61,6 @@ Meteor.methods({
       });
     });
 
-    settings.schemas.sort((a, b) => a.name.localeCompare(b.name));
-
     Meteor.users.update({_id: this.userId}, {$set: settings});
   }
 });

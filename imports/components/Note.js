@@ -89,7 +89,7 @@ export class Note extends Component<Note$Props> {
               </option>
             )}
 
-            {props.user.schemas.map((schema, index) =>
+            {props.user.schemas.slice().sort((a, b) => a.name.localeCompare(b.name)).map((schema, index) =>
               <option key={index} value={schema.name}>
                 {schema.name}
               </option>

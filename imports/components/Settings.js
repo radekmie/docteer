@@ -6,6 +6,8 @@ import {h}         from 'preact';
 
 import {Button}           from '/imports/components/Button';
 import {onChangePassword} from '/imports/lib/stateActions';
+import {onExport}         from '/imports/lib/stateActions';
+import {onImport}         from '/imports/lib/stateActions';
 import {onSchemaAdd}      from '/imports/lib/stateActions';
 import {onSchemaDelete}   from '/imports/lib/stateActions';
 import {onSchemaField}    from '/imports/lib/stateActions';
@@ -202,6 +204,30 @@ export function Settings (props: Settings$Props) {
             </div>
           </details>
         )}
+      </dd>
+
+      <dt class="mt3">
+        Import / Export
+      </dt>
+
+      <dd class="ml4">
+        <div class="flex mt1">
+          <Button
+            class="flex-1"
+            onClick={onImport}
+            title="Import"
+          >
+            Import
+          </Button>
+
+          <Button
+            class="flex-1 ml1"
+            onClick={onExport}
+            title="Export"
+          >
+            Export
+          </Button>
+        </div>
       </dd>
     </dl>
   );
