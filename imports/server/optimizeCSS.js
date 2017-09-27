@@ -1,9 +1,9 @@
 // @flow
 
-import cssnext      from 'postcss-cssnext';
-import cssnano      from 'cssnano';
-import postcss      from 'postcss';
-import {readFile}   from 'fs';
+import cssnext    from 'postcss-cssnext';
+import cssnano    from 'cssnano';
+import postcss    from 'postcss';
+import {readFile} from 'fs';
 
 import {Meteor}          from 'meteor/meteor';
 import {WebAppInternals} from 'meteor/webapp';

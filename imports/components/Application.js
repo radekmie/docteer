@@ -75,6 +75,12 @@ export class Application extends Component<Application$Props, Application$State>
       <main class={`app dark-gray flex lh-copy${state.load ? ' loading' : ''}`}>
         <Navigation full={state.full} pend={state.pend} user={state.user} view={state.view} />
 
+        {state.view === '' && (
+          <div class="flex flex-center w-100">
+            <Splashscreen />
+          </div>
+        )}
+
         {state.view === 'd' && (
           <Labels labels={state.labels} />
         )}
@@ -87,21 +93,15 @@ export class Application extends Component<Application$Props, Application$State>
           <Note labels={state.labels} note={state.note} edit={state.edit} user={state.user} />
         )}
 
-        {state.view === 's' && (
-          <div class="h-100 overflow-auto pa3 w-100">
-            <Settings user={state.user} />
-          </div>
-        )}
-
         {state.view === 'l' && (
           <div class="flex flex-center w-100">
             <Account />
           </div>
         )}
 
-        {state.view === '' && (
-          <div class="flex flex-center w-100">
-            <Splashscreen />
+        {state.view === 's' && (
+          <div class="h-100 overflow-auto pa3 w-100">
+            <Settings user={state.user} />
           </div>
         )}
 
