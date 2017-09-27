@@ -36,7 +36,7 @@ export class Account extends Component<Account$Props> {
 
   render () {
     return (
-      <form onSubmit={this.onSubmit}>
+      <form class="w5" onSubmit={this.onSubmit}>
         <label class="flex h2 mb1" for="email" title="Email">
           {iconUser}
           <input class="ba bg-near-white bw1 flex-1 ml1 ph1" id="email" name="email" ref={this.onRefEmail} required type="email" />
