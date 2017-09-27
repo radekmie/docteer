@@ -280,7 +280,7 @@ Notes.register = function register (server, context) {
               _updated: now,
 
               // History
-              _version: [{_created: now, ...doc}],
+              _version: [{_created: now, _outline, _outname, ...doc}],
 
               // Data
               ...doc
@@ -292,8 +292,8 @@ Notes.register = function register (server, context) {
           updateOne: {
             filter: {_id_slug: _id, _id_user: userId},
             update: {
-              $set:             {_updated: now, ...doc},
-              $push: {_version: {_created: now, ...doc}}
+              $set:             {_updated: now, ..._outline && {_outline}, ..._outname && {_outname}, ...doc},
+              $push: {_version: {_created: now, ..._outline && {_outline}, ..._outname && {_outname}, ...doc}}
             }
           }
         });

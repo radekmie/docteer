@@ -71,24 +71,16 @@ export class Note extends Component<Note$Props> {
       );
     }
 
-    const other = props.user.schemas.findIndex(schema => schema.name === props.note._outname) === -1;
-
     return (
       <dl class="h-100 ma0 overflow-auto pa3 w-100">
         {props.user.schemas.length > 1 && (
           <select
-            class="b--dark-gray ba bg-white bw1 h2 mb1 pointer tc w-100"
-            disabled={!props.edit && !props.note._created}
+            class={`b--dark-gray ba bg-white bw1 h2 mb1${props.edit ? ' pointer' : ''} w-100`}
+            disabled={!props.edit}
             onChange={this.onSchema}
             title="Schema"
-            value={props.note._outname || ''}
+            value={props.note._outname}
           >
-            {other && (
-              <option value="">
-                {props.note._outname || '(unknown)'}
-              </option>
-            )}
-
             {props.user.schemas.slice().sort((a, b) => a.name.localeCompare(b.name)).map((schema, index) =>
               <option key={index} value={schema.name}>
                 {schema.name}

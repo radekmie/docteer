@@ -39,7 +39,7 @@ export function onChangePassword (old: string, new1: string, new2: string): Prom
 }
 
 export function onChangeSchema (_id: string, schema: {fields: {[string]: string}, name: string}) {
-  const doc = tree.get(['notesUpdated', _id]);
+  const doc = tree.get(['notes', {_id}]);
 
   if (doc) {
     tree.set(['notesUpdated', _id], Object.keys(schema.fields).reduce(
