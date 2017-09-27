@@ -50,15 +50,6 @@ const action = title =>
   })
 ;
 
-// eslint-disable-next-line no-unused-vars
-const close = page =>
-  it(`should close '${page}'`, async () => {
-    const {targetInfos} = await browser._connection.send('Target.getTargets');
-    const {targetId} = targetInfos.find(target => target.url === page);
-    await browser._connection.send('Target.closeTarget', {targetId});
-  })
-;
-
 const field = (position, name, value) => {
   it(`should check field ${position + 1} to be called '${name}'`, async () => {
     await page.waitForFunction(
@@ -85,6 +76,8 @@ const field = (position, name, value) => {
       await page.press('Enter');
       await page.type(value.shift());
     }
+
+    await page.$eval(selector, input => input.blur());
   });
 };
 
@@ -124,7 +117,18 @@ const navigate = title =>
   })
 ;
 
-const note = (title, color) => {
+const note = (title, color = 'normal') => {
+  if (color === false) {
+    it(`should check if note called '${title}' is not visible`, async () => {
+      await page.waitForFunction(
+        `Array.from(document.querySelectorAll('.flex-1.ma0.overflow-auto > *')).every(x => x.textContent !== '${title.replace('\'', '\\\'')}')`,
+        {polling: 'mutation'}
+      );
+    });
+
+    return;
+  }
+
   it(`should check if note called '${title}' is visible`, async () => {
     await page.waitForFunction(
       `Array.from(document.querySelectorAll('.flex-1.ma0.overflow-auto > *')).some(x => x.textContent === '${title.replace('\'', '\\\'')}')`,
@@ -132,14 +136,12 @@ const note = (title, color) => {
     );
   });
 
-  if (color) {
-    it(`should check if note called '${title}' is ${color}`, async () => {
-      await page.waitForFunction(
-        `Array.from(document.querySelectorAll('.flex-1.ma0.overflow-auto > .hover-${color}')).some(x => x.textContent === '${title.replace('\'', '\\\'')}')`,
-        {polling: 'mutation'}
-      );
-    });
-  }
+  it(`should check if note called '${title}' is ${color}`, async () => {
+    await page.waitForFunction(
+      `Array.from(document.querySelectorAll('.flex-1.ma0.overflow-auto > .${color === 'normal' ? 'dark-gray' : `hover-${color}`}')).some(x => x.textContent === '${title.replace('\'', '\\\'')}')`,
+      {polling: 'mutation'}
+    );
+  });
 };
 
 const resize = (width, height) =>
@@ -158,13 +160,18 @@ const resize = (width, height) =>
   })
 ;
 
+const select = title =>
+  it(`should select note called '${title}'`, async () => {
+    const note = await page.evaluate(`Array.from(document.querySelectorAll('.flex-1.ma0.overflow-auto > *')).findIndex(x => x.textContent === '${title.replace('\'', '\\\'')}')`);
+    await page.click(`.flex-1.ma0.overflow-auto > :nth-child(${note + 1})`);
+  })
+;
+
 const start = path =>
   it(`should load ${path}`, async () => {
     const url = Meteor.absoluteUrl(path.slice(1));
 
-    if (await page.url() !== url)
-      await page.goto(url);
-
+    await page.goto(url);
     await page.waitForSelector('main:not(.loading)');
   })
 ;
@@ -178,14 +185,12 @@ const toast = text =>
   })
 ;
 
-describe('docteer.com', () => {
-  // FIXME: Remember about {args: ['--no-sandbox']}.
-  // TODO: Makes sense only in non-headless mode.
-  // close('chrome://newtab/');
+//
 
+describe('docteer.com', () => {
   resize(1024, 768);
 
-  describe('Log In (fail)', () => {
+  describe('Log in fail', () => {
     const user = faker.user();
 
     start('/');
@@ -194,7 +199,7 @@ describe('docteer.com', () => {
     toast('Sounds good, doesn\'t work.');
   });
 
-  describe('Log In (success) and Log Out', () => {
+  describe('Log in success and log out', () => {
     const user = faker.user.registered();
 
     start('/');
@@ -229,6 +234,100 @@ describe('docteer.com', () => {
     toast('Saving...');
     toast('Saved.');
     note(title);
+    logout(user);
+    toast('Logging out...');
+    toast('Logged out.');
+  });
+
+  describe('Add and edit note', () => {
+    const user = faker.user.registered();
+    const title = faker.lorem.words();
+
+    start('/');
+    login(user);
+    toast('Logging in...');
+    toast('Logged in.');
+    toast('Loading...');
+    toast('Loaded.');
+    navigate('Notes');
+    action('Create');
+    note('(untitled)', 'light-green');
+    field(0, 'Name', title);
+    field(1, 'Labels', [faker.lorem.word(), faker.lorem.word()]);
+    field(2, 'Text', faker.lorem.paragraphs());
+    note(title, 'light-green');
+    action('Save');
+    toast('Saving...');
+    toast('Saved.');
+    note(title);
+    select(title);
+    action('Edit');
+    field(2, 'Text', faker.lorem.paragraphs());
+    note(title, 'light-blue');
+    action('Save');
+    toast('Saving...');
+    toast('Saved.');
+    note(title);
+    logout(user);
+    toast('Logging out...');
+    toast('Logged out.');
+  });
+
+  describe('Add and remove note before save', () => {
+    const user = faker.user.registered();
+    const title = faker.lorem.words();
+
+    start('/');
+    login(user);
+    toast('Logging in...');
+    toast('Logged in.');
+    toast('Loading...');
+    toast('Loaded.');
+    navigate('Notes');
+    action('Create');
+    note('(untitled)', 'light-green');
+    field(0, 'Name', title);
+    field(1, 'Labels', [faker.lorem.word(), faker.lorem.word()]);
+    field(2, 'Text', faker.lorem.paragraphs());
+    note(title, 'light-green');
+    action('Remove');
+    note(title, 'light-gray');
+    action('Save');
+    note(title, false);
+    logout(user);
+    toast('Logging out...');
+    toast('Logged out.');
+  });
+
+  describe('Add and remove note', () => {
+    const user = faker.user.registered();
+    const title = faker.lorem.words();
+
+    start('/');
+    login(user);
+    toast('Logging in...');
+    toast('Logged in.');
+    toast('Loading...');
+    toast('Loaded.');
+    navigate('Notes');
+    action('Create');
+    note('(untitled)', 'light-green');
+    field(0, 'Name', title);
+    field(1, 'Labels', [faker.lorem.word(), faker.lorem.word()]);
+    field(2, 'Text', faker.lorem.paragraphs());
+    note(title, 'light-green');
+    action('Save');
+    toast('Saving...');
+    toast('Saved.');
+    note(title);
+    select(title);
+    action('Edit');
+    action('Remove');
+    note(title, 'light-red');
+    action('Save');
+    note(title, false);
+    toast('Saving...');
+    toast('Saved.');
     logout(user);
     toast('Logging out...');
     toast('Logged out.');

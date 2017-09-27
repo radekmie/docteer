@@ -1,10 +1,14 @@
 {
   "universe:e2e": {
+    "mocha": {
+      "bail": true
+    },
     "puppeteer": {
       "args": [
         "--no-sandbox"
       ],
-      "headless": true
+      "headless": true,
+      "slowMo": 1
     }
   }
 }
