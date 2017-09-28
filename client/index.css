@@ -6,7 +6,7 @@
 :root {
   --blue:        rgba(53, 126, 221, 1);
   --dark-blue:   rgba(0, 68, 158, 1);
-  --dark-gray:   rgba(51, 51, 51, 1);
+  --dark-gray:   rgba(34, 40, 49, 1);
   --dark-green:  rgba(19, 119, 82, 1);
   --dark-pink:   rgba(213, 0, 143, 1);
   --dark-red:    rgba(231, 4, 15, 1);
@@ -16,8 +16,8 @@
   --light-gray:  rgba(238, 238, 238, 1);
   --light-green: rgba(158, 235, 207, 1);
   --light-red:   rgba(255, 114, 92, 1);
-  --near-white:  rgba(244, 244, 244, 1);
-  --shade:       rgba(244, 244, 244, 0.1);
+  --near-white:  rgba(238, 238, 238, 1);
+  --shade:       rgba(238, 238, 238, 0.1);
   --orange:      rgba(255, 99, 0, 1);
   --red:         rgba(255, 65, 54, 1);
   --white:       rgba(255, 255, 255, 1);
