@@ -114,7 +114,7 @@ export function onImport () {
 
         // $FlowFixMe: This will be a string, because of readAsText.
         JSON.parse(reader.result).forEach(row => {
-          if (typeof row._id !== 'string' || row._id.length !== 6)
+          if (typeof row._id !== 'string' || row._id.length !== 6 || row._outname !== undefined && typeof row._outname !== 'string')
             throw new Error();
 
           Object.keys(row).forEach(key => {
