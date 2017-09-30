@@ -19,7 +19,7 @@ export const tree = new Baobab({
       origins
         .concat(Object.keys(created).map(_id => ({_created: true, _id})))
         .map(x => Object.assign({_removed: !!removed[x._id], _updated: !!updated[x._id]}, x, updated[x._id]))
-        .sort((a, b) => a.name.localeCompare(b.name))
+        .sort((a, b) => a.name.localeCompare(b.name) || a._id.localeCompare(b._id))
   ),
 
   notesVisible: Baobab.monkey(
