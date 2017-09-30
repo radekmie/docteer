@@ -32,6 +32,7 @@
     "preact-render-to-string": "3.6.3",
     "prepack": "0.2.6",
     "restify": "6.0.1",
+    "shrink-ray": "aickin/shrink-ray#91ebcac6aadcd93be3a79dcb6f45dd1fdbf32b91",
     "specificity": "0.3.1"
   },
   "devDependencies": {

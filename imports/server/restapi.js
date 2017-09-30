@@ -30,7 +30,6 @@ server.use(restify.plugins.acceptParser(['application/json']));
 server.use(restify.plugins.authorizationParser());
 server.use(restify.plugins.bodyParser());
 server.use(restify.plugins.dateParser());
-server.use(restify.plugins.gzipResponse());
 server.use(restify.plugins.queryParser());
 server.use(async (req, res, next) => {
   next();
