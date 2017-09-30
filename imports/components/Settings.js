@@ -58,17 +58,17 @@ class ChangePassword extends Component {
         <form onSubmit={this.onChangePassword}>
           <label class="flex flex-column mt1" for="old" title="Old password">
             <b>Old password</b>
-            <input class="ba bg-near-white bw1 ph1" id="old" name="old" ref={this.onOld} type="password" />
+            <input class="ba bg-near-white br-0 bw1 ph1" id="old" name="old" ref={this.onOld} type="password" />
           </label>
 
           <label class="flex flex-column mt1" for="new1" title="New password">
             <b>New password</b>
-            <input class="ba bg-near-white bw1 ph1" id="new1" name="new1" ref={this.onNew1} type="password" />
+            <input class="ba bg-near-white br-0 bw1 ph1" id="new1" name="new1" ref={this.onNew1} type="password" />
           </label>
 
           <label class="flex flex-column mt1" for="new2" title="New password (again)">
             <b>New password (again)</b>
-            <input class="ba bg-near-white bw1 ph1" id="new2" name="new2" ref={this.onNew2} type="password" />
+            <input class="ba bg-near-white br-0 bw1 ph1" id="new2" name="new2" ref={this.onNew2} type="password" />
           </label>
 
           <Button class="mt1 w-100" title="Change password">
@@ -120,7 +120,7 @@ export function Settings (props: Settings$Props) {
 
             <div class="flex mt1" data-name={schema.name}>
               <input
-                class="b--dark-gray bw1 flex-1 pa1"
+                class="b--dark-gray br-0 bw1 flex-1 ph1"
                 onChange={onSchemaName}
                 type="Schema name"
                 value={schema.name}
@@ -133,7 +133,7 @@ export function Settings (props: Settings$Props) {
               return (
                 <div class="flex mt1" data-field={key} data-index={index} data-name={schema.name} key={key}>
                   <Button
-                    class="pa1"
+                    class="ph1"
                     data-order="-1"
                     disabled={index === 0}
                     onClick={onSchemaOrder}
@@ -143,7 +143,7 @@ export function Settings (props: Settings$Props) {
                   </Button>
 
                   <Button
-                    class="ml1 pa1"
+                    class="ml1 ph1"
                     data-order="+1"
                     disabled={index === array.length - 1}
                     onClick={onSchemaOrder}
@@ -153,7 +153,7 @@ export function Settings (props: Settings$Props) {
                   </Button>
 
                   <input
-                    class={`b--dark-gray ${disabled ? 'bg-near-white ' : ''}bw1 ml1 flex-1 pa1`}
+                    class={`b--dark-gray ${disabled ? 'bg-near-white ' : ''}br-0 bw1 ml1 flex-1 ph1`}
                     disabled={disabled}
                     onChange={onSchemaKey}
                     title="Field name"
@@ -161,7 +161,7 @@ export function Settings (props: Settings$Props) {
                   />
 
                   <select
-                    class={`b--dark-gray ba bg-${disabled ? 'near-' : ''}white bw1${disabled ? '' : ' dim'} ml1${disabled ? '' : ' pointer'} tc`}
+                    class={`b--dark-gray ba bg-${disabled ? 'near-' : ''}white br-0 bw1${disabled ? '' : ' dim'} ml1 ph1${disabled ? '' : ' pointer'} tc`}
                     disabled={disabled}
                     onChange={onSchemaType}
                     title="Field type"
@@ -173,7 +173,7 @@ export function Settings (props: Settings$Props) {
                   </select>
 
                   <Button
-                    class="ml1 pa1"
+                    class="ml1 ph1"
                     disabled={disabled}
                     onClick={onSchemaDelete}
                     title="Remove field"

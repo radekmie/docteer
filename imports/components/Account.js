@@ -39,12 +39,12 @@ export class Account extends Component<Account$Props> {
       <form class="w5" onSubmit={this.onSubmit}>
         <label class="flex h2 mb1" for="email" title="Email">
           {iconUser}
-          <input class="ba bg-near-white bw1 flex-1 ml1 ph1" id="email" name="email" ref={this.onRefEmail} required type="email" />
+          <input class="ba bg-near-white br-0 bw1 flex-1 ml1 ph1" id="email" name="email" ref={this.onRefEmail} required type="email" />
         </label>
 
         <label class="flex h2 mb1" for="password" title="Password">
           {iconLock}
-          <input class="ba bg-near-white bw1 flex-1 ml1 ph1" id="password" name="password" ref={this.onRefPassword} required type="password" />
+          <input class="ba bg-near-white br-0 bw1 flex-1 ml1 ph1" id="password" name="password" ref={this.onRefPassword} required type="password" />
         </label>
 
         <Button class="h2 w-100" title="Log In">

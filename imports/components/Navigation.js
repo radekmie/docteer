@@ -19,13 +19,13 @@ type Navigation$Props = {
 };
 
 export const Navigation = (props: Navigation$Props) => (
-  <div class="bg-dark-gray flex flex-center flex-column h-100 near-white pa3 ph1">
-    <a class="flex mb1 mt1 near-white" href="/">
+  <div class="bg-dark-gray flex flex-around flex-center flex-column h-100 near-white pa3 ph1">
+    <a class="flex flex-0 flex-center mb1 mt1 near-white" href="/">
       <Logo class={`${props.pend ? '' : 'freeze '}h3 w3`} />
     </a>
 
     {!!props.user && (
-      <a class="hover-bg-shade br-100 flex flex-center mb1 mt1 square tc" href="/d" title="Notes">
+      <a class="hover-bg-shade br-100 flex flex-0 flex-center mb1 mt1 square tc" href="/d" title="Notes">
         <div class="h2 pa1 w2">
           {iconNote}
         </div>
@@ -33,7 +33,7 @@ export const Navigation = (props: Navigation$Props) => (
     )}
 
     {!!props.user && (
-      <a class="hover-bg-shade br-100 flex flex-center mb1 mt1 square tc" href="/s" title="Settings">
+      <a class="hover-bg-shade br-100 flex flex-0 flex-center mb1 mt1 square tc" href="/s" title="Settings">
         <div class="h2 pa1 w2">
           {iconCog}
         </div>
@@ -42,7 +42,7 @@ export const Navigation = (props: Navigation$Props) => (
 
     <div class="flex-1" />
 
-    <a class="hover-bg-shade br-100 flex flex-center mb1 mt1 square tc" href="/l" onClick={props.user && onLogout} title={props.user ? 'Log Out' : 'Log In'}>
+    <a class="hover-bg-shade br-100 flex flex-0 flex-center mb1 mt1 square tc" href="/l" onClick={props.user && onLogout} title={props.user ? 'Log Out' : 'Log In'}>
       <div class="h2 pa1 w2">
         {props.user ? iconLogOut : iconLogIn}
       </div>
