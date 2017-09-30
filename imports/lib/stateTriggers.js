@@ -87,8 +87,9 @@ tree.select(['labels']).on('update', event => {
     tree.set(['filter'], filterAvailable);
 });
 
-tree.select(['userData']).on('update', () => {
-  onRefresh(true).then(update);
+tree.select(['userData']).on('update', event => {
+  if (!event.currentData || !event.previousData || event.previousData._id !== event.currentData._id)
+    onRefresh(true).then(update);
 });
 
 // Helpers
