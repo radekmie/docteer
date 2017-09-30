@@ -2,6 +2,7 @@ import faker from 'faker';
 
 import {Accounts} from 'meteor/accounts-base';
 import {Meteor}   from 'meteor/meteor';
+import {before}   from 'meteor/universe:e2e';
 import {browser}  from 'meteor/universe:e2e';
 import {describe} from 'meteor/universe:e2e';
 import {it}       from 'meteor/universe:e2e';
@@ -47,6 +48,18 @@ const action = title =>
     const selector = `.bottom-1.fixed.right-1.w2 > [title=${title}]`;
     await page.waitForSelector(selector);
     await page.click(selector);
+  })
+;
+
+const close = (page, {noopIsOK = false} = {}) =>
+  it(`should close '${page}'${noopIsOK ? ' (if possible)' : ''}`, async () => {
+    const {targetInfos} = await browser._connection.send('Target.getTargets');
+    const {targetId} = targetInfos.find(target => target.url === page) || {};
+
+    if (!targetId && noopIsOK)
+      return;
+
+    await browser._connection.send('Target.closeTarget', {targetId});
   })
 ;
 
@@ -187,149 +200,150 @@ const toast = text =>
 
 //
 
-describe('docteer.com', () => {
+before('Setup', () => {
+  close('chrome://newtab/', {noopIsOK: true});
   resize(1024, 768);
+});
 
-  describe('Log in fail', () => {
-    const user = faker.user();
+describe('Log in fail', () => {
+  const user = faker.user();
 
-    start('/');
-    login(user);
-    toast('Logging in...');
-    toast('Sounds good, doesn\'t work.');
-  });
+  start('/');
+  login(user);
+  toast('Logging in...');
+  toast('Sounds good, doesn\'t work.');
+});
 
-  describe('Log in success and log out', () => {
-    const user = faker.user.registered();
+describe('Log in success and log out', () => {
+  const user = faker.user.registered();
 
-    start('/');
-    login(user);
-    toast('Logging in...');
-    toast('Logged in.');
-    toast('Loading...');
-    toast('Loaded.');
-    logout(user);
-    toast('Logging out...');
-    toast('Logged out.');
-  });
+  start('/');
+  login(user);
+  toast('Logging in...');
+  toast('Logged in.');
+  toast('Loading...');
+  toast('Loaded.');
+  logout(user);
+  toast('Logging out...');
+  toast('Logged out.');
+});
 
-  describe('Add note', () => {
-    const user = faker.user.registered();
-    const title = faker.lorem.words();
+describe('Add note', () => {
+  const user = faker.user.registered();
+  const title = faker.lorem.words();
 
-    start('/');
-    login(user);
-    toast('Logging in...');
-    toast('Logged in.');
-    toast('Loading...');
-    toast('Loaded.');
-    navigate('Notes');
-    action('Create');
-    note('(untitled)', 'light-green');
-    field(0, 'Name', title);
-    field(1, 'Labels', [faker.lorem.word(), faker.lorem.word()]);
-    field(2, 'Text', faker.lorem.paragraphs());
-    note(title, 'light-green');
-    action('Save');
-    toast('Saving...');
-    toast('Saved.');
-    note(title);
-    logout(user);
-    toast('Logging out...');
-    toast('Logged out.');
-  });
+  start('/');
+  login(user);
+  toast('Logging in...');
+  toast('Logged in.');
+  toast('Loading...');
+  toast('Loaded.');
+  navigate('Notes');
+  action('Create');
+  note('(untitled)', 'light-green');
+  field(0, 'Name', title);
+  field(1, 'Labels', [faker.lorem.word(), faker.lorem.word()]);
+  field(2, 'Text', faker.lorem.paragraphs());
+  note(title, 'light-green');
+  action('Save');
+  toast('Saving...');
+  toast('Saved.');
+  note(title);
+  logout(user);
+  toast('Logging out...');
+  toast('Logged out.');
+});
 
-  describe('Add and edit note', () => {
-    const user = faker.user.registered();
-    const title = faker.lorem.words();
+describe('Add and edit note', () => {
+  const user = faker.user.registered();
+  const title = faker.lorem.words();
 
-    start('/');
-    login(user);
-    toast('Logging in...');
-    toast('Logged in.');
-    toast('Loading...');
-    toast('Loaded.');
-    navigate('Notes');
-    action('Create');
-    note('(untitled)', 'light-green');
-    field(0, 'Name', title);
-    field(1, 'Labels', [faker.lorem.word(), faker.lorem.word()]);
-    field(2, 'Text', faker.lorem.paragraphs());
-    note(title, 'light-green');
-    action('Save');
-    toast('Saving...');
-    toast('Saved.');
-    note(title);
-    select(title);
-    action('Edit');
-    field(2, 'Text', faker.lorem.paragraphs());
-    note(title, 'light-blue');
-    action('Save');
-    toast('Saving...');
-    toast('Saved.');
-    note(title);
-    logout(user);
-    toast('Logging out...');
-    toast('Logged out.');
-  });
+  start('/');
+  login(user);
+  toast('Logging in...');
+  toast('Logged in.');
+  toast('Loading...');
+  toast('Loaded.');
+  navigate('Notes');
+  action('Create');
+  note('(untitled)', 'light-green');
+  field(0, 'Name', title);
+  field(1, 'Labels', [faker.lorem.word(), faker.lorem.word()]);
+  field(2, 'Text', faker.lorem.paragraphs());
+  note(title, 'light-green');
+  action('Save');
+  toast('Saving...');
+  toast('Saved.');
+  note(title);
+  select(title);
+  action('Edit');
+  field(2, 'Text', faker.lorem.paragraphs());
+  note(title, 'light-blue');
+  action('Save');
+  toast('Saving...');
+  toast('Saved.');
+  note(title);
+  logout(user);
+  toast('Logging out...');
+  toast('Logged out.');
+});
 
-  describe('Add and remove note before save', () => {
-    const user = faker.user.registered();
-    const title = faker.lorem.words();
+describe('Add and remove note before save', () => {
+  const user = faker.user.registered();
+  const title = faker.lorem.words();
 
-    start('/');
-    login(user);
-    toast('Logging in...');
-    toast('Logged in.');
-    toast('Loading...');
-    toast('Loaded.');
-    navigate('Notes');
-    action('Create');
-    note('(untitled)', 'light-green');
-    field(0, 'Name', title);
-    field(1, 'Labels', [faker.lorem.word(), faker.lorem.word()]);
-    field(2, 'Text', faker.lorem.paragraphs());
-    note(title, 'light-green');
-    action('Remove');
-    note(title, 'light-gray');
-    action('Save');
-    note(title, false);
-    logout(user);
-    toast('Logging out...');
-    toast('Logged out.');
-  });
+  start('/');
+  login(user);
+  toast('Logging in...');
+  toast('Logged in.');
+  toast('Loading...');
+  toast('Loaded.');
+  navigate('Notes');
+  action('Create');
+  note('(untitled)', 'light-green');
+  field(0, 'Name', title);
+  field(1, 'Labels', [faker.lorem.word(), faker.lorem.word()]);
+  field(2, 'Text', faker.lorem.paragraphs());
+  note(title, 'light-green');
+  action('Remove');
+  note(title, 'light-gray');
+  action('Save');
+  note(title, false);
+  logout(user);
+  toast('Logging out...');
+  toast('Logged out.');
+});
 
-  describe('Add and remove note', () => {
-    const user = faker.user.registered();
-    const title = faker.lorem.words();
+describe('Add and remove note', () => {
+  const user = faker.user.registered();
+  const title = faker.lorem.words();
 
-    start('/');
-    login(user);
-    toast('Logging in...');
-    toast('Logged in.');
-    toast('Loading...');
-    toast('Loaded.');
-    navigate('Notes');
-    action('Create');
-    note('(untitled)', 'light-green');
-    field(0, 'Name', title);
-    field(1, 'Labels', [faker.lorem.word(), faker.lorem.word()]);
-    field(2, 'Text', faker.lorem.paragraphs());
-    note(title, 'light-green');
-    action('Save');
-    toast('Saving...');
-    toast('Saved.');
-    note(title);
-    select(title);
-    action('Edit');
-    action('Remove');
-    note(title, 'light-red');
-    action('Save');
-    note(title, false);
-    toast('Saving...');
-    toast('Saved.');
-    logout(user);
-    toast('Logging out...');
-    toast('Logged out.');
-  });
+  start('/');
+  login(user);
+  toast('Logging in...');
+  toast('Logged in.');
+  toast('Loading...');
+  toast('Loaded.');
+  navigate('Notes');
+  action('Create');
+  note('(untitled)', 'light-green');
+  field(0, 'Name', title);
+  field(1, 'Labels', [faker.lorem.word(), faker.lorem.word()]);
+  field(2, 'Text', faker.lorem.paragraphs());
+  note(title, 'light-green');
+  action('Save');
+  toast('Saving...');
+  toast('Saved.');
+  note(title);
+  select(title);
+  action('Edit');
+  action('Remove');
+  note(title, 'light-red');
+  action('Save');
+  note(title, false);
+  toast('Saving...');
+  toast('Saved.');
+  logout(user);
+  toast('Logging out...');
+  toast('Logged out.');
 });

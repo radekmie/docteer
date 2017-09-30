@@ -2,7 +2,7 @@
 
 Package.describe({
     name: 'universe:e2e',
-    version: '1.0.0-beta.1',
+    version: '0.3.0',
     summary: 'Complete end-to-end/acceptance testing solution for Meteor: Mocha/Chai & Chrome Puppeteer',
     git: 'https://github.com/vazco/meteor-universe-e2e',
     documentation: 'README.md',
@@ -11,9 +11,7 @@ Package.describe({
 
 Npm.depends({
     mocha: '3.5.0',
-    chai: '4.1.2',
-    'chai-as-promised': '7.1.1',
-    puppeteer: '0.10.2'
+    puppeteer: '0.11.0'
 });
 
 Package.onUse(api => {

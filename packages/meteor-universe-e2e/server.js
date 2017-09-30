@@ -5,7 +5,6 @@ import {createBrowser} from './lib/puppeteer';
 
 // Export mocha functions (describe, it etc.) and other public api
 export * from './lib/mocha';
-export * from './lib/chai';
 export * from './lib/puppeteer';
 
 // Export puppeteer objects that will be initialized later
