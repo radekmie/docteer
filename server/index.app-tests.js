@@ -86,7 +86,9 @@ const field = (position, name, value) => {
 
     while (value.length) {
       // FIXME: It's not working in contenteditable.
-      await page.press('Enter');
+      // await page.press('Enter');
+      await page.$eval(selector, input => input.innerHTML += '<li></li>');
+      await page.press('PageDown');
       await page.type(value.shift());
     }
 
@@ -200,40 +202,35 @@ const toast = text =>
 
 //
 
-before('Setup', () => {
+before(() => {
   close('chrome://newtab/', {noopIsOK: true});
   resize(1024, 768);
 });
 
 describe('Log in fail', () => {
-  const user = faker.user();
-
   start('/');
-  login(user);
+  login(faker.user());
   toast('Logging in...');
   toast('Sounds good, doesn\'t work.');
 });
 
 describe('Log in success and log out', () => {
-  const user = faker.user.registered();
-
   start('/');
-  login(user);
+  login(faker.user.registered());
   toast('Logging in...');
   toast('Logged in.');
   toast('Loading...');
   toast('Loaded.');
-  logout(user);
+  logout();
   toast('Logging out...');
   toast('Logged out.');
 });
 
 describe('Add note', () => {
-  const user = faker.user.registered();
   const title = faker.lorem.words();
 
   start('/');
-  login(user);
+  login(faker.user.registered());
   toast('Logging in...');
   toast('Logged in.');
   toast('Loading...');
@@ -249,17 +246,16 @@ describe('Add note', () => {
   toast('Saving...');
   toast('Saved.');
   note(title);
-  logout(user);
+  logout();
   toast('Logging out...');
   toast('Logged out.');
 });
 
 describe('Add and edit note', () => {
-  const user = faker.user.registered();
   const title = faker.lorem.words();
 
   start('/');
-  login(user);
+  login(faker.user.registered());
   toast('Logging in...');
   toast('Logged in.');
   toast('Loading...');
@@ -283,17 +279,16 @@ describe('Add and edit note', () => {
   toast('Saving...');
   toast('Saved.');
   note(title);
-  logout(user);
+  logout();
   toast('Logging out...');
   toast('Logged out.');
 });
 
 describe('Add and remove note before save', () => {
-  const user = faker.user.registered();
   const title = faker.lorem.words();
 
   start('/');
-  login(user);
+  login(faker.user.registered());
   toast('Logging in...');
   toast('Logged in.');
   toast('Loading...');
@@ -309,17 +304,16 @@ describe('Add and remove note before save', () => {
   note(title, 'light-gray');
   action('Save');
   note(title, false);
-  logout(user);
+  logout();
   toast('Logging out...');
   toast('Logged out.');
 });
 
 describe('Add and remove note', () => {
-  const user = faker.user.registered();
   const title = faker.lorem.words();
 
   start('/');
-  login(user);
+  login(faker.user.registered());
   toast('Logging in...');
   toast('Logged in.');
   toast('Loading...');
@@ -343,7 +337,7 @@ describe('Add and remove note', () => {
   note(title, false);
   toast('Saving...');
   toast('Saved.');
-  logout(user);
+  logout();
   toast('Logging out...');
   toast('Logged out.');
 });
