@@ -17,7 +17,7 @@ const bundledCSSFile = Object
 const bundledCSS = bundledCSSFile ? Meteor.wrapAsync(readFile)(bundledCSSFile.absolutePath, 'utf8') : '';
 
 const processor = postcss([
-  cssnext({browsers: ['last 2 Chrome versions', 'last 2 Edge versions', 'last 2 Firefox versions']}),
+  cssnext({browsers: ['last 2 major versions']}),
   cssnano({preset: ['advanced', {discardComments: {removeAll: true}}]})
 ]);
 

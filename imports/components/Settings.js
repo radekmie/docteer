@@ -207,7 +207,7 @@ export function Settings (props: Settings$Props) {
       </dd>
 
       <dt class="mt3">
-        Import / Export
+        <b>Import / Export:</b>
       </dt>
 
       <dd class="ml4">

@@ -46,6 +46,8 @@ body {
 button,
 input,
 select {
+  background-color: inherit;
+  color: inherit;
   font-family: inherit;
   font-size: inherit;
   line-height: inherit;
@@ -68,7 +70,7 @@ path {
 }
 
 select {
-  -webkit-appearance: none;
+  appearance: none;
 }
 
 .app {
@@ -212,11 +214,15 @@ select {
 }
 
 .flex-1 {
-  flex: 1 1 auto;
+  flex: 1;
 }
 
 .flex-around {
   justify-content: space-around;
+}
+
+.flex-auto {
+  flex-basis: auto;
 }
 
 .flex-center {
@@ -399,7 +405,7 @@ select {
 }
 
 [type=search] {
-  -webkit-appearance: none;
+  appearance: none;
   outline-offset: -2px;
 }
 
@@ -503,6 +509,7 @@ select {
 
 .logo :nth-child(-n+5) {
   animation: linear infinite alternate scale-y .25s;
+  transform-box: fill-box;
   transform-origin: center top;
 }
 

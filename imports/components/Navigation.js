@@ -40,7 +40,7 @@ export const Navigation = (props: Navigation$Props) => (
       </a>
     )}
 
-    <div class="flex-1" />
+    <div class="flex-1 flex-auto" />
 
     <a class="hover-bg-shade br-100 flex flex-0 flex-center mb1 mt1 square tc" href="/l" onClick={props.user && onLogout} title={props.user ? 'Log Out' : 'Log In'}>
       <div class="h2 pa1 w2">
