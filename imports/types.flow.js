@@ -19,14 +19,9 @@ declare class TToast {
 }
 
 declare class TUser {
-  _changed: bool;
-  emails: {address: string, verified: bool}[];
+  _changed: boolean;
+  emails: {address: string, verified: boolean}[];
   schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[];
 }
 
-export type {
-  TLabel,
-  TNote,
-  TToast,
-  TUser
-};
+export type {TLabel, TNote, TToast, TUser};

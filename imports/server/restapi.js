@@ -1,13 +1,13 @@
 // @flow
 
-import Ajv     from 'ajv';
-import LRU     from 'lru-cache';
-import bunyan  from 'bunyan';
+import Ajv from 'ajv';
+import LRU from 'lru-cache';
+import bunyan from 'bunyan';
 import restify from 'restify';
 
 import {Accounts} from 'meteor/accounts-base';
-import {Meteor}   from 'meteor/meteor';
-import {WebApp}   from 'meteor/webapp';
+import {Meteor} from 'meteor/meteor';
+import {WebApp} from 'meteor/webapp';
 
 import {Notes} from '/imports/api/notes/server';
 import {Stats} from '/imports/api/stats/server';
@@ -19,8 +19,8 @@ const log = bunyan.createLogger({
   streams: [{stream: {write: row => raw.insert(row)}, type: 'raw'}],
   serializers: {
     error: bunyan.stdSerializers.err,
-    req:   bunyan.stdSerializers.req,
-    res:   bunyan.stdSerializers.res
+    req: bunyan.stdSerializers.req,
+    res: bunyan.stdSerializers.res
   }
 });
 
@@ -35,12 +35,13 @@ server.use(async (req, res, next) => {
   next();
 });
 
-server.on('after', restify.plugins.metrics({server}, (error, metrics, req, res) => {
-  if (error)
-    log.error({error, req, res, metrics});
-  else
-    log.info({req, res, metrics});
-}));
+server.on(
+  'after',
+  restify.plugins.metrics({server}, (error, metrics, req, res) => {
+    if (error) log.error({error, req, res, metrics});
+    else log.info({req, res, metrics});
+  })
+);
 
 const users = Meteor.users.rawCollection();
 const cache = new LRU({
@@ -50,12 +51,11 @@ const cache = new LRU({
 
 const context = {
   ajv,
-  authenticate (req) {
+  authenticate(req) {
     const hash = req.headers.authorization;
     const prev = cache.get(hash);
 
-    if (prev !== undefined)
-      return prev;
+    if (prev !== undefined) return prev;
 
     const {password, username} = req.authorization.basic;
 
@@ -69,7 +69,12 @@ const context = {
       }
     };
 
-    const next = users.find(query).project({_id: 1}).limit(1).hasNext().await();
+    const next = users
+      .find(query)
+      .project({_id: 1})
+      .limit(1)
+      .hasNext()
+      .await();
 
     cache.set(hash, next ? username : null);
 

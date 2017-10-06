@@ -2,45 +2,45 @@
 // @jsx h
 
 import {Component} from 'preact';
-import {h}         from 'preact';
+import {h} from 'preact';
 
 import {tree} from '/imports/lib/state';
 
-import {Account}      from './Account';
-import {Actions}      from './Actions';
-import {Labels}       from './Labels';
-import {Navigation}   from './Navigation';
-import {Notes}        from './Notes';
-import {Note}         from './Note';
-import {Settings}     from './Settings';
+import {Account} from './Account';
+import {Actions} from './Actions';
+import {Labels} from './Labels';
+import {Navigation} from './Navigation';
+import {Notes} from './Notes';
+import {Note} from './Note';
+import {Settings} from './Settings';
 import {Splashscreen} from './Splashscreen';
-import {Toasts}       from './Toasts';
+import {Toasts} from './Toasts';
 
 import type {TLabel} from '/imports/types.flow';
-import type {TNote}  from '/imports/types.flow';
+import type {TNote} from '/imports/types.flow';
 import type {TToast} from '/imports/types.flow';
-import type {TUser}  from '/imports/types.flow';
+import type {TUser} from '/imports/types.flow';
 
 const watcher = tree.watch({
-  edit:   ['edit'],
-  full:   ['full'],
+  edit: ['edit'],
+  full: ['full'],
   labels: ['labels'],
-  load:   ['load'],
-  note:   ['note'],
-  notes:  ['notesVisible'],
-  pend:   ['pend'],
+  load: ['load'],
+  note: ['note'],
+  notes: ['notesVisible'],
+  pend: ['pend'],
   search: ['search'],
   toasts: ['toasts'],
-  user:   ['user'],
-  view:   ['view']
+  user: ['user'],
+  view: ['view']
 });
 
 type Application$Props = {};
 type Application$State = {
-  edit: bool,
-  full: bool,
+  edit: boolean,
+  full: boolean,
   labels: TLabel[],
-  load: bool,
+  load: boolean,
   note: ?TNote,
   notes: TNote[],
   pend: number,
@@ -50,10 +50,13 @@ type Application$State = {
   view: ?string
 };
 
-export class Application extends Component<Application$Props, Application$State> {
+export class Application extends Component<
+  Application$Props,
+  Application$State
+> {
   _sync: () => void;
 
-  constructor () {
+  constructor() {
     super(...arguments);
 
     this.state = watcher.get();
@@ -64,16 +67,21 @@ export class Application extends Component<Application$Props, Application$State>
     watcher.on('update', this._sync);
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     watcher.off('update', this._sync);
   }
 
-  render () {
+  render() {
     const state = this.state;
 
     return (
       <main class={`app dark-gray flex lh-copy${state.load ? ' loading' : ''}`}>
-        <Navigation full={state.full} pend={state.pend} user={state.user} view={state.view} />
+        <Navigation
+          full={state.full}
+          pend={state.pend}
+          user={state.user}
+          view={state.view}
+        />
 
         {state.view === '' && (
           <div class="flex flex-center w-100">
@@ -81,16 +89,19 @@ export class Application extends Component<Application$Props, Application$State>
           </div>
         )}
 
-        {state.view === 'd' && (
-          <Labels labels={state.labels} />
-        )}
+        {state.view === 'd' && <Labels labels={state.labels} />}
 
         {state.view === 'd' && (
           <Notes notes={state.notes} search={state.search} />
         )}
 
         {state.view === 'd' && (
-          <Note labels={state.labels} note={state.note} edit={state.edit} user={state.user} />
+          <Note
+            labels={state.labels}
+            note={state.note}
+            edit={state.edit}
+            user={state.user}
+          />
         )}
 
         {state.view === 'l' && (
@@ -105,7 +116,12 @@ export class Application extends Component<Application$Props, Application$State>
           </div>
         )}
 
-        <Actions note={!!state.note} edit={state.edit} user={state.user} view={state.view} />
+        <Actions
+          note={!!state.note}
+          edit={state.edit}
+          user={state.user}
+          view={state.view}
+        />
 
         <Toasts toasts={state.toasts} />
       </main>

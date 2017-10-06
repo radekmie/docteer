@@ -3,17 +3,17 @@
 
 import {h} from 'preact';
 
-import {Logo}       from './Logo';
-import {iconCog}    from './Icon';
-import {iconLogIn}  from './Icon';
+import {Logo} from './Logo';
+import {iconCog} from './Icon';
+import {iconLogIn} from './Icon';
 import {iconLogOut} from './Icon';
-import {iconNote}   from './Icon';
-import {onLogout}   from '../lib/stateActions';
+import {iconNote} from './Icon';
+import {onLogout} from '../lib/stateActions';
 
 import type {TUser} from '/imports/types.flow';
 
 type Navigation$Props = {
-  full: bool,
+  full: boolean,
   pend: number,
   user: ?TUser
 };
@@ -25,27 +25,34 @@ export const Navigation = (props: Navigation$Props) => (
     </a>
 
     {!!props.user && (
-      <a class="hover-bg-shade br-100 flex flex-0 flex-center mb1 mt1 square tc" href="/d" title="Notes">
-        <div class="h2 pa1 w2">
-          {iconNote}
-        </div>
+      <a
+        class="hover-bg-shade br-100 flex flex-0 flex-center mb1 mt1 square tc"
+        href="/d"
+        title="Notes"
+      >
+        <div class="h2 pa1 w2">{iconNote}</div>
       </a>
     )}
 
     {!!props.user && (
-      <a class="hover-bg-shade br-100 flex flex-0 flex-center mb1 mt1 square tc" href="/s" title="Settings">
-        <div class="h2 pa1 w2">
-          {iconCog}
-        </div>
+      <a
+        class="hover-bg-shade br-100 flex flex-0 flex-center mb1 mt1 square tc"
+        href="/s"
+        title="Settings"
+      >
+        <div class="h2 pa1 w2">{iconCog}</div>
       </a>
     )}
 
     <div class="flex-1 flex-auto" />
 
-    <a class="hover-bg-shade br-100 flex flex-0 flex-center mb1 mt1 square tc" href="/l" onClick={props.user && onLogout} title={props.user ? 'Log Out' : 'Log In'}>
-      <div class="h2 pa1 w2">
-        {props.user ? iconLogOut : iconLogIn}
-      </div>
+    <a
+      class="hover-bg-shade br-100 flex flex-0 flex-center mb1 mt1 square tc"
+      href="/l"
+      onClick={props.user && onLogout}
+      title={props.user ? 'Log Out' : 'Log In'}
+    >
+      <div class="h2 pa1 w2">{props.user ? iconLogOut : iconLogIn}</div>
     </a>
   </div>
 );

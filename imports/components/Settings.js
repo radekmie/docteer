@@ -2,25 +2,25 @@
 // @jsx h
 
 import {Component} from 'preact';
-import {h}         from 'preact';
+import {h} from 'preact';
 
-import {Button}           from '/imports/components/Button';
+import {Button} from '/imports/components/Button';
 import {onChangePassword} from '/imports/lib/stateActions';
-import {onExport}         from '/imports/lib/stateActions';
-import {onImport}         from '/imports/lib/stateActions';
-import {onSchemaAdd}      from '/imports/lib/stateActions';
-import {onSchemaDelete}   from '/imports/lib/stateActions';
-import {onSchemaField}    from '/imports/lib/stateActions';
-import {onSchemaKey}      from '/imports/lib/stateActions';
-import {onSchemaName}     from '/imports/lib/stateActions';
-import {onSchemaOrder}    from '/imports/lib/stateActions';
-import {onSchemaRemove}   from '/imports/lib/stateActions';
-import {onSchemaType}     from '/imports/lib/stateActions';
+import {onExport} from '/imports/lib/stateActions';
+import {onImport} from '/imports/lib/stateActions';
+import {onSchemaAdd} from '/imports/lib/stateActions';
+import {onSchemaDelete} from '/imports/lib/stateActions';
+import {onSchemaField} from '/imports/lib/stateActions';
+import {onSchemaKey} from '/imports/lib/stateActions';
+import {onSchemaName} from '/imports/lib/stateActions';
+import {onSchemaOrder} from '/imports/lib/stateActions';
+import {onSchemaRemove} from '/imports/lib/stateActions';
+import {onSchemaType} from '/imports/lib/stateActions';
 
 import type {TUser} from '/imports/types.flow';
 
 class ChangePassword extends Component {
-  old:  ?HTMLInputElement;
+  old: ?HTMLInputElement;
   new1: ?HTMLInputElement;
   new2: ?HTMLInputElement;
 
@@ -40,35 +40,59 @@ class ChangePassword extends Component {
     event.preventDefault();
 
     if (this.old && this.new1 && this.new2) {
-      onChangePassword(this.old.value, this.new1.value, this.new2.value).then(() => {
-        if (this.old)  this.old.value  = '';
+      onChangePassword(
+        this.old.value,
+        this.new1.value,
+        this.new2.value
+      ).then(() => {
+        if (this.old) this.old.value = '';
         if (this.new1) this.new1.value = '';
         if (this.new2) this.new2.value = '';
       });
     }
   };
 
-  render () {
+  render() {
     return (
       <details class="pointer">
-        <summary>
-          Change password
-        </summary>
+        <summary>Change password</summary>
 
         <form onSubmit={this.onChangePassword}>
           <label class="flex flex-column mt1" for="old" title="Old password">
             <b>Old password</b>
-            <input class="ba bg-near-white br-0 bw1 ph1" id="old" name="old" ref={this.onOld} type="password" />
+            <input
+              class="ba bg-near-white br-0 bw1 ph1"
+              id="old"
+              name="old"
+              ref={this.onOld}
+              type="password"
+            />
           </label>
 
           <label class="flex flex-column mt1" for="new1" title="New password">
             <b>New password</b>
-            <input class="ba bg-near-white br-0 bw1 ph1" id="new1" name="new1" ref={this.onNew1} type="password" />
+            <input
+              class="ba bg-near-white br-0 bw1 ph1"
+              id="new1"
+              name="new1"
+              ref={this.onNew1}
+              type="password"
+            />
           </label>
 
-          <label class="flex flex-column mt1" for="new2" title="New password (again)">
+          <label
+            class="flex flex-column mt1"
+            for="new2"
+            title="New password (again)"
+          >
             <b>New password (again)</b>
-            <input class="ba bg-near-white br-0 bw1 ph1" id="new2" name="new2" ref={this.onNew2} type="password" />
+            <input
+              class="ba bg-near-white br-0 bw1 ph1"
+              id="new2"
+              name="new2"
+              ref={this.onNew2}
+              type="password"
+            />
           </label>
 
           <Button class="mt1 w-100" title="Change password">
@@ -84,16 +108,14 @@ type Settings$Props = {
   user: TUser
 };
 
-export function Settings (props: Settings$Props) {
+export function Settings(props: Settings$Props) {
   return (
     <dl class="ma0 w10 w-100">
       <dt>
         <b>Login:</b>
       </dt>
 
-      <dd class="ml4">
-        {props.user.emails[0].address}
-      </dd>
+      <dd class="ml4">{props.user.emails[0].address}</dd>
 
       <dt class="mt3">
         <b>Password:</b>
@@ -112,11 +134,9 @@ export function Settings (props: Settings$Props) {
           Add schema
         </Button>
 
-        {props.user.schemas.map((schema, index) =>
+        {props.user.schemas.map((schema, index) => (
           <details class="mt1" key={index}>
-            <summary class="pointer">
-              {schema.name}
-            </summary>
+            <summary class="pointer">{schema.name}</summary>
 
             <div class="flex mt1" data-name={schema.name}>
               <input
@@ -131,7 +151,13 @@ export function Settings (props: Settings$Props) {
               const disabled = key === 'labels' || key === 'name';
 
               return (
-                <div class="flex mt1" data-field={key} data-index={index} data-name={schema.name} key={key}>
+                <div
+                  class="flex mt1"
+                  data-field={key}
+                  data-index={index}
+                  data-name={schema.name}
+                  key={key}
+                >
                   <Button
                     class="ph1"
                     data-order="-1"
@@ -153,7 +179,9 @@ export function Settings (props: Settings$Props) {
                   </Button>
 
                   <input
-                    class={`b--dark-gray ${disabled ? 'bg-near-white ' : ''}br-0 bw1 ml1 flex-1 ph1`}
+                    class={`b--dark-gray ${disabled
+                      ? 'bg-near-white '
+                      : ''}br-0 bw1 ml1 flex-1 ph1`}
                     disabled={disabled}
                     onChange={onSchemaKey}
                     title="Field name"
@@ -161,7 +189,11 @@ export function Settings (props: Settings$Props) {
                   />
 
                   <select
-                    class={`b--dark-gray ba bg-${disabled ? 'near-' : ''}white br-0 bw1${disabled ? '' : ' dim'} ml1 ph1${disabled ? '' : ' pointer'} tc`}
+                    class={`b--dark-gray ba bg-${disabled
+                      ? 'near-'
+                      : ''}white br-0 bw1${disabled
+                      ? ''
+                      : ' dim'} ml1 ph1${disabled ? '' : ' pointer'} tc`}
                     disabled={disabled}
                     onChange={onSchemaType}
                     title="Field type"
@@ -185,11 +217,7 @@ export function Settings (props: Settings$Props) {
             })}
 
             <div class="flex mt1" data-name={schema.name}>
-              <Button
-                class="flex-1"
-                onClick={onSchemaField}
-                title="Add field"
-              >
+              <Button class="flex-1" onClick={onSchemaField} title="Add field">
                 Add field
               </Button>
 
@@ -203,7 +231,7 @@ export function Settings (props: Settings$Props) {
               </Button>
             </div>
           </details>
-        )}
+        ))}
       </dd>
 
       <dt class="mt3">
@@ -212,19 +240,11 @@ export function Settings (props: Settings$Props) {
 
       <dd class="ml4">
         <div class="flex mt1">
-          <Button
-            class="flex-1"
-            onClick={onImport}
-            title="Import"
-          >
+          <Button class="flex-1" onClick={onImport} title="Import">
             Import
           </Button>
 
-          <Button
-            class="flex-1 ml1"
-            onClick={onExport}
-            title="Export"
-          >
+          <Button class="flex-1 ml1" onClick={onExport} title="Export">
             Export
           </Button>
         </div>

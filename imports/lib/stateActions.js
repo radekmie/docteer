@@ -3,13 +3,15 @@
 import fuzzysort from 'fuzzysort';
 
 import {Accounts} from 'meteor/accounts-base';
-import {Meteor}   from 'meteor/meteor';
+import {Meteor} from 'meteor/meteor';
 
 import {schemaEmpty} from '/imports/lib/schemas';
-import {tree}        from '/imports/lib/state';
+import {tree} from '/imports/lib/state';
 
-export function onAdd () {
-  const _id = Math.random().toString(36).substr(2, 6);
+export function onAdd() {
+  const _id = Math.random()
+    .toString(36)
+    .substr(2, 6);
 
   tree.set(['notesUpdated', _id], schemaEmpty(tree.get(['user']).schemas[0]));
   tree.set(['notesCreated', _id], true);
@@ -17,51 +19,67 @@ export function onAdd () {
   tree.set(['edit'], true);
 }
 
-export function onChange (_id: string, key: string, value: string | string[]) {
+export function onChange(_id: string, key: string, value: string | string[]) {
   if (tree.get(['notesUpdated', _id]))
     tree.set(['notesUpdated', _id, key], value);
-  else
-    tree.set(['notesUpdated', _id], {[key]: value});
+  else tree.set(['notesUpdated', _id], {[key]: value});
 }
 
-export function onChangePassword (old: string, new1: string, new2: string): Promise<void> {
+export function onChangePassword(
+  old: string,
+  new1: string,
+  new2: string
+): Promise<void> {
   toast('info', 'Changing password...');
 
   return new Promise((resolve, reject) => {
     Meteor.call('users.password', old, new1, new2, error => {
       toast(error ? 'error' : 'success', error || 'Changed password.');
-      if (error)
-        reject(error);
-      else
-        resolve();
+      if (error) reject(error);
+      else resolve();
     });
   });
 }
 
-export function onChangeSchema (_id: string, schema: {fields: {[string]: string}, name: string}) {
+export function onChangeSchema(
+  _id: string,
+  schema: {fields: {[string]: string}, name: string}
+) {
   const doc = tree.get(['notes', {_id}]);
 
   if (doc) {
-    tree.set(['notesUpdated', _id], Object.keys(schema.fields).reduce(
-      (clone, field) => doc._outline[field] && typeof clone[field] === typeof doc[field]
-        ? Object.assign(clone, {[field]: doc[field]})
-        : clone,
-      schemaEmpty(schema)
-    ));
+    tree.set(
+      ['notesUpdated', _id],
+      Object.keys(schema.fields).reduce(
+        (clone, field) =>
+          doc._outline[field] && typeof clone[field] === typeof doc[field]
+            ? Object.assign(clone, {[field]: doc[field]})
+            : clone,
+        schemaEmpty(schema)
+      )
+    );
   }
 }
 
-export function onEdit () {
-  if (!tree.set(['edit'], !tree.get(['edit'])))
-    onReset();
+export function onEdit() {
+  if (!tree.set(['edit'], !tree.get(['edit']))) onReset();
 }
 
-export function onExport () {
+export function onExport() {
   const link = document.createElement('a');
-  const url = URL.createObjectURL(new Blob([JSON.stringify(tree.get(['notesOrigins']))], {type: 'application/json'}));
+  const url = URL.createObjectURL(
+    new Blob([JSON.stringify(tree.get(['notesOrigins']))], {
+      type: 'application/json'
+    })
+  );
 
   link.href = url;
-  link.download = `docteer-${tree.get(['last']).toJSON().slice(0, 16).replace(/[:-]/g, '_').replace('T', '-')}.json`;
+  link.download = `docteer-${tree
+    .get(['last'])
+    .toJSON()
+    .slice(0, 16)
+    .replace(/[:-]/g, '_')
+    .replace('T', '-')}.json`;
   link.style.display = 'none';
 
   // $FlowFixMe: Is body really nullable?
@@ -76,7 +94,7 @@ export function onExport () {
   }, 0);
 }
 
-export function onImport () {
+export function onImport() {
   const input = document.createElement('input');
 
   input.type = 'file';
@@ -89,14 +107,14 @@ export function onImport () {
   input.click();
   input.addEventListener('change', uploaded, false);
 
-  function remove () {
+  function remove() {
     // $FlowFixMe: Is body really nullable?
     document.body.removeChild(input);
   }
 
   const removeDelay = setTimeout(remove, 60 * 1000);
 
-  function uploaded () {
+  function uploaded() {
     const reader = new FileReader();
 
     clearTimeout(removeDelay);
@@ -114,7 +132,11 @@ export function onImport () {
 
         // $FlowFixMe: This will be a string, because of readAsText.
         JSON.parse(reader.result).forEach(row => {
-          if (typeof row._id !== 'string' || row._id.length !== 6 || row._outname !== undefined && typeof row._outname !== 'string')
+          if (
+            typeof row._id !== 'string' ||
+            row._id.length !== 6 ||
+            (row._outname !== undefined && typeof row._outname !== 'string')
+          )
             throw new Error();
 
           Object.keys(row).forEach(key => {
@@ -127,15 +149,17 @@ export function onImport () {
             if (row._outline[key] === 'div' && typeof row[key] === 'string')
               return;
 
-            if ((row._outline[key] === 'ol' || row._outline[key] === 'ul') && row[key].every(line => typeof line === 'string'))
+            if (
+              (row._outline[key] === 'ol' || row._outline[key] === 'ul') &&
+              row[key].every(line => typeof line === 'string')
+            )
               return;
 
             throw new Error();
           });
 
           Object.keys(row._outline).forEach(key => {
-            if (row[key] === undefined)
-              throw new Error();
+            if (row[key] === undefined) throw new Error();
           });
 
           if (!tree.get(['notesOrigins', {_id: row._id}]))
@@ -159,7 +183,7 @@ export function onImport () {
   }
 }
 
-export function onLogin (email: string, password: string) {
+export function onLogin(email: string, password: string) {
   toast('info', 'Logging in...');
 
   Meteor.loginWithPassword(email, password, error => {
@@ -167,7 +191,7 @@ export function onLogin (email: string, password: string) {
   });
 }
 
-export function onLogout () {
+export function onLogout() {
   toast('info', 'Logging out...');
 
   Meteor.logout(error => {
@@ -175,7 +199,7 @@ export function onLogout () {
   });
 }
 
-export function onRefresh (firstRun: ?bool): Promise<void> {
+export function onRefresh(firstRun: ?boolean): Promise<void> {
   if (tree.get(['user']) === undefined) {
     tree.set(['notesOrigins'], []);
 
@@ -186,19 +210,22 @@ export function onRefresh (firstRun: ?bool): Promise<void> {
 
   const last = new Date();
 
-  return rest('GET', `/api/notes?refresh=${tree.get(['last']).valueOf()}`).then(response => {
+  return rest(
+    'GET',
+    `/api/notes?refresh=${tree.get(['last']).valueOf()}`
+  ).then(response => {
     tree.set(['last'], last);
     toast('success', firstRun === true ? 'Loaded.' : 'Refreshed.');
     merge(response);
   });
 }
 
-export function onRemove () {
+export function onRemove() {
   tree.set(['notesRemoved', tree.get(['noteId'])], true);
   tree.set(['noteId'], undefined);
 }
 
-export function onReset () {
+export function onReset() {
   if (tree.get(['notesCreated'])[tree.get(['noteId'])])
     tree.set(['noteId'], undefined);
 
@@ -207,7 +234,7 @@ export function onReset () {
   tree.set(['notesUpdated'], Object.create(null));
 }
 
-export function onSave (): Promise<void> {
+export function onSave(): Promise<void> {
   tree.set(['edit'], false);
 
   const created = tree.get(['notesCreated']);
@@ -236,7 +263,11 @@ export function onSave (): Promise<void> {
 
   const last = new Date();
 
-  return rest('POST', `/api/notes?refresh=${tree.get(['last']).valueOf()}`, JSON.stringify(patch)).then(response => {
+  return rest(
+    'POST',
+    `/api/notes?refresh=${tree.get(['last']).valueOf()}`,
+    JSON.stringify(patch)
+  ).then(response => {
     tree.set(['last'], last);
     toast('success', 'Saved.');
     merge(response);
@@ -244,7 +275,7 @@ export function onSave (): Promise<void> {
   });
 }
 
-export function onSchemaAdd () {
+export function onSchemaAdd() {
   tree.push(['userDiff', 'schemas'], {
     name: `_${tree.get(['user', 'schemas']).length}`,
     fields: {name: 'div', labels: 'ul'}
@@ -252,98 +283,126 @@ export function onSchemaAdd () {
 }
 
 // TODO: Should use Event instead, but Flow definition is not complete.
-type Event$ = {target: {dataset: {[string]: string}, parentNode: HTMLElement, value: string}};
+type Event$ = {
+  target: {dataset: {[string]: string}, parentNode: HTMLElement, value: string}
+};
 
-export function onSchemaDelete (event: Event$) {
+export function onSchemaDelete(event: Event$) {
   const name = event.target.parentNode.dataset.name;
   const index = +event.target.parentNode.dataset.index;
   const schema = tree.get(['user', 'schemas', {name}, 'fields']);
 
-  tree.set(['userDiff', 'schemas', {name}, 'fields'], Object.keys(schema).reduce((next, key, index2) => index === index2 ? next : Object.assign(next, {[key]: schema[key]}), {}));
+  tree.set(
+    ['userDiff', 'schemas', {name}, 'fields'],
+    Object.keys(schema).reduce(
+      (next, key, index2) =>
+        index === index2 ? next : Object.assign(next, {[key]: schema[key]}),
+      {}
+    )
+  );
 }
 
-export function onSchemaField (event: Event$) {
+export function onSchemaField(event: Event$) {
   const name = event.target.parentNode.dataset.name;
   const schema = tree.get(['user', 'schemas', {name}, 'fields']);
 
-  tree.set(['userDiff', 'schemas', {name}, 'fields'], Object.assign({}, schema, {[`_${Object.keys(schema).length}`]: 'div'}));
+  tree.set(
+    ['userDiff', 'schemas', {name}, 'fields'],
+    Object.assign({}, schema, {[`_${Object.keys(schema).length}`]: 'div'})
+  );
 }
 
-export function onSchemaKey (event: Event$) {
+export function onSchemaKey(event: Event$) {
   const name = event.target.parentNode.dataset.name;
   const index = +event.target.parentNode.dataset.index;
   const schema = tree.get(['user', 'schemas', {name}, 'fields']);
 
-  tree.set(['userDiff', 'schemas', {name}, 'fields'], Object.keys(schema).reduce((next, key, index2) => Object.assign(next, {[index === index2 ? event.target.value : key]: schema[key]}), {}));
+  tree.set(
+    ['userDiff', 'schemas', {name}, 'fields'],
+    Object.keys(schema).reduce(
+      (next, key, index2) =>
+        Object.assign(next, {
+          [index === index2 ? event.target.value : key]: schema[key]
+        }),
+      {}
+    )
+  );
 }
 
-export function onSchemaName (event: Event$) {
+export function onSchemaName(event: Event$) {
   const name = event.target.parentNode.dataset.name;
 
   tree.set(['userDiff', 'schemas', {name}, 'name'], event.target.value);
 }
 
-export function onSchemaOrder (event: Event$) {
+export function onSchemaOrder(event: Event$) {
   const name = event.target.parentNode.dataset.name;
   const index = +event.target.parentNode.dataset.index;
   const schema = tree.get(['user', 'schemas', {name}, 'fields']);
   const fields = Object.keys(schema);
 
-  fields[index] = fields.splice(index + (+event.target.dataset.order), 1, fields[index])[0];
+  fields[index] = fields.splice(
+    index + +event.target.dataset.order,
+    1,
+    fields[index]
+  )[0];
 
-  tree.set(['userDiff', 'schemas', {name}, 'fields'], fields.reduce((next, key) => Object.assign(next, {[key]: schema[key]}), {}));
+  tree.set(
+    ['userDiff', 'schemas', {name}, 'fields'],
+    fields.reduce((next, key) => Object.assign(next, {[key]: schema[key]}), {})
+  );
 }
 
-export function onSchemaRemove (event: Event$) {
+export function onSchemaRemove(event: Event$) {
   const name = event.target.parentNode.dataset.name;
 
   tree.unset(['userDiff', 'schemas', {name}]);
 }
 
-export function onSchemaType (event: Event$) {
-  const name  = event.target.parentNode.dataset.name;
+export function onSchemaType(event: Event$) {
+  const name = event.target.parentNode.dataset.name;
   const field = event.target.parentNode.dataset.field;
 
-  tree.set(['userDiff', 'schemas', {name}, 'fields', field], event.target.value);
+  tree.set(
+    ['userDiff', 'schemas', {name}, 'fields', field],
+    event.target.value
+  );
 }
 
 // TODO: Should use Event instead, but Flow definition is not complete.
-type InputEvent$ = {target: HTMLInputElement & {|__skip: ?bool|}};
+type InputEvent$ = {target: HTMLInputElement & {|__skip: ?boolean|}};
 
-export function onSearch (event: InputEvent$) {
+export function onSearch(event: InputEvent$) {
   tree.set(['search'], event.target.value);
 }
 
-export function onSettingsReset () {
+export function onSettingsReset() {
   tree.set(['userDiff'], {schemas: tree.get(['userData']).schemas});
 }
 
-export function onSettingsSave () {
+export function onSettingsSave() {
   if (tree.get(['userDiff'])) {
     toast('info', 'Saving...');
 
     Meteor.call('users.settings', tree.get(['userDiff']), error => {
       toast(error ? 'error' : 'success', error || 'Saved.');
 
-      if (!error)
-        onSettingsReset();
+      if (!error) onSettingsReset();
     });
   }
 }
 
-export function onTypeAhead (event: InputEvent$) {
-  if (event.target.__skip)
-    return;
+export function onTypeAhead(event: InputEvent$) {
+  if (event.target.__skip) return;
 
   const selection = window.getSelection();
   const focusNode = selection.focusNode;
-  const search = (
-    focusNode.wholeText &&
-    focusNode.wholeText.trim()
-  );
+  const search = focusNode.wholeText && focusNode.wholeText.trim();
 
   if (search) {
-    const names = tree.get(['labelsNames']).filter(label => label !== search && label.startsWith(search));
+    const names = tree
+      .get(['labelsNames'])
+      .filter(label => label !== search && label.startsWith(search));
     const match = fuzzysort.go(search, names)[0];
 
     if (match) {
@@ -354,71 +413,91 @@ export function onTypeAhead (event: InputEvent$) {
         event.target.__skip = true;
 
         document.execCommand('insertText', true, label);
-        selection.setBaseAndExtent(focusNode, start, focusNode, focusNode.length);
+        selection.setBaseAndExtent(
+          focusNode,
+          start,
+          focusNode,
+          focusNode.length
+        );
       }
     }
   }
 }
 
 onTypeAhead.pre = event => {
-  event.target.__skip = event.ctrlKey || event.metaKey || !event.key || event.key.length !== 1;
+  event.target.__skip =
+    event.ctrlKey || event.metaKey || !event.key || event.key.length !== 1;
 };
 
 onTypeAhead.post = event => {
   event.target.__skip = true;
 };
 
-function merge (diff) {
-  tree.set(['notesOrigins'], tree.get(['notesOrigins'])
-    .filter(note => !diff.removed.includes(note._id))
-    .concat(diff.created.map(_id => ({_id})))
-    .filter((note, index, notes) => notes.findIndex(other => other._id === note._id) === index)
-    .map(note => {
-      const  patch = diff.updated.find(updated => updated._id === note._id);
-      return patch ? Object.assign({}, note, patch) : note;
-    })
+function merge(diff) {
+  tree.set(
+    ['notesOrigins'],
+    tree
+      .get(['notesOrigins'])
+      .filter(note => !diff.removed.includes(note._id))
+      .concat(diff.created.map(_id => ({_id})))
+      .filter(
+        (note, index, notes) =>
+          notes.findIndex(other => other._id === note._id) === index
+      )
+      .map(note => {
+        const patch = diff.updated.find(updated => updated._id === note._id);
+        return patch ? Object.assign({}, note, patch) : note;
+      })
   );
 }
 
-function rest (method, url, body) {
+function rest(method, url, body) {
   return fetch(url, {
     body,
     method,
     headers: new Headers({
-      'Accept':        'application/json',
-      'Authorization': `Basic ${btoa([Accounts._storedUserId(), Accounts._storedLoginToken()].join(':'))}`,
-      'Content-Type':  'application/json'
+      Accept: 'application/json',
+      Authorization: `Basic ${btoa(
+        [Accounts._storedUserId(), Accounts._storedLoginToken()].join(':')
+      )}`,
+      'Content-Type': 'application/json'
     })
-  }).then(response => {
-    if (response.ok) {
-      return response.json().then(response => {
-        if (response.errors)
-          throw new Error(response.errors[0].message);
+  })
+    .then(response => {
+      if (response.ok) {
+        return response.json().then(response => {
+          if (response.errors) throw new Error(response.errors[0].message);
 
-        return response;
-      });
-    }
+          return response;
+        });
+      }
 
-    throw new Error(response.statusText);
-  }).catch(error => {
-    toast('error', error);
-    throw error;
-  });
+      throw new Error(response.statusText);
+    })
+    .catch(error => {
+      toast('error', error);
+      throw error;
+    });
 }
 
-function toast (type, message) {
+function toast(type, message) {
   const _id = Math.random().toString(36);
-  const text = message instanceof Error
-    ? message.error === 403
-      ? 'Sounds good, doesn\'t work.'
-      : message.reason || message.message
-    : message
-  ;
+  const text =
+    message instanceof Error
+      ? message.error === 403
+        ? "Sounds good, doesn't work."
+        : message.reason || message.message
+      : message;
 
-  tree.push(['toasts'], {_id, dead: false, marked: type === 'info', text, type});
+  tree.push(['toasts'], {
+    _id,
+    dead: false,
+    marked: type === 'info',
+    text,
+    type
+  });
 
-  if (type === 'info')
-    tree.set(['pend'], tree.get(['pend']) + 1);
+  if (type === 'info') tree.set(['pend'], tree.get(['pend']) + 1);
   else {
     const info = tree.get(['toasts']).find(toast => toast.marked)._id;
 

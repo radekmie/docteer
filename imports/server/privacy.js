@@ -1,10 +1,10 @@
 // @flow
 
-import {Accounts}       from 'meteor/accounts-base';
+import {Accounts} from 'meteor/accounts-base';
 import {DDPRateLimiter} from 'meteor/ddp-rate-limiter';
 
 Accounts.config({
-  ambiguousErrorMessages:      true,
+  ambiguousErrorMessages: true,
   forbidClientAccountCreation: true,
 
   // NOTE: Keep it limited.

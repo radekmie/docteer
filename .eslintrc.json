@@ -1,11 +1,13 @@
 {
-  "extends": "vazco",
+  "extends": "vazco/prettier",
   "rules": {
-    "curly": ["error", "multi-or-nest"],
-    "indent": ["error", 2],
-    "max-len": "off",
-    "react/jsx-indent": ["error", 2],
-    "react/jsx-indent-props": ["error", 2]
+    "prettier/prettier": [
+      "error",
+      {
+        "bracketSpacing": false,
+        "singleQuote": true
+      }
+    ]
   },
   "settings": {
     "react": {
