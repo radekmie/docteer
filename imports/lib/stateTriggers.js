@@ -70,11 +70,21 @@ window.document.addEventListener('click', event => {
   } while ((node = node.parentNode));
 });
 
-window.document.addEventListener('keypress', event => {
-  if (event.charCode !== 13) return;
+window.document.addEventListener('keydown', event => {
+  const target = event.target;
 
-  if (event.target.__preactattr_ && event.target.__preactattr_.onClick)
-    event.target.click();
+  if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+    if (target.parentNode.className === 'flex-1 ma0 overflow-auto') {
+      const sibling =
+        target[`${event.key === 'ArrowDown' ? 'next' : 'previous'}Sibling`];
+      if (sibling && sibling.href) {
+        sibling.focus();
+        sibling.click();
+        event.preventDefault();
+      }
+    }
+  } else if (event.key === 'Enter')
+    if (target.__preactattr_ && target.__preactattr_.onClick) target.click();
 });
 
 // History
