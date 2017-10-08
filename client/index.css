@@ -168,6 +168,12 @@ select {
   border-width: 0.25rem;
 }
 
+.center {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .center-h {
   left: 50%;
   transform: translateX(-50%);
@@ -225,6 +231,10 @@ select {
   flex-basis: auto;
 }
 
+.flex-between {
+  justify-content: space-between;
+}
+
 .flex-center {
   align-items: center;
   justify-content: center;
@@ -234,12 +244,20 @@ select {
   flex-direction: column;
 }
 
+.flex-end {
+  align-items: flex-end;
+}
+
 .gray {
   color: var(--gray);
 }
 
 .green {
   color: var(--green);
+}
+
+.hidden {
+  transition-delay: 0s;
 }
 
 .h-100 {
@@ -270,10 +288,6 @@ select {
 
 .list {
   list-style-type: none;
-}
-
-.loading {
-  transition-delay: 0s;
 }
 
 .ma0 {
@@ -418,10 +432,6 @@ select {
 
 .app + .logo {
   height: 20rem;
-  left: 50%;
-  position: fixed;
-  top: 50%;
-  transform: translate(-50%, -50%);
   width: 20rem;
 }
 
@@ -535,8 +545,8 @@ select {
   cursor: pointer;
 }
 
-.app:not(.loading)+.logo,
-.loading {
+.app:not(.hidden)+.logo,
+.hidden {
   opacity: 0;
   pointer-events: none;
 }
@@ -547,7 +557,7 @@ select {
   transition: opacity 0.15s ease-in;
 }
 
-.app:not(.loading) + .logo path,
+.app:not(.hidden) + .logo path,
 .logo.freeze path {
   animation-play-state: paused;
 }

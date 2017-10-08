@@ -8,6 +8,7 @@ import {tree} from '/imports/lib/state';
 
 import {Account} from './Account';
 import {Actions} from './Actions';
+import {Help} from './Help';
 import {Labels} from './Labels';
 import {Navigation} from './Navigation';
 import {Notes} from './Notes';
@@ -24,6 +25,7 @@ import type {TUser} from '/imports/types.flow';
 const watcher = tree.watch({
   edit: ['edit'],
   full: ['full'],
+  help: ['help'],
   labels: ['labels'],
   load: ['load'],
   note: ['note'],
@@ -39,6 +41,7 @@ type Application$Props = {};
 type Application$State = {
   edit: boolean,
   full: boolean,
+  help: boolean,
   labels: TLabel[],
   load: boolean,
   note: ?TNote,
@@ -75,7 +78,7 @@ export class Application extends Component<
     const state = this.state;
 
     return (
-      <main class={`app dark-gray flex lh-copy${state.load ? ' loading' : ''}`}>
+      <main class={`app dark-gray flex lh-copy${state.load ? ' hidden' : ''}`}>
         <Navigation
           full={state.full}
           pend={state.pend}
@@ -122,6 +125,8 @@ export class Application extends Component<
           user={state.user}
           view={state.view}
         />
+
+        <Help active={state.help} />
 
         <Toasts toasts={state.toasts} />
       </main>

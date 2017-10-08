@@ -148,6 +148,7 @@ export const tree = new Baobab(
     toasts: [],
 
     edit: false,
+    help: false,
     last: new Date(0),
     view: undefined,
 

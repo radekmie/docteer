@@ -70,21 +70,43 @@ window.document.addEventListener('click', event => {
   } while ((node = node.parentNode));
 });
 
+const keyBoth = ['ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp'];
+const keyNote = ['ArrowDown', 'ArrowUp'];
+const keyHelp = ['Escape', '?'];
+const keyNext = ['ArrowDown', 'ArrowRight'];
+
 window.document.addEventListener('keydown', event => {
   const target = event.target;
 
-  if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-    if (target.parentNode.className === 'flex-1 ma0 overflow-auto') {
-      const sibling =
-        target[`${event.key === 'ArrowDown' ? 'next' : 'previous'}Sibling`];
-      if (sibling && sibling.href) {
-        sibling.focus();
-        sibling.click();
+  if (keyBoth.includes(event.key)) {
+    if (target.contentEditable !== 'true') {
+      const list = window.document.querySelector(
+        `.app > :nth-child(${keyNote.includes(event.key)
+          ? '3) > :last-child'
+          : '2)'}`
+      );
+      const focus = window.document.activeElement;
+      const active =
+        focus && focus.parentNode === list ? focus : list.querySelector('.bl');
+      const item =
+        (active &&
+          active[
+            `${keyNext.includes(event.key) ? 'next' : 'previous'}Sibling`
+          ]) ||
+        list.querySelector(
+          `:${keyNext.includes(event.key) ? 'last' : 'first'}-child`
+        );
+      if (item && item.pathname) {
+        item.focus();
+        if (item.pathname !== '/d' && keyNote.includes(event.key)) item.click();
         event.preventDefault();
       }
     }
-  } else if (event.key === 'Enter')
+  } else if (keyHelp.includes(event.key)) {
+    tree.set(['help'], event.key === '?');
+  } else if (event.key === 'Enter') {
     if (target.__preactattr_ && target.__preactattr_.onClick) target.click();
+  }
 });
 
 // History

@@ -15,7 +15,7 @@ WebApp.addHtmlAttributeHook(() => ({lang: 'en'}));
 const body = render(
   <body>
     <Application />
-    <Logo class="dark-gray" />
+    <Logo class="center dark-gray fixed" />
   </body>
 ).slice(0, -7);
 

@@ -124,7 +124,7 @@ const logout = () =>
 
 const navigate = title =>
   it(`should click '${title}' navigation link`, async () => {
-    const selector = `.bg-dark-gray.flex.flex-center.flex-column.h-100.near-white.pa3.ph1 > [title=${title}]`;
+    const selector = `.bg-dark-gray.flex.flex-center.flex-column.h-100.near-white.pa3.ph1 > [title="${title}"]`;
     await page.waitForSelector(selector);
     await page.click(selector);
   });
@@ -231,6 +231,7 @@ before(() => {
 
 describe('Log in fail', () => {
   start('/');
+  navigate('Log In');
   login(faker.user());
   toast('Logging in...');
   toast("Sounds good, doesn't work.");
@@ -238,6 +239,7 @@ describe('Log in fail', () => {
 
 describe('Log in success and log out', () => {
   start('/');
+  navigate('Log In');
   login(faker.user.registered());
   toast('Logging in...');
   toast('Logged in.');
@@ -252,6 +254,7 @@ describe('Add note', () => {
   const title = faker.lorem.words();
 
   start('/');
+  navigate('Log In');
   login(faker.user.registered());
   toast('Logging in...');
   toast('Logged in.');
@@ -277,6 +280,7 @@ describe('Add and edit note', () => {
   const title = faker.lorem.words();
 
   start('/');
+  navigate('Log In');
   login(faker.user.registered());
   toast('Logging in...');
   toast('Logged in.');
@@ -310,6 +314,7 @@ describe('Add and remove note before save', () => {
   const title = faker.lorem.words();
 
   start('/');
+  navigate('Log In');
   login(faker.user.registered());
   toast('Logging in...');
   toast('Logged in.');
@@ -335,6 +340,7 @@ describe('Add and remove note', () => {
   const title = faker.lorem.words();
 
   start('/');
+  navigate('Log In');
   login(faker.user.registered());
   toast('Logging in...');
   toast('Logged in.');
