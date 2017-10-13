@@ -4,7 +4,7 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "e2e": "meteor test --full-app --driver-package universe:e2e --raw-logs --settings settings.json",
+    "e2e": "meteor test --full-app --driver-package universe:e2e --raw-logs",
     "flow": "flow",
     "lint": "eslint .",
     "precommit": "npm run test",
@@ -43,6 +43,8 @@
     "faker": "4.1.0",
     "flow-bin": "0.56.0",
     "husky": "0.14.3",
-    "prettier": "1.7.4"
+    "mocha": "4.0.1",
+    "prettier": "1.7.4",
+    "puppeteer": "0.11.0"
   }
 }

@@ -1,12 +1,19 @@
+// @flow
+
 import faker from 'faker';
 
 import {Accounts} from 'meteor/accounts-base';
 import {Meteor} from 'meteor/meteor';
-import {before} from 'meteor/universe:e2e';
-import {browser} from 'meteor/universe:e2e';
-import {describe} from 'meteor/universe:e2e';
-import {it} from 'meteor/universe:e2e';
-import {page} from 'meteor/universe:e2e';
+import {before} from 'meteor/universe:e2e'; // $FlowFixMe: No local file.
+import {createBrowser} from 'meteor/universe:e2e'; // $FlowFixMe: No local file.
+import {describe} from 'meteor/universe:e2e'; // $FlowFixMe: No local file.
+import {it} from 'meteor/universe:e2e'; // $FlowFixMe: No local file.
+
+import type {Browser} from 'puppeteer';
+import type {Page} from 'puppeteer';
+
+let browser: Browser = null;
+let page: Page = null;
 
 //
 
@@ -50,16 +57,6 @@ const action = title =>
     const selector = `.bottom-1.fixed.right-1.w2 > [title=${title}]`;
     await page.waitForSelector(selector);
     await page.click(selector);
-  });
-
-const close = (page, {noopIsOK = false} = {}) =>
-  it(`should close '${page}'${noopIsOK ? ' (if possible)' : ''}`, async () => {
-    const {targetInfos} = await browser._connection.send('Target.getTargets');
-    const {targetId} = targetInfos.find(target => target.url === page) || {};
-
-    if (!targetId && noopIsOK) return;
-
-    await browser._connection.send('Target.closeTarget', {targetId});
   });
 
 const field = (position, name, value) => {
@@ -130,7 +127,7 @@ const navigate = title =>
   });
 
 const note = (title, color = 'normal') => {
-  if (color === false) {
+  if (color === '-') {
     it(`should check if note called '${title}' is not visible`, async () => {
       await page.waitForFunction(
         `Array.from(document.querySelectorAll('.flex-1.ma0.overflow-auto > *')).every(x => x.textContent !== '${title.replace(
@@ -224,8 +221,14 @@ const toast = text =>
 
 //
 
+before(async () => {
+  ({browser, page} = await createBrowser({
+    args: ['--disable-gpu', '--no-sandbox'],
+    slowMo: 1
+  }));
+});
+
 before(() => {
-  close('chrome://newtab/', {noopIsOK: true});
   resize(1024, 768);
 });
 
@@ -330,7 +333,7 @@ describe('Add and remove note before save', () => {
   action('Remove');
   note(title, 'light-gray');
   action('Save');
-  note(title, false);
+  note(title, '-');
   logout();
   toast('Logging out...');
   toast('Logged out.');
@@ -362,7 +365,7 @@ describe('Add and remove note', () => {
   action('Remove');
   note(title, 'light-red');
   action('Save');
-  note(title, false);
+  note(title, '-');
   toast('Saving...');
   toast('Saved.');
   logout();
