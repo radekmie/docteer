@@ -8,6 +8,7 @@ export const optimizeOptions = {
   delayInitializations: true,
   inlineExpressions: true
 };
+
 export const optimize = (js: string) =>
   meteorJsMinify(
     prepackSources([{filePath: 'unknown', fileContents: js}], optimizeOptions)

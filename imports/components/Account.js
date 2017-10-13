@@ -7,9 +7,13 @@ import {h} from 'preact';
 import {Button} from './Button';
 import {iconLock} from './Icon';
 import {iconUser} from './Icon';
-import {onLogin} from '../lib/stateActions';
+import {onLogin} from '../actions';
 
-import type {TUser} from '/imports/types.flow';
+class TUser {
+  _changed: boolean;
+  emails: {address: string, verified: boolean}[];
+  schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[];
+}
 
 type Account$Props = {
   user: ?TUser

@@ -3,7 +3,12 @@
 
 import {h} from 'preact';
 
-import type {TLabel} from '/imports/types.flow';
+class TLabel {
+  count: number;
+  href: string;
+  name: string;
+  total: number;
+}
 
 type Label$Props = {
   label: TLabel

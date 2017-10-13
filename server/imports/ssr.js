@@ -7,8 +7,8 @@ import {render} from 'preact-render-to-string';
 import {Boilerplate} from 'meteor/boilerplate-generator';
 import {WebApp} from 'meteor/webapp';
 
-import {Application} from '/imports/components/Application';
-import {Logo} from '/imports/components/Logo';
+import {Application} from '../../imports/components/Application';
+import {Logo} from '../../imports/components/Logo';
 
 WebApp.addHtmlAttributeHook(() => ({lang: 'en'}));
 

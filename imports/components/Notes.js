@@ -3,9 +3,12 @@
 
 import {h} from 'preact';
 
-import {onSearch} from '/imports/lib/stateActions';
+import {onSearch} from '../actions';
 
-import type {TNote} from '/imports/types.flow';
+class TNote {
+  _id: string;
+  _href: string;
+}
 
 type Note$Props = {
   note: TNote

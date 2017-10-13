@@ -5,8 +5,8 @@ import fuzzysort from 'fuzzysort';
 import {Accounts} from 'meteor/accounts-base';
 import {Meteor} from 'meteor/meteor';
 
-import {schemaEmpty} from '/imports/lib/schemas';
-import {tree} from '/imports/lib/state';
+import {schemaEmpty} from './lib';
+import {tree} from './state';
 
 export function onAdd() {
   const _id = Math.random()

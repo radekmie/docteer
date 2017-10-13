@@ -6,8 +6,8 @@ import {createLocation} from 'history/LocationUtils';
 import {Meteor} from 'meteor/meteor';
 import {Tracker} from 'meteor/tracker';
 
-import {onRefresh} from '/imports/lib/stateActions';
-import {tree} from '/imports/lib/state';
+import {onRefresh} from '../../imports/actions';
+import {tree} from '../../imports/state';
 
 const history = createHistory();
 

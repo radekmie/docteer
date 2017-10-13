@@ -4,20 +4,24 @@
 import {Component} from 'preact';
 import {h} from 'preact';
 
-import {Button} from '/imports/components/Button';
-import {onChangePassword} from '/imports/lib/stateActions';
-import {onExport} from '/imports/lib/stateActions';
-import {onImport} from '/imports/lib/stateActions';
-import {onSchemaAdd} from '/imports/lib/stateActions';
-import {onSchemaDelete} from '/imports/lib/stateActions';
-import {onSchemaField} from '/imports/lib/stateActions';
-import {onSchemaKey} from '/imports/lib/stateActions';
-import {onSchemaName} from '/imports/lib/stateActions';
-import {onSchemaOrder} from '/imports/lib/stateActions';
-import {onSchemaRemove} from '/imports/lib/stateActions';
-import {onSchemaType} from '/imports/lib/stateActions';
+import {Button} from './Button';
+import {onChangePassword} from '../actions';
+import {onExport} from '../actions';
+import {onImport} from '../actions';
+import {onSchemaAdd} from '../actions';
+import {onSchemaDelete} from '../actions';
+import {onSchemaField} from '../actions';
+import {onSchemaKey} from '../actions';
+import {onSchemaName} from '../actions';
+import {onSchemaOrder} from '../actions';
+import {onSchemaRemove} from '../actions';
+import {onSchemaType} from '../actions';
 
-import type {TUser} from '/imports/types.flow';
+class TUser {
+  _changed: boolean;
+  emails: {address: string, verified: boolean}[];
+  schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[];
+}
 
 class ChangePassword extends Component {
   old: ?HTMLInputElement;

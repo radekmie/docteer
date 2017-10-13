@@ -3,21 +3,25 @@
 
 import {h} from 'preact';
 
-import {iconAdd} from '/imports/components/Icon';
-import {iconMinus} from '/imports/components/Icon';
-import {iconNo} from '/imports/components/Icon';
-import {iconOk} from '/imports/components/Icon';
-import {iconPen} from '/imports/components/Icon';
-import {iconRefresh} from '/imports/components/Icon';
-import {onAdd} from '/imports/lib/stateActions';
-import {onEdit} from '/imports/lib/stateActions';
-import {onRefresh} from '/imports/lib/stateActions';
-import {onRemove} from '/imports/lib/stateActions';
-import {onSave} from '/imports/lib/stateActions';
-import {onSettingsReset} from '/imports/lib/stateActions';
-import {onSettingsSave} from '/imports/lib/stateActions';
+import {iconAdd} from './Icon';
+import {iconMinus} from './Icon';
+import {iconNo} from './Icon';
+import {iconOk} from './Icon';
+import {iconPen} from './Icon';
+import {iconRefresh} from './Icon';
+import {onAdd} from '../actions';
+import {onEdit} from '../actions';
+import {onRefresh} from '../actions';
+import {onRemove} from '../actions';
+import {onSave} from '../actions';
+import {onSettingsReset} from '../actions';
+import {onSettingsSave} from '../actions';
 
-import type {TUser} from '/imports/types.flow';
+class TUser {
+  _changed: boolean;
+  emails: {address: string, verified: boolean}[];
+  schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[];
+}
 
 type Actions$Props = {
   note: boolean,

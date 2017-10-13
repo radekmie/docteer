@@ -8,10 +8,10 @@ export const optimize = () => {
   // eslint-disable-next-line no-undef
   if (global.Package['bundle-visualizer']) return;
 
-  for (const path in WebAppInternals.staticFiles) {
-    if (
-      !optimizeOptions.allowed.includes(WebAppInternals.staticFiles[path].type)
-    )
-      delete WebAppInternals.staticFiles[path];
+  const staticFiles = WebAppInternals.staticFiles;
+
+  for (const path in staticFiles) {
+    if (!optimizeOptions.allowed.includes(staticFiles[path].type))
+      delete staticFiles[path];
   }
 };

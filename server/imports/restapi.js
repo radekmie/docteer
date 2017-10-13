@@ -9,8 +9,8 @@ import {Accounts} from 'meteor/accounts-base';
 import {Meteor} from 'meteor/meteor';
 import {WebApp} from 'meteor/webapp';
 
-import {Notes} from '/imports/api/notes/server';
-import {Stats} from '/imports/api/stats/server';
+import {Notes} from '../../imports/api/notes/server';
+import {Stats} from '../../imports/api/stats/server';
 
 const ajv = new Ajv({coerceTypes: true});
 const raw = Stats.rawCollection();

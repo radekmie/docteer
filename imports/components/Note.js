@@ -4,16 +4,23 @@
 import {Component} from 'preact';
 import {h} from 'preact';
 
-import {onChangeSchema} from '/imports/lib/stateActions';
-import {onChange} from '/imports/lib/stateActions';
-import {onTypeAhead} from '/imports/lib/stateActions';
-import {schemaIsArray} from '/imports/lib/schemas';
-import {schemaKey} from '/imports/lib/schemas';
-
 import {Editable} from './Editable';
+import {onChangeSchema} from '../actions';
+import {onChange} from '../actions';
+import {onTypeAhead} from '../actions';
+import {schemaIsArray} from '../lib';
+import {schemaKey} from '../lib';
 
-import type {TNote} from '/imports/types.flow';
-import type {TUser} from '/imports/types.flow';
+class TNote {
+  _id: string;
+  _href: string;
+}
+
+class TUser {
+  _changed: boolean;
+  emails: {address: string, verified: boolean}[];
+  schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[];
+}
 
 type Note$Props = {
   edit: boolean,

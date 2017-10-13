@@ -8,9 +8,13 @@ import {iconCog} from './Icon';
 import {iconLogIn} from './Icon';
 import {iconLogOut} from './Icon';
 import {iconNote} from './Icon';
-import {onLogout} from '../lib/stateActions';
+import {onLogout} from '../actions';
 
-import type {TUser} from '/imports/types.flow';
+class TUser {
+  _changed: boolean;
+  emails: {address: string, verified: boolean}[];
+  schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[];
+}
 
 type Navigation$Props = {
   full: boolean,

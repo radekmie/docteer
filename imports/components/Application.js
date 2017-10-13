@@ -4,8 +4,6 @@
 import {Component} from 'preact';
 import {h} from 'preact';
 
-import {tree} from '/imports/lib/state';
-
 import {Account} from './Account';
 import {Actions} from './Actions';
 import {Help} from './Help';
@@ -16,11 +14,7 @@ import {Note} from './Note';
 import {Settings} from './Settings';
 import {Splashscreen} from './Splashscreen';
 import {Toasts} from './Toasts';
-
-import type {TLabel} from '/imports/types.flow';
-import type {TNote} from '/imports/types.flow';
-import type {TToast} from '/imports/types.flow';
-import type {TUser} from '/imports/types.flow';
+import {tree} from '../state';
 
 const watcher = tree.watch({
   edit: ['edit'],
@@ -36,6 +30,30 @@ const watcher = tree.watch({
   user: ['user'],
   view: ['view']
 });
+
+class TLabel {
+  count: number;
+  href: string;
+  name: string;
+  total: number;
+}
+
+class TNote {
+  _id: string;
+  _href: string;
+}
+
+class TToast {
+  _id: number;
+  type: 'info' | 'error' | 'success';
+  text: string;
+}
+
+class TUser {
+  _changed: boolean;
+  emails: {address: string, verified: boolean}[];
+  schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[];
+}
 
 type Application$Props = {};
 type Application$State = {

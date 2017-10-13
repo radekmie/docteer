@@ -1,5 +1,5 @@
 // @flow
 
-import '/imports/client/optimize';
-import '/imports/client/render';
-import '/imports/lib/stateTriggers';
+import './imports/optimize';
+import './imports/render';
+import './imports/triggers';
