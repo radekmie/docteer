@@ -14,7 +14,8 @@ module.exports = {
     },
 
     env: {
-      MONGO_URL: 'mongodb://localhost/meteor',
+      MONGO_OPLOG_URL: 'mongodb://mongodb:27017/local',
+      MONGO_URL: 'mongodb://mongodb:27017/docteer',
       ROOT_URL: 'https://docteer.com'
     },
 
