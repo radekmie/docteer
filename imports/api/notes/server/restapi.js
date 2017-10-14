@@ -9,8 +9,10 @@ import {endpoint} from '../../../../server/imports/restapi';
 const ObjectId = MongoInternals.NpmModules.mongodb.module.ObjectId;
 
 endpoint('/notes', 'get', {
-  handle(req) {
-    return notesByUser(req.userId, req.query.refresh);
+  handle(req, res, next) {
+    res.send(notesByUser(req.userId, req.query.refresh));
+
+    return next();
   },
 
   schema: {
@@ -30,14 +32,13 @@ endpoint('/notes', 'get', {
 });
 
 endpoint('/notes', 'post', {
-  handle(req) {
+  handle(req, res, next) {
     notesPatch(req.body, req.userId);
-
-    const notes = notesByUser(req.userId, req.query.refresh);
+    res.send(notesByUser(req.userId, req.query.refresh));
 
     if (req.body.removed.length) notesArchive();
 
-    return notes;
+    return next();
   },
 
   schema: {

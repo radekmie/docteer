@@ -116,34 +116,16 @@ export function endpoint(
     }
   });
 
-  Meteor.methods({
-    [key](req) {
-      ajv.validate(key, req);
-
-      if (ajv.errors) throw new InvalidArgumentError({errors: ajv.errors});
-
-      req.userId = authenticate(req);
-
-      if (req.userId === null) throw new UnauthorizedError();
-
-      return handle(req);
-    }
-  });
-
   server[method](path, (req, res, next) => {
-    try {
-      res.send(
-        Meteor.call(key, {
-          authorization: req.authorization,
-          body: req.body,
-          headers: req.headers,
-          query: req.query
-        })
-      );
+    ajv.validate(key, req);
 
-      next();
-    } catch (error) {
-      next(error);
-    }
+    if (ajv.errors)
+      return next(InvalidArgumentError(ajv.errorsText(ajv.errors)));
+
+    req.userId = authenticate(req);
+
+    if (req.userId === null) return next(UnauthorizedError());
+
+    return handle(req, res, next);
   });
 }
