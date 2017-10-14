@@ -3,7 +3,7 @@
     "appId": "mrRgwAFX2wxgWLyii",
     "appSecret": "c9ac3195-9ffa-456a-b36c-cf1d9657e5ea",
     "options": {
-      "endpoint": "https://kadira.docteer.com/"
+      "endpoint": "https://engine.kadira.docteer.com/"
     }
   },
   "public": {}
