@@ -12,7 +12,6 @@
     "test": "npm run lint && npm run flow && CI=1 npm run e2e -- --once"
   },
   "dependencies": {
-    "ajv": "5.2.3",
     "babel-runtime": "6.26.0",
     "baobab": "2.5.0",
     "bcrypt": "1.0.3",
@@ -21,15 +20,13 @@
     "fuzzysort": "1.0.1",
     "history": "4.7.2",
     "html-minifier": "3.5.5",
-    "lru-cache": "4.1.1",
     "meteor-node-stubs": "0.2.11",
     "postcss": "6.0.13",
     "postcss-cssnext": "3.0.2",
     "preact": "8.2.5",
     "preact-render-to-string": "3.7.0",
     "prepack": "0.2.9",
-    "restify": "6.0.1",
-    "shrink-ray": "aickin/shrink-ray#91ebcac6aadcd93be3a79dcb6f45dd1fdbf32b91"
+    "simpl-schema": "0.3.2"
   },
   "devDependencies": {
     "babel-eslint": "8.0.1",

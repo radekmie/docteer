@@ -3,7 +3,7 @@
 import {Mongo} from 'meteor/mongo';
 
 import './indexes';
-import './restapi';
+import './methods';
 
 export {Notes} from '..';
 

@@ -1,96 +1,90 @@
 // @flow
 
+import SimpleSchema from 'simpl-schema';
+
+import {Meteor} from 'meteor/meteor';
 import {MongoInternals} from 'meteor/mongo';
 
 import {NotesArchive} from '.';
 import {Notes} from '.';
-import {endpoint} from '../../../../server/imports/restapi';
 
 const ObjectId = MongoInternals.NpmModules.mongodb.module.ObjectId;
 
-endpoint('/notes', 'get', {
-  handle(req, res, next) {
-    res.send(notesByUser(req.userId, req.query.refresh));
+const endpoint = (name, {handle, schema: definition}) => {
+  const schema = new SimpleSchema(definition);
 
-    return next();
+  Meteor.methods({
+    [name](data) {
+      if (!this.userId) throw new Meteor.Error('not-authorized');
+
+      schema.clean(data, {mutate: true});
+      schema.validate(data);
+
+      return handle.call(this, data);
+    }
+  });
+};
+
+endpoint('GET /notes', {
+  handle({refresh}) {
+    return notesByUser(this.userId, refresh);
   },
 
   schema: {
-    properties: {
-      query: {
-        type: 'object',
-        required: [],
-        properties: {
-          refresh: {
-            type: 'number'
-          }
-        },
-        additionalProperties: false
-      }
+    refresh: {
+      type: Number,
+      optional: true,
+      min: 0
     }
   }
 });
 
-endpoint('/notes', 'post', {
-  handle(req, res, next) {
-    notesPatch(req.body, req.userId);
-    res.send(notesByUser(req.userId, req.query.refresh));
+endpoint('POST /notes', {
+  handle({patch, refresh}) {
+    notesPatch(patch, this.userId);
 
-    if (req.body.removed.length) notesArchive();
+    const notes = notesByUser(this.userId, refresh);
 
-    return next();
+    if (patch.removed.length) notesArchive();
+
+    return notes;
   },
 
   schema: {
-    required: ['body', 'query'],
-    properties: {
-      body: {
-        type: 'object',
-        required: ['created', 'removed', 'updated'],
-        properties: {
-          created: {
-            type: 'array',
-            items: {
-              type: 'string'
-            }
-          },
-          removed: {
-            type: 'array',
-            items: {
-              type: 'string'
-            }
-          },
-          updated: {
-            type: 'array',
-            items: {
-              type: 'object',
-              required: ['_id'],
-              properties: {
-                _id: {
-                  type: 'string'
-                },
-                _outline: {
-                  type: 'object'
-                },
-                _outname: {
-                  type: 'string'
-                }
-              }
-            }
-          }
-        },
-        additionalProperties: false
-      },
-      query: {
-        type: 'object',
-        required: [],
-        properties: {
-          refresh: {
-            type: 'number'
-          }
-        },
-        additionalProperties: false
-      }
+    patch: Object,
+
+    'patch.created': Array,
+
+    'patch.created.$': String,
+
+    'patch.removed': Array,
+
+    'patch.removed.$': String,
+
+    'patch.updated': Array,
+
+    'patch.updated.$': {
+      type: Object,
+      blackbox: true
+    },
+
+    'patch.updated.$._id': String,
+
+    'patch.updated.$._outline': {
+      type: Object,
+      optional: true,
+      blackbox: true
+    },
+
+    'patch.updated.$._outname': {
+      type: String,
+      optional: true
+    },
+
+    refresh: {
+      type: Number,
+      optional: true,
+      min: 0
     }
   }
 });

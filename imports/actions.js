@@ -2,7 +2,6 @@
 
 import fuzzysort from 'fuzzysort';
 
-import {Accounts} from 'meteor/accounts-base';
 import {Meteor} from 'meteor/meteor';
 
 import {schemaEmpty} from './lib';
@@ -210,10 +209,9 @@ export function onRefresh(firstRun: ?boolean): Promise<void> {
 
   const last = new Date();
 
-  return rest(
-    'GET',
-    `/api/notes?refresh=${tree.get(['last']).valueOf()}`
-  ).then(response => {
+  return call('GET /notes', {
+    refresh: tree.get(['last']).valueOf()
+  }).then(response => {
     tree.set(['last'], last);
     toast('success', firstRun === true ? 'Loaded.' : 'Refreshed.');
     merge(response);
@@ -263,11 +261,10 @@ export function onSave(): Promise<void> {
 
   const last = new Date();
 
-  return rest(
-    'POST',
-    `/api/notes?refresh=${tree.get(['last']).valueOf()}`,
-    JSON.stringify(patch)
-  ).then(response => {
+  return call('POST /notes', {
+    patch,
+    refresh: tree.get(['last']).valueOf()
+  }).then(response => {
     tree.set(['last'], last);
     toast('success', 'Saved.');
     merge(response);
@@ -451,33 +448,17 @@ function merge(diff) {
   );
 }
 
-function rest(method, url, body) {
-  return fetch(url, {
-    body,
-    method,
-    headers: new Headers({
-      Accept: 'application/json',
-      Authorization: `Basic ${btoa(
-        [Accounts._storedUserId(), Accounts._storedLoginToken()].join(':')
-      )}`,
-      'Content-Type': 'application/json'
-    })
-  })
-    .then(response => {
-      if (response.ok) {
-        return response.json().then(response => {
-          if (response.errors) throw new Error(response.errors[0].message);
-
-          return response;
-        });
+function call(path, options) {
+  return new Promise((resolve, reject) => {
+    Meteor.call(path, options, (error, response) => {
+      if (error) {
+        toast('error', error);
+        reject(error);
+      } else {
+        resolve(response);
       }
-
-      throw new Error(response.statusText);
-    })
-    .catch(error => {
-      toast('error', error);
-      throw error;
     });
+  });
 }
 
 function toast(type, message) {
