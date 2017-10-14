@@ -4,12 +4,13 @@ import Ajv from 'ajv';
 import LRU from 'lru-cache';
 import bunyan from 'bunyan';
 import restify from 'restify';
+import {InvalidArgumentError} from 'restify-errors';
+import {UnauthorizedError} from 'restify-errors';
 
 import {Accounts} from 'meteor/accounts-base';
 import {Meteor} from 'meteor/meteor';
 import {WebApp} from 'meteor/webapp';
 
-import {Notes} from '../../imports/api/notes/server';
 import {Stats} from '../../imports/api/stats/server';
 
 const ajv = new Ajv({coerceTypes: true});
@@ -49,41 +50,100 @@ const cache = new LRU({
   maxAge: 30 * 1000
 });
 
-const context = {
-  ajv,
-  authenticate(req) {
-    const hash = req.headers.authorization;
-    const prev = cache.get(hash);
-
-    if (prev !== undefined) return prev;
-
-    const {password, username} = req.authorization.basic;
-
-    const query = {
-      _id: username,
-      'services.resume.loginTokens': {
-        $elemMatch: {
-          hashedToken: Accounts._hashLoginToken(password),
-          when: {$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}
-        }
-      }
-    };
-
-    const next = users
-      .find(query)
-      .project({_id: 1})
-      .limit(1)
-      .hasNext()
-      .await();
-
-    cache.set(hash, next ? username : null);
-
-    return username;
-  }
-};
-
-[Notes].forEach(module => {
-  module.register(server, context);
-});
-
 WebApp.rawConnectHandlers.use('/api', server.server);
+
+function authenticate(req) {
+  const hash = req.headers.authorization;
+  const prev = cache.get(hash);
+
+  if (prev !== undefined) return prev;
+
+  const {password, username} = req.authorization.basic;
+
+  const query = {
+    _id: username,
+    'services.resume.loginTokens': {
+      $elemMatch: {
+        hashedToken: Accounts._hashLoginToken(password),
+        when: {$gte: new Date(Date.now() - 24 * 60 * 60 * 1000)}
+      }
+    }
+  };
+
+  const next = users
+    .find(query)
+    .project({_id: 1})
+    .limit(1)
+    .hasNext()
+    .await();
+
+  cache.set(hash, next ? username : null);
+
+  return username;
+}
+
+export function endpoint(
+  path: string,
+  method: 'get' | 'post',
+  {handle, schema}: {handle: Function, schema: Object}
+) {
+  const key = `${method.toUpperCase()} ${path}`;
+
+  ajv.addSchema({
+    id: key,
+    type: 'object',
+    required: ['authorization', ...(schema.required || [])],
+    properties: {
+      authorization: {
+        type: 'object',
+        required: ['basic'],
+        properties: {
+          basic: {
+            type: 'object',
+            required: ['password', 'username'],
+            properties: {
+              password: {
+                type: 'string'
+              },
+              username: {
+                type: 'string'
+              }
+            }
+          }
+        }
+      },
+      ...schema.properties
+    }
+  });
+
+  Meteor.methods({
+    [key](req) {
+      ajv.validate(key, req);
+
+      if (ajv.errors) throw new InvalidArgumentError({errors: ajv.errors});
+
+      req.userId = authenticate(req);
+
+      if (req.userId === null) throw new UnauthorizedError();
+
+      return handle(req);
+    }
+  });
+
+  server[method](path, (req, res, next) => {
+    try {
+      res.send(
+        Meteor.call(key, {
+          authorization: req.authorization,
+          body: req.body,
+          headers: req.headers,
+          query: req.query
+        })
+      );
+
+      next();
+    } catch (error) {
+      next(error);
+    }
+  });
+}
