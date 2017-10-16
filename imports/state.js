@@ -3,6 +3,8 @@
 import Baobab from 'baobab';
 import fuzzysort from 'fuzzysort';
 
+import {Minimongo} from 'meteor/minimongo';
+
 export const tree = new Baobab(
   {
     // Data
@@ -45,25 +47,31 @@ export const tree = new Baobab(
         const term = search.trim();
 
         if (term) {
-          notes = notes
-            .reduce((notes, note) => {
-              const match = fuzzysort.single(term, note.name);
+          try {
+            const matcher = new Minimongo.Matcher(JSON.parse(term), false);
 
-              if (match) notes.push({note, match});
+            notes = notes.filter(note => matcher.documentMatches(note).result);
+          } catch (error) {
+            notes = notes
+              .reduce((notes, note) => {
+                const match = fuzzysort.single(term, note.name);
 
-              return notes;
-            }, [])
-            .sort(
-              (a, b) =>
-                b.match.score - a.match.score ||
-                a.note.name.localeCompare(b.note.name)
-            )
-            .slice(0, 50)
-            .map(single =>
-              Object.assign({}, single.note, {
-                name: fuzzysort.highlight(single.match, '<b>', '</b>')
-              })
-            );
+                if (match) notes.push({note, match});
+
+                return notes;
+              }, [])
+              .sort(
+                (a, b) =>
+                  b.match.score - a.match.score ||
+                  a.note.name.localeCompare(b.note.name)
+              )
+              .slice(0, 50)
+              .map(single =>
+                Object.assign({}, single.note, {
+                  name: fuzzysort.highlight(single.match, '<b>', '</b>')
+                })
+              );
+          }
         }
 
         return notes.map(note =>
