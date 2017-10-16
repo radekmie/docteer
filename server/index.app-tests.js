@@ -130,7 +130,7 @@ const note = (title, color = 'normal') => {
   if (color === '-') {
     it(`should check if note called '${title}' is not visible`, async () => {
       await page.waitForFunction(
-        `Array.from(document.querySelectorAll('.flex-1.ma0.overflow-auto > *')).every(x => x.textContent !== '${title.replace(
+        `Array.from(document.querySelectorAll('.b--dark-gray.bl > *')).every(x => x.textContent !== '${title.replace(
           "'",
           "\\'"
         )}')`,
@@ -143,7 +143,7 @@ const note = (title, color = 'normal') => {
 
   it(`should check if note called '${title}' is visible`, async () => {
     await page.waitForFunction(
-      `Array.from(document.querySelectorAll('.flex-1.ma0.overflow-auto > *')).some(x => x.textContent === '${title.replace(
+      `Array.from(document.querySelectorAll('.b--dark-gray.bl > *')).some(x => x.textContent === '${title.replace(
         "'",
         "\\'"
       )}')`,
@@ -153,7 +153,7 @@ const note = (title, color = 'normal') => {
 
   it(`should check if note called '${title}' is ${color}`, async () => {
     await page.waitForFunction(
-      `Array.from(document.querySelectorAll('.flex-1.ma0.overflow-auto > .${color ===
+      `Array.from(document.querySelectorAll('.b--dark-gray.bl > .${color ===
       'normal'
         ? 'dark-gray'
         : `hover-${color}`}')).some(x => x.textContent === '${title.replace(
@@ -192,12 +192,12 @@ const resize = (width, height) =>
 const select = title =>
   it(`should select note called '${title}'`, async () => {
     const note = await page.evaluate(
-      `Array.from(document.querySelectorAll('.flex-1.ma0.overflow-auto > *')).findIndex(x => x.textContent === '${title.replace(
+      `Array.from(document.querySelectorAll('.b--dark-gray.bl > *')).findIndex(x => x.textContent === '${title.replace(
         "'",
         "\\'"
       )}')`
     );
-    await page.click(`.flex-1.ma0.overflow-auto > :nth-child(${note + 1})`);
+    await page.click(`.b--dark-gray.bl > :nth-child(${note + 1})`);
   });
 
 const start = path =>
