@@ -36,7 +36,7 @@ type Labels$Props = {
 
 export function Labels(props: Labels$Props) {
   return (
-    <div class="b--dark-gray br bw1 column flex flex-column h-100 overflow-auto resize">
+    <div class="flex flex-column flex-1 h-100 overflow-auto">
       {props.labels.length === 0 && <div className="pa3 tc">(no labels)</div>}
 
       {props.labels.map(label => <Label key={label.name} label={label} />)}

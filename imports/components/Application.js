@@ -7,7 +7,6 @@ import {h} from 'preact';
 import {Account} from './Account';
 import {Actions} from './Actions';
 import {Help} from './Help';
-import {Labels} from './Labels';
 import {Navigation} from './Navigation';
 import {Notes} from './Notes';
 import {Note} from './Note';
@@ -110,10 +109,12 @@ export class Application extends Component<
           </div>
         )}
 
-        {state.view === 'd' && <Labels labels={state.labels} />}
-
         {state.view === 'd' && (
-          <Notes notes={state.notes} search={state.search} />
+          <Notes
+            labels={state.labels}
+            notes={state.notes}
+            search={state.search}
+          />
         )}
 
         {state.view === 'd' && (

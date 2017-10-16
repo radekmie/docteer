@@ -3,6 +3,7 @@
 
 import {h} from 'preact';
 
+import {Labels} from './Labels';
 import {onSearch} from '../actions';
 
 class TNote {
@@ -34,7 +35,15 @@ function Note({note}: Note$Props) {
   );
 }
 
+class TLabel {
+  count: number;
+  href: string;
+  name: string;
+  total: number;
+}
+
 type Notes$Props = {
+  labels: TLabel[],
   notes: TNote[],
   search: string
 };
@@ -56,14 +65,18 @@ export function Notes(props: Notes$Props) {
         </label>
       </div>
 
-      <div class="flex-1 ma0 overflow-auto">
-        {props.notes.length === 0 && (
-          <div class="pa3 tc">
-            {`(no notes${props.search ? ' found' : ''})`}
-          </div>
-        )}
+      <div class="flex h-100">
+        <Labels labels={props.labels} />
 
-        {props.notes.map(note => <Note note={note} key={note._id} />)}
+        <div class="b--dark-gray bl bw1 flex flex-column flex-1 h-100 overflow-auto">
+          {props.notes.length === 0 && (
+            <div class="pa3 tc">
+              {`(no notes${props.search ? ' found' : ''})`}
+            </div>
+          )}
+
+          {props.notes.map(note => <Note note={note} key={note._id} />)}
+        </div>
       </div>
     </div>
   );
