@@ -48,7 +48,11 @@ export const tree = new Baobab(
 
         if (term) {
           try {
-            const matcher = new Minimongo.Matcher(JSON.parse(term), false);
+            const selector = JSON.parse(term);
+
+            if (typeof selector !== 'object') throw new Error();
+
+            const matcher = new Minimongo.Matcher(selector, false);
 
             notes = notes.filter(note => matcher.documentMatches(note).result);
           } catch (error) {

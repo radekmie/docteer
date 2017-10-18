@@ -50,7 +50,7 @@ type Notes$Props = {
 
 export function Notes(props: Notes$Props) {
   return (
-    <div class="b--dark-gray br bw1 column flex flex-column h-100 overflow-auto resize">
+    <div class="b--dark-gray br bw1 column flex flex-column">
       <div class="b--dark-gray bb bw1">
         <label class="flex" for="search" title="Search">
           <input
@@ -68,7 +68,7 @@ export function Notes(props: Notes$Props) {
       <div class="flex h-100">
         <Labels labels={props.labels} />
 
-        <div class="b--dark-gray bl bw1 flex flex-column flex-1 h-100 overflow-auto">
+        <div class="b--dark-gray bl bw1 flex-1 overflow-auto">
           {props.notes.length === 0 && (
             <div class="pa3 tc">
               {`(no notes${props.search ? ' found' : ''})`}

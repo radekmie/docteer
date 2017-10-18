@@ -370,10 +370,6 @@ select {
   color: var(--red);
 }
 
-.resize {
-  resize: horizontal;
-}
-
 .right-1 {
   right: 1rem;
 }
