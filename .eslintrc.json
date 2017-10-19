@@ -1,5 +1,11 @@
 {
-  "extends": "vazco/prettier",
+  "extends": [
+    "plugin:flowtype/recommended",
+    "vazco/prettier"
+  ],
+  "plugins": [
+    "flowtype"
+  ],
   "rules": {
     "prettier/prettier": [
       "error",
