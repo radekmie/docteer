@@ -50,7 +50,7 @@ type Notes$Props = {
 
 export function Notes(props: Notes$Props) {
   return (
-    <div class="b--dark-gray br bw1 column flex flex-column">
+    <div class="column flex flex-column">
       <div class="b--dark-gray bb bw1">
         <label class="flex" for="search" title="Search">
           <input

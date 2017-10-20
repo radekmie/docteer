@@ -10,6 +10,7 @@ import {Help} from './Help';
 import {Navigation} from './Navigation';
 import {Notes} from './Notes';
 import {Note} from './Note';
+import {Resizer} from './Resizer';
 import {Settings} from './Settings';
 import {Splashscreen} from './Splashscreen';
 import {Toasts} from './Toasts';
@@ -116,6 +117,8 @@ export class Application extends Component<
             search={state.search}
           />
         )}
+
+        {state.view === 'd' && <Resizer />}
 
         {state.view === 'd' && (
           <Note

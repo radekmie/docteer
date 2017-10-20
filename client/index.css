@@ -181,7 +181,6 @@ select {
 
 .column {
   flex-shrink: 0;
-  min-width: 20rem;
   width: 33%;
 }
 
@@ -368,6 +367,25 @@ select {
 
 .red {
   color: var(--red);
+}
+
+.resizer {
+  cursor: col-resize;
+  position: relative;
+}
+
+.resizer * {
+  bottom: 0;
+  position: absolute;
+  top: 0;
+  width: 1rem;
+  z-index: 2;
+}
+
+@media (max-device-width: 1024px) {
+  .resizer * {
+    margin-left: -.5rem;
+  }
 }
 
 .right-1 {
