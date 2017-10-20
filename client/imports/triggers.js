@@ -81,9 +81,9 @@ window.document.addEventListener('keydown', event => {
   if (keyBoth.includes(event.key)) {
     if (target.contentEditable !== 'true') {
       const list = window.document.querySelector(
-        `.app > :nth-child(${keyNote.includes(event.key)
-          ? '3) > :last-child'
-          : '2)'}`
+        `.app > :nth-child(2) > :nth-child(2) > :nth-child(${1 +
+          keyNote.includes(event.key)}
+        )`
       );
       const focus = window.document.activeElement;
       const active =
@@ -93,9 +93,7 @@ window.document.addEventListener('keydown', event => {
           active[
             `${keyNext.includes(event.key) ? 'next' : 'previous'}Sibling`
           ]) ||
-        list.querySelector(
-          `:${keyNext.includes(event.key) ? 'last' : 'first'}-child`
-        );
+        (keyNext.includes(event.key) ? list.lastChild : list.children[0]);
       if (item && item.pathname) {
         item.focus();
         if (item.pathname !== '/d' && keyNote.includes(event.key)) item.click();
