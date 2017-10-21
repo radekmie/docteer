@@ -44,6 +44,7 @@ export class Account extends Component<Account$Props> {
         <label class="flex h2 mb1" for="email" title="Email">
           {iconUser}
           <input
+            autocomplete="email"
             class="ba bg-near-white br-0 bw1 flex-1 ml1 ph1"
             id="email"
             name="email"
@@ -56,6 +57,7 @@ export class Account extends Component<Account$Props> {
         <label class="flex h2 mb1" for="password" title="Password">
           {iconLock}
           <input
+            autocomplete="current-password"
             class="ba bg-near-white br-0 bw1 flex-1 ml1 ph1"
             id="password"
             name="password"
