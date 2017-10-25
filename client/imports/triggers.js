@@ -78,27 +78,31 @@ const keyNext = ['ArrowDown', 'ArrowRight'];
 window.document.addEventListener('keydown', event => {
   const target = event.target;
 
+  if (
+    target.contentEditable === 'true' ||
+    target.tagName.toLowerCase() === 'input'
+  )
+    return;
+
   if (keyBoth.includes(event.key)) {
-    if (target.contentEditable !== 'true') {
-      const list = window.document.querySelector(
-        `.app > :nth-child(2) > :nth-child(2) > :nth-child(${1 +
-          keyNote.includes(event.key)}
-        )`
-      );
-      const focus = window.document.activeElement;
-      const active =
-        focus && focus.parentNode === list ? focus : list.querySelector('.bl');
-      const item =
-        (active &&
-          active[
-            `${keyNext.includes(event.key) ? 'next' : 'previous'}Sibling`
-          ]) ||
-        (keyNext.includes(event.key) ? list.lastChild : list.children[0]);
-      if (item && item.pathname) {
-        item.focus();
-        if (item.pathname !== '/d' && keyNote.includes(event.key)) item.click();
-        event.preventDefault();
-      }
+    const list = window.document.querySelector(
+      `.app > :nth-child(2) > :nth-child(2) > :nth-child(${1 +
+        keyNote.includes(event.key)}
+      )`
+    );
+    const focus = window.document.activeElement;
+    const active =
+      focus && focus.parentNode === list ? focus : list.querySelector('.bl');
+    const item =
+      (active &&
+        active[
+          `${keyNext.includes(event.key) ? 'next' : 'previous'}Sibling`
+        ]) ||
+      (keyNext.includes(event.key) ? list.lastChild : list.children[0]);
+    if (item && item.pathname) {
+      item.focus();
+      if (item.pathname !== '/d' && keyNote.includes(event.key)) item.click();
+      event.preventDefault();
     }
   } else if (keyHelp.includes(event.key)) {
     tree.set(['help'], event.key === '?');
