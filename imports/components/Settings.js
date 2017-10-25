@@ -23,13 +23,17 @@ class TUser {
   schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[];
 }
 
-class ChangePassword extends Component {
-  old: ?HTMLInputElement;
+class Credentials$Props {
+  user: TUser;
+}
+
+class Credentials extends Component<Credentials$Props> {
+  current: ?HTMLInputElement;
   new1: ?HTMLInputElement;
   new2: ?HTMLInputElement;
 
-  onOld = (ref: ?HTMLInputElement) => {
-    this.old = ref;
+  onCurrent = (ref: ?HTMLInputElement) => {
+    this.current = ref;
   };
 
   onNew1 = (ref: ?HTMLInputElement) => {
@@ -43,32 +47,50 @@ class ChangePassword extends Component {
   onChangePassword = event => {
     event.preventDefault();
 
-    if (this.old && this.new1 && this.new2) {
+    if (this.current && this.new1 && this.new2) {
       onChangePassword(
-        this.old.value,
+        this.current.value,
         this.new1.value,
         this.new2.value
       ).then(() => {
-        if (this.old) this.old.value = '';
+        if (this.current) this.current.value = '';
         if (this.new1) this.new1.value = '';
         if (this.new2) this.new2.value = '';
       });
     }
   };
 
-  render() {
+  render(props) {
     return (
       <details class="pointer">
         <summary>Change password</summary>
 
         <form onSubmit={this.onChangePassword}>
-          <label class="flex flex-column mt1" for="old" title="Old password">
-            <b>Old password</b>
+          <label class="flex flex-column mt1" for="email" title="Email">
+            <b>Email</b>
             <input
+              autocomplete="email username"
               class="ba bg-near-white br-0 bw1 ph1"
-              id="old"
-              name="old"
-              ref={this.onOld}
+              disabled
+              id="email"
+              name="email"
+              type="email"
+              value={props.user.emails[0].address}
+            />
+          </label>
+
+          <label
+            class="flex flex-column mt1"
+            for="current"
+            title="Current password"
+          >
+            <b>Current password</b>
+            <input
+              autocomplete="current-password"
+              class="ba br-0 bw1 ph1"
+              id="current"
+              name="current"
+              ref={this.onCurrent}
               type="password"
             />
           </label>
@@ -76,7 +98,8 @@ class ChangePassword extends Component {
           <label class="flex flex-column mt1" for="new1" title="New password">
             <b>New password</b>
             <input
-              class="ba bg-near-white br-0 bw1 ph1"
+              autocomplete="new-password"
+              class="ba br-0 bw1 ph1"
               id="new1"
               name="new1"
               ref={this.onNew1}
@@ -91,7 +114,8 @@ class ChangePassword extends Component {
           >
             <b>New password (again)</b>
             <input
-              class="ba bg-near-white br-0 bw1 ph1"
+              autocomplete="new-password"
+              class="ba br-0 bw1 ph1"
               id="new2"
               name="new2"
               ref={this.onNew2}
@@ -115,18 +139,12 @@ type Settings$Props = {
 export function Settings(props: Settings$Props) {
   return (
     <dl class="ma0 w10 w-100">
-      <dt>
-        <b>Login:</b>
-      </dt>
-
-      <dd class="ml4">{props.user.emails[0].address}</dd>
-
       <dt class="mt3">
-        <b>Password:</b>
+        <b>Credentials:</b>
       </dt>
 
       <dd class="ml4">
-        <ChangePassword />
+        <Credentials user={props.user} />
       </dd>
 
       <dt class="mt3">
