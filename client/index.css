@@ -275,6 +275,14 @@ select {
   min-width: 1rem;
 }
 
+.input-icon {
+  margin-right: -2.25rem;
+}
+
+.input-icon + input {
+  padding-left: 2.25rem;
+}
+
 .link {
   text-decoration: none;
 }

@@ -28,6 +28,10 @@ export const iconRefresh = icon(
   'M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15',
   1
 );
+export const iconSearch = icon(
+  'M3 10.5a7.5 7.5 0 1 0 15 0 7.5 7.5 0 1 0-15 0zM21 21l-5.2-5.2',
+  1
+);
 export const iconUser = icon(
   'M8,7a4,4 0 1,0 8,0a4,4 0 1,0 -8,0M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2',
   2
