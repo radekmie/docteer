@@ -29,7 +29,7 @@ Meteor.methods({
     // NOTE: Should we throw an error here?
     if (user.emails[0].address === 'demo@docteer.com') return;
 
-    Accounts.setPassword(this.userId, new1);
+    Accounts.setPassword(this.userId, new1, {logout: false});
   },
 
   'users.settings'(settings) {

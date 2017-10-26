@@ -59,6 +59,24 @@ const action = title =>
     await page.click(selector);
   });
 
+const click = selector =>
+  it(`should click '${selector}'`, async () => {
+    await page.click(selector);
+  });
+
+const expand = title =>
+  it(`should expand section '${title}'`, async () => {
+    const summaries = await page.$$('summary');
+    const summary = await page.evaluate(
+      `Array.from(document.querySelectorAll('summary')).findIndex(x => x.textContent === '${title.replace(
+        "'",
+        "\\'"
+      )}')`
+    );
+
+    await summaries[summary].click();
+  });
+
 const field = (position, name, value) => {
   it(`should check field ${position + 1} to be called '${name}'`, async () => {
     await page.waitForFunction(
@@ -116,6 +134,7 @@ const login = user =>
 
 const logout = () =>
   it('should log out', async () => {
+    await page.waitForSelector('[title="Log Out"]');
     await page.click('[title="Log Out"]');
   });
 
@@ -169,9 +188,6 @@ const resize = (width, height) =>
   it(`should resize to ${width}x${height}`, async () => {
     await page.setViewport({height, width});
 
-    // "Chrome is being..." bar.
-    height += 40;
-
     // Window frame.
     height += 85;
 
@@ -219,11 +235,17 @@ const toast = text =>
     );
   });
 
+const type = (selector, text) =>
+  it(`should type '${text}' in '${selector}'`, async () => {
+    await page.click(selector);
+    await page.type(text);
+  });
+
 //
 
 before(async () => {
   ({browser, page} = await createBrowser({
-    args: ['--disable-gpu', '--no-sandbox'],
+    args: ['--disable-gpu', '--disable-infobars', '--no-sandbox'],
     slowMo: 1
   }));
 });
@@ -240,7 +262,7 @@ describe('Log in fail', () => {
   toast("Sounds good, doesn't work.");
 });
 
-describe('Log in success and log out', () => {
+describe('Log in success', () => {
   start('/');
   navigate('Log In');
   login(faker.user.registered());
@@ -368,6 +390,85 @@ describe('Add and remove note', () => {
   note(title, '-');
   toast('Saving...');
   toast('Saved.');
+  logout();
+  toast('Logging out...');
+  toast('Logged out.');
+});
+
+describe('Change password incorrect', () => {
+  const user1 = faker.user.registered();
+  const user2 = faker.user();
+
+  start('/');
+  navigate('Log In');
+  login(user1);
+  toast('Logging in...');
+  toast('Logged in.');
+  toast('Loading...');
+  toast('Loaded.');
+  navigate('Settings');
+  expand('Change password');
+  type('#current', user2.password);
+  type('#new1', user2.password);
+  type('#new2', user2.password);
+  click('[title="Change password"]');
+  toast('Changing password...');
+  toast('Incorrect old password.');
+  logout();
+});
+
+describe('Change password mismatch', () => {
+  const user1 = faker.user.registered();
+  const user2 = faker.user();
+
+  start('/');
+  navigate('Log In');
+  login(user1);
+  toast('Logging in...');
+  toast('Logged in.');
+  toast('Loading...');
+  toast('Loaded.');
+  navigate('Settings');
+  expand('Change password');
+  type('#current', user1.password);
+  type('#new1', user1.password);
+  type('#new2', user2.password);
+  click('[title="Change password"]');
+  toast('Changing password...');
+  toast('Passwords mismatch.');
+  logout();
+});
+
+describe('Change password', () => {
+  const user1 = faker.user.registered();
+  const user2 = faker.user();
+
+  user2.email = user1.email;
+
+  start('/');
+  navigate('Log In');
+  login(user1);
+  toast('Logging in...');
+  toast('Logged in.');
+  toast('Loading...');
+  toast('Loaded.');
+  navigate('Settings');
+  expand('Change password');
+  type('#current', user1.password);
+  type('#new1', user2.password);
+  type('#new2', user2.password);
+  click('[title="Change password"]');
+  toast('Changing password...');
+  toast('Changed password.');
+  logout();
+  toast('Logging out...');
+  toast('Logged out.');
+  navigate('Log In');
+  login(user2);
+  toast('Logging in...');
+  toast('Logged in.');
+  toast('Loading...');
+  toast('Loaded.');
   logout();
   toast('Logging out...');
   toast('Logged out.');
