@@ -182,11 +182,15 @@ export function onImport() {
   }
 }
 
-export function onLogin(email: string, password: string) {
+export function onLogin(email: string, password: string): Promise<void> {
   toast('info', 'Logging in...');
 
-  Meteor.loginWithPassword(email, password, error => {
-    toast(error ? 'error' : 'success', error || 'Logged in.');
+  return new Promise((resolve, reject) => {
+    Meteor.loginWithPassword(email, password, error => {
+      toast(error ? 'error' : 'success', error || 'Logged in.');
+      if (error) reject(error);
+      else resolve();
+    });
   });
 }
 
@@ -215,6 +219,18 @@ export function onRefresh(firstRun: ?boolean): Promise<void> {
     tree.set(['last'], last);
     toast('success', firstRun === true ? 'Loaded.' : 'Refreshed.');
     merge(response);
+  });
+}
+
+export function onRegister(email: string, password: string): Promise<void> {
+  toast('info', 'Signing in...');
+
+  return new Promise((resolve, reject) => {
+    Meteor.call('users.register', email, password, error => {
+      toast(error ? 'error' : 'success', error || 'Signed in.');
+      if (error) reject(error);
+      else onLogin(email, password);
+    });
   });
 }
 

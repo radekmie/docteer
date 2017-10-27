@@ -165,7 +165,11 @@ function syncHistory(location) {
     state.search = '';
   }
 
-  if (!['', user && 'd', !user && 'l', user && 's'].includes(state.view))
+  if (
+    !['', user && 'd', !user && 'l', !user && 'r', user && 's'].includes(
+      state.view
+    )
+  )
     state.view = '';
 
   tree.set(

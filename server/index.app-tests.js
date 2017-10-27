@@ -2,7 +2,6 @@
 
 import faker from 'faker';
 
-import {Accounts} from 'meteor/accounts-base';
 import {Meteor} from 'meteor/meteor';
 import {before} from 'meteor/universe:e2e'; // $FlowFixMe: No local file.
 import {createBrowser} from 'meteor/universe:e2e'; // $FlowFixMe: No local file.
@@ -23,29 +22,6 @@ faker.user = () => {
     email: faker.internet.email(),
     password: faker.internet.password()
   };
-
-  return user;
-};
-
-faker.user.registered = () => {
-  const user = faker.user();
-
-  user._id = Accounts.createUser(user);
-
-  Meteor.users.update(user._id, {
-    $set: {
-      schemas: [
-        {
-          name: 'Default',
-          fields: {
-            name: 'div',
-            labels: 'ul',
-            text: 'div'
-          }
-        }
-      ]
-    }
-  });
 
   return user;
 };
@@ -113,8 +89,6 @@ const field = (position, name, value) => {
 
 const login = user =>
   it(`should log in as ${user.email}:${user.password}`, async () => {
-    await page.click('[title="Log In"]');
-
     await page.click('#email');
     await page.keyboard.down('Control');
     await page.keyboard.down('A');
@@ -184,6 +158,27 @@ const note = (title, color = 'normal') => {
   });
 };
 
+const signin = user =>
+  it(`should sign in as ${user.email}:${user.password}`, async () => {
+    await page.click('[href="/r"]');
+
+    await page.click('#email');
+    await page.keyboard.down('Control');
+    await page.keyboard.down('A');
+    await page.keyboard.up('A');
+    await page.keyboard.up('Control');
+    await page.type(user.email);
+
+    await page.click('#password');
+    await page.keyboard.down('Control');
+    await page.keyboard.down('A');
+    await page.keyboard.up('A');
+    await page.keyboard.up('Control');
+    await page.type(user.password);
+
+    await page.click('button[title="Sign In"]');
+  });
+
 const resize = (width, height) =>
   it(`should resize to ${width}x${height}`, async () => {
     await page.setViewport({height, width});
@@ -246,7 +241,7 @@ const type = (selector, text) =>
 before(async () => {
   ({browser, page} = await createBrowser({
     args: ['--disable-gpu', '--disable-infobars', '--no-sandbox'],
-    slowMo: 1
+    slowMo: 25
   }));
 });
 
@@ -263,9 +258,14 @@ describe('Log in fail', () => {
 });
 
 describe('Log in success', () => {
+  const user = faker.user();
+
   start('/');
   navigate('Log In');
-  login(faker.user.registered());
+  signin(user);
+  toast('Signing in...');
+  toast('Signed in.');
+  toast('Logging in...');
   toast('Logging in...');
   toast('Logged in.');
   toast('Loading...');
@@ -276,11 +276,14 @@ describe('Log in success', () => {
 });
 
 describe('Add note', () => {
+  const user = faker.user();
   const title = faker.lorem.words();
 
   start('/');
   navigate('Log In');
-  login(faker.user.registered());
+  signin(user);
+  toast('Signing in...');
+  toast('Signed in.');
   toast('Logging in...');
   toast('Logged in.');
   toast('Loading...');
@@ -302,11 +305,14 @@ describe('Add note', () => {
 });
 
 describe('Add and edit note', () => {
+  const user = faker.user();
   const title = faker.lorem.words();
 
   start('/');
   navigate('Log In');
-  login(faker.user.registered());
+  signin(user);
+  toast('Signing in...');
+  toast('Signed in.');
   toast('Logging in...');
   toast('Logged in.');
   toast('Loading...');
@@ -336,11 +342,14 @@ describe('Add and edit note', () => {
 });
 
 describe('Add and remove note before save', () => {
+  const user = faker.user();
   const title = faker.lorem.words();
 
   start('/');
   navigate('Log In');
-  login(faker.user.registered());
+  signin(user);
+  toast('Signing in...');
+  toast('Signed in.');
   toast('Logging in...');
   toast('Logged in.');
   toast('Loading...');
@@ -362,11 +371,14 @@ describe('Add and remove note before save', () => {
 });
 
 describe('Add and remove note', () => {
+  const user = faker.user();
   const title = faker.lorem.words();
 
   start('/');
   navigate('Log In');
-  login(faker.user.registered());
+  signin(user);
+  toast('Signing in...');
+  toast('Signed in.');
   toast('Logging in...');
   toast('Logged in.');
   toast('Loading...');
@@ -396,12 +408,14 @@ describe('Add and remove note', () => {
 });
 
 describe('Change password incorrect', () => {
-  const user1 = faker.user.registered();
+  const user1 = faker.user();
   const user2 = faker.user();
 
   start('/');
   navigate('Log In');
-  login(user1);
+  signin(user1);
+  toast('Signing in...');
+  toast('Signed in.');
   toast('Logging in...');
   toast('Logged in.');
   toast('Loading...');
@@ -418,12 +432,14 @@ describe('Change password incorrect', () => {
 });
 
 describe('Change password mismatch', () => {
-  const user1 = faker.user.registered();
+  const user1 = faker.user();
   const user2 = faker.user();
 
   start('/');
   navigate('Log In');
-  login(user1);
+  signin(user1);
+  toast('Signing in...');
+  toast('Signed in.');
   toast('Logging in...');
   toast('Logged in.');
   toast('Loading...');
@@ -440,14 +456,16 @@ describe('Change password mismatch', () => {
 });
 
 describe('Change password', () => {
-  const user1 = faker.user.registered();
+  const user1 = faker.user();
   const user2 = faker.user();
 
   user2.email = user1.email;
 
   start('/');
   navigate('Log In');
-  login(user1);
+  signin(user1);
+  toast('Signing in...');
+  toast('Signed in.');
   toast('Logging in...');
   toast('Logged in.');
   toast('Loading...');

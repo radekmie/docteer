@@ -135,6 +135,12 @@ export class Application extends Component<
           </div>
         )}
 
+        {state.view === 'r' && (
+          <div class="flex flex-center w-100">
+            <Account register />
+          </div>
+        )}
+
         {state.view === 's' && (
           <div class="h-100 overflow-auto pa3 w-100">
             <Settings user={state.user} />

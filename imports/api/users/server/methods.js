@@ -32,6 +32,33 @@ Meteor.methods({
     Accounts.setPassword(this.userId, new1, {logout: false});
   },
 
+  'users.register'(email, password) {
+    try {
+      check(this.userId, null);
+      check(email, String);
+      check(password, String);
+    } catch (error) {
+      throw new Meteor.Error('validation-error', 'Validation error.');
+    }
+
+    const _id = Accounts.createUser({email, password});
+
+    Meteor.users.update(_id, {
+      $set: {
+        schemas: [
+          {
+            name: 'Default',
+            fields: {
+              name: 'div',
+              labels: 'ul',
+              text: 'div'
+            }
+          }
+        ]
+      }
+    });
+  },
+
   'users.settings'(settings) {
     try {
       check(this.userId, String);
