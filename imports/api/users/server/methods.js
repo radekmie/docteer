@@ -41,22 +41,28 @@ Meteor.methods({
       throw new Meteor.Error('validation-error', 'Validation error.');
     }
 
-    const _id = Accounts.createUser({email, password});
+    try {
+      const _id = Accounts.createUser({email, password});
 
-    Meteor.users.update(_id, {
-      $set: {
-        schemas: [
-          {
-            name: 'Default',
-            fields: {
-              name: 'div',
-              labels: 'ul',
-              text: 'div'
+      Meteor.users.update(_id, {
+        $set: {
+          schemas: [
+            {
+              name: 'Default',
+              fields: {
+                name: 'div',
+                labels: 'ul',
+                text: 'div'
+              }
             }
-          }
-        ]
-      }
-    });
+          ]
+        }
+      });
+    } catch (error) {
+      if (error.error === 403)
+        throw new Meteor.Error('user-exists', 'User already exists.');
+      throw error;
+    }
   },
 
   'users.settings'(settings) {

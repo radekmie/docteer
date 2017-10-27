@@ -257,6 +257,24 @@ describe('Log in fail', () => {
   toast("Sounds good, doesn't work.");
 });
 
+describe('Sign in fail', () => {
+  const user = faker.user();
+
+  start('/');
+  navigate('Log In');
+  signin(user);
+  toast('Signing in...');
+  toast('Signed in.');
+  toast('Logging in...');
+  toast('Logged in.');
+  toast('Loading...');
+  toast('Loaded.');
+  logout();
+  signin(user);
+  toast('Signing in...');
+  toast('User already exists.');
+});
+
 describe('Log in success', () => {
   const user = faker.user();
 
