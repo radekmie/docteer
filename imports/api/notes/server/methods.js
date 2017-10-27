@@ -118,7 +118,7 @@ function notesByUser(userId, after) {
   const diff = {created: [], removed: [], updated: []};
 
   Notes.find(
-    {_id_user: userId, _updated: {$gt: refresh}},
+    {_id_user: userId, ...(after && {_updated: {$gt: refresh}})},
     {fields}
   ).forEach(note => {
     note._id = note._id_slug;
