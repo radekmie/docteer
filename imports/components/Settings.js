@@ -101,7 +101,7 @@ class Credentials extends Component<Credentials$Props> {
               autocomplete="new-password"
               class="ba br-0 bw1 ph1"
               id="new1"
-              minlength={5}
+              minlength={4}
               name="new1"
               ref={this.onNew1}
               type="password"
@@ -118,7 +118,7 @@ class Credentials extends Component<Credentials$Props> {
               autocomplete="new-password"
               class="ba br-0 bw1 ph1"
               id="new2"
-              minlength={5}
+              minlength={4}
               name="new2"
               ref={this.onNew2}
               type="password"

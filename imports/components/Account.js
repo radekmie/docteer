@@ -64,7 +64,7 @@ export class Account extends Component<Account$Props> {
             autocomplete={`${register ? 'new' : 'current'}-password`}
             class="ba bg-near-white br-0 bw1 flex-1 ml1 ph1"
             id="password"
-            minlength={5}
+            minlength={4}
             name="password"
             placeholder="Password"
             ref={this.onRefpassword}
