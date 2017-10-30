@@ -2,257 +2,44 @@
 
 import faker from 'faker';
 
-import {Meteor} from 'meteor/meteor';
 import {before} from 'meteor/universe:e2e'; // $FlowFixMe: No local file.
-import {createBrowser} from 'meteor/universe:e2e'; // $FlowFixMe: No local file.
 import {describe} from 'meteor/universe:e2e'; // $FlowFixMe: No local file.
-import {it} from 'meteor/universe:e2e'; // $FlowFixMe: No local file.
 
-import type {Browser} from 'puppeteer';
-import type {Page} from 'puppeteer';
-
-let browser: Browser = null;
-let page: Page = null;
-
-//
-
-faker.user = () => {
-  const user = {
-    _id: null,
-    email: faker.internet.email(),
-    password: faker.internet.password()
-  };
-
-  return user;
-};
+import {action} from './imports/test/action';
+import {click} from './imports/test/click';
+import {expand} from './imports/test/expand';
+import {field} from './imports/test/field';
+import {login} from './imports/test/login';
+import {logout} from './imports/test/logout';
+import {navigate} from './imports/test/navigate';
+import {note} from './imports/test/note';
+import {resize} from './imports/test/resize';
+import {select} from './imports/test/select';
+import {signin} from './imports/test/signin';
+import {start} from './imports/test/start';
+import {toast} from './imports/test/toast';
+import {type} from './imports/test/type';
+import {wait} from './imports/test/wait';
 
 //
 
-const action = title =>
-  it(`should click '${title}' action button`, async () => {
-    const selector = `.bottom-1.fixed.right-1.w2 > [title=${title}]`;
-    await page.waitForSelector(selector);
-    await page.click(selector);
-  });
-
-const click = selector =>
-  it(`should click '${selector}'`, async () => {
-    await page.click(selector);
-  });
-
-const expand = title =>
-  it(`should expand section '${title}'`, async () => {
-    const summaries = await page.$$('summary');
-    const summary = await page.evaluate(
-      `Array.from(document.querySelectorAll('summary')).findIndex(x => x.textContent === '${title.replace(
-        "'",
-        "\\'"
-      )}')`
-    );
-
-    await summaries[summary].click();
-  });
-
-const field = (position, name, value) => {
-  it(`should check field ${position + 1} to be called '${name}'`, async () => {
-    await page.waitForFunction(
-      `(document.querySelector('dl > dt:nth-of-type(${position +
-        1}) > b') || {}).textContent === '${name}:'`,
-      {polling: 'mutation'}
-    );
-  });
-
-  it(`should enter field ${position + 1} value`, async () => {
-    const selector = `dl > dd:nth-of-type(${position + 1}) > :first-child`;
-
-    await page.click(selector);
-    await page.keyboard.down('Control');
-    await page.keyboard.down('A');
-    await page.keyboard.up('A');
-    await page.keyboard.up('Control');
-
-    value = [].concat(value);
-
-    await page.type(value.shift());
-
-    while (value.length) {
-      // FIXME: It's not working in contenteditable.
-      // await page.press('Enter');
-      await page.$eval(selector, input => (input.innerHTML += '<li></li>'));
-      await page.press('PageDown');
-      await page.type(value.shift());
-    }
-
-    await page.$eval(selector, input => input.blur());
-  });
-};
-
-const login = user =>
-  it(`should log in as ${user.email}:${user.password}`, async () => {
-    await page.click('#email');
-    await page.keyboard.down('Control');
-    await page.keyboard.down('A');
-    await page.keyboard.up('A');
-    await page.keyboard.up('Control');
-    await page.type(user.email);
-
-    await page.click('#password');
-    await page.keyboard.down('Control');
-    await page.keyboard.down('A');
-    await page.keyboard.up('A');
-    await page.keyboard.up('Control');
-    await page.type(user.password);
-
-    await page.click('button[title="Log In"]');
-  });
-
-const logout = () =>
-  it('should log out', async () => {
-    await page.waitForSelector('[title="Log Out"]');
-    await page.click('[title="Log Out"]');
-  });
-
-const navigate = title =>
-  it(`should click '${title}' navigation link`, async () => {
-    const selector = `.bg-dark-gray.flex.flex-center.flex-column.h-100.near-white.pa3.ph1 > [title="${title}"]`;
-    await page.waitForSelector(selector);
-    await page.click(selector);
-  });
-
-const note = (title, color = 'normal') => {
-  if (color === '-') {
-    it(`should check if note called '${title}' is not visible`, async () => {
-      await page.waitForFunction(
-        `Array.from(document.querySelectorAll('.b--dark-gray.bl > *')).every(x => x.textContent !== '${title.replace(
-          "'",
-          "\\'"
-        )}')`,
-        {polling: 'mutation'}
-      );
-    });
-
-    return;
-  }
-
-  it(`should check if note called '${title}' is visible`, async () => {
-    await page.waitForFunction(
-      `Array.from(document.querySelectorAll('.b--dark-gray.bl > *')).some(x => x.textContent === '${title.replace(
-        "'",
-        "\\'"
-      )}')`,
-      {polling: 'mutation'}
-    );
-  });
-
-  it(`should check if note called '${title}' is ${color}`, async () => {
-    await page.waitForFunction(
-      `Array.from(document.querySelectorAll('.b--dark-gray.bl > .${color ===
-      'normal'
-        ? 'dark-gray'
-        : `hover-${color}`}')).some(x => x.textContent === '${title.replace(
-        "'",
-        "\\'"
-      )}')`,
-      {polling: 'mutation'}
-    );
-  });
-};
-
-const signin = user =>
-  it(`should sign in as ${user.email}:${user.password}`, async () => {
-    await page.click('[href="/r"]');
-
-    await page.click('#email');
-    await page.keyboard.down('Control');
-    await page.keyboard.down('A');
-    await page.keyboard.up('A');
-    await page.keyboard.up('Control');
-    await page.type(user.email);
-
-    await page.click('#password');
-    await page.keyboard.down('Control');
-    await page.keyboard.down('A');
-    await page.keyboard.up('A');
-    await page.keyboard.up('Control');
-    await page.type(user.password);
-
-    await page.click('button[title="Sign In"]');
-  });
-
-const resize = (width, height) =>
-  it(`should resize to ${width}x${height}`, async () => {
-    await page.setViewport({height, width});
-
-    // Window frame.
-    height += 85;
-
-    const {targetInfos: [{targetId}]} = await browser._connection.send(
-      'Target.getTargets'
-    );
-    const {
-      windowId
-    } = await browser._connection.send('Browser.getWindowForTarget', {
-      targetId
-    });
-    await browser._connection.send('Browser.setWindowBounds', {
-      bounds: {height, width},
-      windowId
-    });
-  });
-
-const select = title =>
-  it(`should select note called '${title}'`, async () => {
-    const note = await page.evaluate(
-      `Array.from(document.querySelectorAll('.b--dark-gray.bl > *')).findIndex(x => x.textContent === '${title.replace(
-        "'",
-        "\\'"
-      )}')`
-    );
-    await page.click(`.b--dark-gray.bl > :nth-child(${note + 1})`);
-  });
-
-const start = path =>
-  it(`should load ${path}`, async () => {
-    const url = Meteor.absoluteUrl(path.slice(1));
-
-    await page.goto(url);
-    await page.waitForSelector('main:not(.loading)');
-  });
-
-const toast = text =>
-  it(`should show toast '${text}'`, async () => {
-    await page.waitForFunction(
-      `Array.from(document.querySelectorAll('main > :last-child > *')).some(x => x.textContent === '${text.replace(
-        "'",
-        "\\'"
-      )}')`,
-      {polling: 'mutation'}
-    );
-  });
-
-const type = (selector, text) =>
-  it(`should type '${text}' in '${selector}'`, async () => {
-    await page.click(selector);
-    await page.type(text);
-  });
-
-//
-
-before(async () => {
-  ({browser, page} = await createBrowser({
-    args: ['--disable-gpu', '--disable-infobars', '--no-sandbox'],
-    slowMo: 25
-  }));
+faker.user = () => ({
+  email: faker.internet.email(),
+  password: faker.internet.password()
 });
+
+//
 
 before(() => {
   resize(1024, 768);
 });
 
 describe('Log in fail', () => {
+  const user = faker.user();
+
   start('/');
   navigate('Log In');
-  login(faker.user());
+  login(user);
   toast('Logging in...');
   toast("Sounds good, doesn't work.");
 });
@@ -262,6 +49,7 @@ describe('Sign in fail', () => {
 
   start('/');
   navigate('Log In');
+  click('[href="/r"]');
   signin(user);
   toast('Signing in...');
   toast('Signed in.');
@@ -270,6 +58,7 @@ describe('Sign in fail', () => {
   toast('Loading...');
   toast('Loaded.');
   logout();
+  click('[href="/r"]');
   signin(user);
   toast('Signing in...');
   toast('User already exists.');
@@ -280,6 +69,7 @@ describe('Log in success', () => {
 
   start('/');
   navigate('Log In');
+  click('[href="/r"]');
   signin(user);
   toast('Signing in...');
   toast('Signed in.');
@@ -299,6 +89,7 @@ describe('Add note', () => {
 
   start('/');
   navigate('Log In');
+  click('[href="/r"]');
   signin(user);
   toast('Signing in...');
   toast('Signed in.');
@@ -328,6 +119,7 @@ describe('Add and edit note', () => {
 
   start('/');
   navigate('Log In');
+  click('[href="/r"]');
   signin(user);
   toast('Signing in...');
   toast('Signed in.');
@@ -365,6 +157,7 @@ describe('Add and remove note before save', () => {
 
   start('/');
   navigate('Log In');
+  click('[href="/r"]');
   signin(user);
   toast('Signing in...');
   toast('Signed in.');
@@ -394,6 +187,7 @@ describe('Add and remove note', () => {
 
   start('/');
   navigate('Log In');
+  click('[href="/r"]');
   signin(user);
   toast('Signing in...');
   toast('Signed in.');
@@ -431,6 +225,7 @@ describe('Change password incorrect', () => {
 
   start('/');
   navigate('Log In');
+  click('[href="/r"]');
   signin(user1);
   toast('Signing in...');
   toast('Signed in.');
@@ -455,6 +250,7 @@ describe('Change password mismatch', () => {
 
   start('/');
   navigate('Log In');
+  click('[href="/r"]');
   signin(user1);
   toast('Signing in...');
   toast('Signed in.');
@@ -481,6 +277,7 @@ describe('Change password', () => {
 
   start('/');
   navigate('Log In');
+  click('[href="/r"]');
   signin(user1);
   toast('Signing in...');
   toast('Signed in.');
@@ -499,6 +296,7 @@ describe('Change password', () => {
   logout();
   toast('Logging out...');
   toast('Logged out.');
+  wait(1500);
   navigate('Log In');
   login(user2);
   toast('Logging in...');
