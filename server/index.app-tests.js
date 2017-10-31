@@ -24,287 +24,190 @@ import {wait} from './imports/test/wait';
 
 //
 
-faker.user = () => ({
-  email: faker.internet.email(),
-  password: faker.internet.password()
-});
+type DAGStep = {
+  args: (Object => any[]) | any[],
+  fn: Function
+};
 
-//
+const DAGStepper = context => ({args, fn}) =>
+  fn(...(Array.isArray(args) ? args : args(context)));
+
+class DAG {
+  _last: DAGStep[];
+  _next: DAGStep[];
+
+  constructor(next: DAGStep[] = [], last: DAGStep[] = []) {
+    this._last = last;
+    this._next = next;
+  }
+
+  as(title) {
+    describe(title, () => {
+      const context = {};
+      const stepper = DAGStepper(context);
+      this._next.forEach(stepper);
+      this._last.forEach(stepper);
+    });
+  }
+
+  last(fn, args) {
+    return new DAG(this._next, this._last.concat({args, fn}));
+  }
+
+  next(fn, args) {
+    return new DAG(this._next.concat({args, fn}), this._last);
+  }
+
+  with(contextify: Object => Object) {
+    return this.next(
+      () => {},
+      context => [Object.assign(context, contextify(context))]
+    );
+  }
+}
 
 before(() => {
   resize(1024, 768);
 });
 
-describe('Log in fail', () => {
-  const user = faker.user();
+const base = new DAG()
+  .with(() => ({
+    user: {
+      email: faker.internet.email(),
+      password: faker.internet.password()
+    }
+  }))
+  .next(start, ['/'])
+  .next(navigate, ['Log In']);
 
-  start('/');
-  navigate('Log In');
-  login(user);
-  toast('Logging in...');
-  toast("Sounds good, doesn't work.");
-});
+base
+  .next(login, context => [context.user])
+  .next(toast, ['Logging in...'])
+  .next(toast, ["Sounds good, doesn't work."])
+  .as('Log in fail');
 
-describe('Sign in fail', () => {
-  const user = faker.user();
+const user = base
+  .next(click, ['[href="/r"]'])
+  .next(signin, context => [context.user])
+  .next(toast, ['Signing in...'])
+  .next(toast, ['Signed in.'])
+  .next(toast, ['Logging in...'])
+  .next(toast, ['Logged in.'])
+  .next(toast, ['Loading...'])
+  .next(toast, ['Loaded.'])
+  .last(logout, [])
+  .last(toast, ['Logging out...'])
+  .last(toast, ['Logged out.']);
 
-  start('/');
-  navigate('Log In');
-  click('[href="/r"]');
-  signin(user);
-  toast('Signing in...');
-  toast('Signed in.');
-  toast('Logging in...');
-  toast('Logged in.');
-  toast('Loading...');
-  toast('Loaded.');
-  logout();
-  click('[href="/r"]');
-  signin(user);
-  toast('Signing in...');
-  toast('User already exists.');
-});
+user.as('Log in success');
+user
+  .last(click, ['[href="/r"]'])
+  .last(signin, context => [context.user])
+  .last(toast, ['Signing in...'])
+  .last(toast, ['User already exists.'])
+  .as('Sign in fail');
 
-describe('Log in success', () => {
-  const user = faker.user();
+const noteNew = user
+  .with(() => ({
+    labels: [faker.lorem.word(), faker.lorem.word()],
+    text: faker.lorem.paragraphs(),
+    title: faker.lorem.words()
+  }))
+  .next(navigate, ['Notes'])
+  .next(action, ['Create'])
+  .next(note, ['(untitled)', 'light-green'])
+  .next(field, context => [0, 'Name', context.title])
+  .next(field, context => [1, 'Labels', context.labels])
+  .next(field, context => [2, 'Text', context.title])
+  .next(note, context => [context.title, 'light-green']);
 
-  start('/');
-  navigate('Log In');
-  click('[href="/r"]');
-  signin(user);
-  toast('Signing in...');
-  toast('Signed in.');
-  toast('Logging in...');
-  toast('Logging in...');
-  toast('Logged in.');
-  toast('Loading...');
-  toast('Loaded.');
-  logout();
-  toast('Logging out...');
-  toast('Logged out.');
-});
+const noteOne = noteNew
+  .next(action, ['Save'])
+  .next(toast, ['Saving...'])
+  .next(toast, ['Saved.'])
+  .next(note, context => [context.title]);
 
-describe('Add note', () => {
-  const user = faker.user();
-  const title = faker.lorem.words();
+noteOne.as('Add note');
+noteOne
+  .with(() => ({
+    diff: faker.lorem.paragraphs()
+  }))
+  .next(select, context => [context.title])
+  .next(action, ['Edit'])
+  .next(field, context => [2, 'Text', context.diff])
+  .next(note, context => [context.title, 'light-blue'])
+  .next(action, ['Save'])
+  .next(toast, ['Saving...'])
+  .next(toast, ['Saved.'])
+  .next(note, context => [context.title])
+  .as('Add and edit note');
 
-  start('/');
-  navigate('Log In');
-  click('[href="/r"]');
-  signin(user);
-  toast('Signing in...');
-  toast('Signed in.');
-  toast('Logging in...');
-  toast('Logged in.');
-  toast('Loading...');
-  toast('Loaded.');
-  navigate('Notes');
-  action('Create');
-  note('(untitled)', 'light-green');
-  field(0, 'Name', title);
-  field(1, 'Labels', [faker.lorem.word(), faker.lorem.word()]);
-  field(2, 'Text', faker.lorem.paragraphs());
-  note(title, 'light-green');
-  action('Save');
-  toast('Saving...');
-  toast('Saved.');
-  note(title);
-  logout();
-  toast('Logging out...');
-  toast('Logged out.');
-});
+noteNew
+  .next(action, ['Remove'])
+  .next(note, context => [context.title, 'light-gray'])
+  .next(action, ['Save'])
+  .next(note, context => [context.title, '-'])
+  .as('Add and remove note before save');
 
-describe('Add and edit note', () => {
-  const user = faker.user();
-  const title = faker.lorem.words();
+noteOne
+  .next(select, context => [context.title])
+  .next(action, ['Edit'])
+  .next(action, ['Remove'])
+  .next(note, context => [context.title, 'light-red'])
+  .next(action, ['Save'])
+  .next(note, context => [context.title, '-'])
+  .next(toast, ['Saving...'])
+  .next(toast, ['Saved.'])
+  .as('Add and remove note');
 
-  start('/');
-  navigate('Log In');
-  click('[href="/r"]');
-  signin(user);
-  toast('Signing in...');
-  toast('Signed in.');
-  toast('Logging in...');
-  toast('Logged in.');
-  toast('Loading...');
-  toast('Loaded.');
-  navigate('Notes');
-  action('Create');
-  note('(untitled)', 'light-green');
-  field(0, 'Name', title);
-  field(1, 'Labels', [faker.lorem.word(), faker.lorem.word()]);
-  field(2, 'Text', faker.lorem.paragraphs());
-  note(title, 'light-green');
-  action('Save');
-  toast('Saving...');
-  toast('Saved.');
-  note(title);
-  select(title);
-  action('Edit');
-  field(2, 'Text', faker.lorem.paragraphs());
-  note(title, 'light-blue');
-  action('Save');
-  toast('Saving...');
-  toast('Saved.');
-  note(title);
-  logout();
-  toast('Logging out...');
-  toast('Logged out.');
-});
+user
+  .with(() => ({
+    pass: faker.internet.password()
+  }))
+  .next(navigate, ['Settings'])
+  .next(expand, ['Change password'])
+  .next(type, context => ['#current', context.pass])
+  .next(type, context => ['#new1', context.pass])
+  .next(type, context => ['#new2', context.pass])
+  .next(click, ['[title="Change password"]'])
+  .next(toast, ['Changing password...'])
+  .next(toast, ['Incorrect old password.'])
+  .as('Change password incorrect');
 
-describe('Add and remove note before save', () => {
-  const user = faker.user();
-  const title = faker.lorem.words();
+user
+  .with(() => ({
+    pass: faker.internet.password()
+  }))
+  .next(navigate, ['Settings'])
+  .next(expand, ['Change password'])
+  .next(type, context => ['#current', context.user.password])
+  .next(type, context => ['#new1', context.user.password])
+  .next(type, context => ['#new2', context.pass])
+  .next(click, ['[title="Change password"]'])
+  .next(toast, ['Changing password...'])
+  .next(toast, ['Passwords mismatch.'])
+  .as('Change password mismatch');
 
-  start('/');
-  navigate('Log In');
-  click('[href="/r"]');
-  signin(user);
-  toast('Signing in...');
-  toast('Signed in.');
-  toast('Logging in...');
-  toast('Logged in.');
-  toast('Loading...');
-  toast('Loaded.');
-  navigate('Notes');
-  action('Create');
-  note('(untitled)', 'light-green');
-  field(0, 'Name', title);
-  field(1, 'Labels', [faker.lorem.word(), faker.lorem.word()]);
-  field(2, 'Text', faker.lorem.paragraphs());
-  note(title, 'light-green');
-  action('Remove');
-  note(title, 'light-gray');
-  action('Save');
-  note(title, '-');
-  logout();
-  toast('Logging out...');
-  toast('Logged out.');
-});
-
-describe('Add and remove note', () => {
-  const user = faker.user();
-  const title = faker.lorem.words();
-
-  start('/');
-  navigate('Log In');
-  click('[href="/r"]');
-  signin(user);
-  toast('Signing in...');
-  toast('Signed in.');
-  toast('Logging in...');
-  toast('Logged in.');
-  toast('Loading...');
-  toast('Loaded.');
-  navigate('Notes');
-  action('Create');
-  note('(untitled)', 'light-green');
-  field(0, 'Name', title);
-  field(1, 'Labels', [faker.lorem.word(), faker.lorem.word()]);
-  field(2, 'Text', faker.lorem.paragraphs());
-  note(title, 'light-green');
-  action('Save');
-  toast('Saving...');
-  toast('Saved.');
-  note(title);
-  select(title);
-  action('Edit');
-  action('Remove');
-  note(title, 'light-red');
-  action('Save');
-  note(title, '-');
-  toast('Saving...');
-  toast('Saved.');
-  logout();
-  toast('Logging out...');
-  toast('Logged out.');
-});
-
-describe('Change password incorrect', () => {
-  const user1 = faker.user();
-  const user2 = faker.user();
-
-  start('/');
-  navigate('Log In');
-  click('[href="/r"]');
-  signin(user1);
-  toast('Signing in...');
-  toast('Signed in.');
-  toast('Logging in...');
-  toast('Logged in.');
-  toast('Loading...');
-  toast('Loaded.');
-  navigate('Settings');
-  expand('Change password');
-  type('#current', user2.password);
-  type('#new1', user2.password);
-  type('#new2', user2.password);
-  click('[title="Change password"]');
-  toast('Changing password...');
-  toast('Incorrect old password.');
-  logout();
-});
-
-describe('Change password mismatch', () => {
-  const user1 = faker.user();
-  const user2 = faker.user();
-
-  start('/');
-  navigate('Log In');
-  click('[href="/r"]');
-  signin(user1);
-  toast('Signing in...');
-  toast('Signed in.');
-  toast('Logging in...');
-  toast('Logged in.');
-  toast('Loading...');
-  toast('Loaded.');
-  navigate('Settings');
-  expand('Change password');
-  type('#current', user1.password);
-  type('#new1', user1.password);
-  type('#new2', user2.password);
-  click('[title="Change password"]');
-  toast('Changing password...');
-  toast('Passwords mismatch.');
-  logout();
-});
-
-describe('Change password', () => {
-  const user1 = faker.user();
-  const user2 = faker.user();
-
-  user2.email = user1.email;
-
-  start('/');
-  navigate('Log In');
-  click('[href="/r"]');
-  signin(user1);
-  toast('Signing in...');
-  toast('Signed in.');
-  toast('Logging in...');
-  toast('Logged in.');
-  toast('Loading...');
-  toast('Loaded.');
-  navigate('Settings');
-  expand('Change password');
-  type('#current', user1.password);
-  type('#new1', user2.password);
-  type('#new2', user2.password);
-  click('[title="Change password"]');
-  toast('Changing password...');
-  toast('Changed password.');
-  logout();
-  toast('Logging out...');
-  toast('Logged out.');
-  wait(1500);
-  navigate('Log In');
-  login(user2);
-  toast('Logging in...');
-  toast('Logged in.');
-  toast('Loading...');
-  toast('Loaded.');
-  logout();
-  toast('Logging out...');
-  toast('Logged out.');
-});
+user
+  .with(() => ({
+    pass: faker.internet.password()
+  }))
+  .next(navigate, ['Settings'])
+  .next(expand, ['Change password'])
+  .next(type, context => ['#current', context.user.password])
+  .next(type, context => ['#new1', context.pass])
+  .next(type, context => ['#new2', context.pass])
+  .next(click, ['[title="Change password"]'])
+  .next(toast, ['Changing password...'])
+  .next(toast, ['Changed password.'])
+  .next(logout, [])
+  .next(toast, ['Logging out...'])
+  .next(toast, ['Logged out.'])
+  .next(wait, [1500])
+  .next(navigate, ['Log In'])
+  .next(login, context => [{email: context.user.email, password: context.pass}])
+  .next(toast, ['Logging in...'])
+  .next(toast, ['Logged in.'])
+  .next(toast, ['Loading...'])
+  .next(toast, ['Loaded.'])
+  .as('Change password');
