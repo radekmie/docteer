@@ -29,14 +29,14 @@ export function field(
 
     value = [].concat(value);
 
-    await page.type(value.shift());
+    await page.keyboard.type(value.shift());
 
     while (value.length) {
       // FIXME: It's not working in contenteditable.
-      // await page.press('Enter');
+      // await page.keyboard.press('Enter');
       await page.$eval(selector, input => (input.innerHTML += '<li></li>'));
-      await page.press('PageDown');
-      await page.type(value.shift());
+      await page.keyboard.press('PageDown');
+      await page.keyboard.type(value.shift());
     }
 
     await page.$eval(selector, input => input.blur());

@@ -23,14 +23,14 @@
     "meteor-node-stubs": "0.3.2",
     "postcss": "6.0.13",
     "postcss-cssnext": "3.0.2",
-    "preact": "8.2.5",
+    "preact": "8.2.6",
     "preact-render-to-string": "3.7.0",
     "prepack": "0.2.10",
     "simpl-schema": "0.3.2"
   },
   "devDependencies": {
     "babel-eslint": "8.0.1",
-    "eslint": "4.9.0",
+    "eslint": "4.10.0",
     "eslint-config-prettier": "2.6.0",
     "eslint-config-vazco": "3.1.0",
     "eslint-plugin-babel": "4.1.2",
@@ -43,6 +43,6 @@
     "husky": "0.14.3",
     "mocha": "4.0.1",
     "prettier": "1.7.4",
-    "puppeteer": "0.11.0"
+    "puppeteer": "0.12.0"
   }
 }

@@ -2,8 +2,9 @@
 
 import faker from 'faker';
 
-import {before} from 'meteor/universe:e2e'; // $FlowFixMe: No local file.
-import {describe} from 'meteor/universe:e2e'; // $FlowFixMe: No local file.
+import {before} from 'meteor/universe:e2e';
+// $FlowFixMe: No local file.
+import {describe} from 'meteor/universe:e2e';
 
 import {action} from './imports/test/action';
 import {click} from './imports/test/click';

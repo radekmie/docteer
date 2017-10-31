@@ -66,7 +66,7 @@ static-html@1.2.2
 templating-tools@1.1.2
 tracker@1.1.3
 underscore@1.0.10
-universe:e2e@0.3.0-rc.1
+universe:e2e@0.3.0
 universe:test-hooks@1.0.0-rc.1
 url@1.1.0
 webapp@1.4.0

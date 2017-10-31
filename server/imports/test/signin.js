@@ -12,14 +12,14 @@ export function signin(user: {email: string, password: string}) {
     await page.keyboard.down('A');
     await page.keyboard.up('A');
     await page.keyboard.up('Control');
-    await page.type(user.email);
+    await page.keyboard.type(user.email);
 
     await page.click('#password');
     await page.keyboard.down('Control');
     await page.keyboard.down('A');
     await page.keyboard.up('A');
     await page.keyboard.up('Control');
-    await page.type(user.password);
+    await page.keyboard.type(user.password);
 
     await page.click('button[title="Sign In"]');
   });

@@ -8,6 +8,6 @@ import {page} from './_browser';
 export function type(selector: string, text: string) {
   it(`should type '${text}' in '${selector}'`, async () => {
     await page.click(selector);
-    await page.type(text);
+    await page.keyboard.type(text);
   });
 }
