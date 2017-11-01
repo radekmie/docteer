@@ -60,8 +60,8 @@ class DAG {
 
   with(contextify: Object => Object) {
     return this.next(
-      () => {},
-      context => [Object.assign(context, contextify(context))]
+      context => Object.assign(context, contextify(context)),
+      context => [context]
     );
   }
 }
