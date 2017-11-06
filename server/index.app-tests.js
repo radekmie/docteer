@@ -24,44 +24,67 @@ import {wait} from './imports/test/wait';
 
 //
 
-type DAGStep = {
-  args: (Object => any[]) | any[],
-  fn: Function
+type DAGStep<Context, Args = any> = {
+  args: (Context => Args) | Args,
+  fn: (...Args) => ?Context
 };
 
-const DAGStepper = context => ({args, fn}) =>
-  fn(...(Array.isArray(args) ? args : args(context)));
+class DAG<Context> {
+  _last: DAGStep<Context>[];
+  _next: DAGStep<Context>[];
 
-class DAG {
-  _last: DAGStep[];
-  _next: DAGStep[];
-
-  constructor(next: DAGStep[] = [], last: DAGStep[] = []) {
+  constructor(next: DAGStep<Context>[] = [], last: DAGStep<Context>[] = []) {
     this._last = last;
     this._next = next;
   }
 
-  as(title) {
-    describe(title, () => {
-      const context = {};
-      const stepper = DAGStepper(context);
-      this._next.forEach(stepper);
-      this._last.forEach(stepper);
-    });
+  static create(): DAG<{}> {
+    return new DAG();
   }
 
-  last(fn, args) {
+  as(title: string): void {
+    describe(title, this.bind());
+  }
+
+  bind(): () => void {
+    return (): void => {
+      const step = (context: $Shape<Context>, {args, fn}): $Shape<Context> =>
+        fn(...(Array.isArray(args) ? args : args(context))) || context;
+
+      this._last.reduce(step, this._next.reduce(step, {}));
+    };
+  }
+
+  last<Args>(
+    fn: (...Args) => ?Context,
+    args: (Context => Args) | Args
+  ): DAG<Context> {
+    // $FlowFixMe
     return new DAG(this._next, this._last.concat({args, fn}));
   }
 
-  next(fn, args) {
+  only(title) {
+    describe.only(title, this.bind());
+  }
+
+  next<Args>(
+    fn: (...Args) => ?Context,
+    args: (Context => Args) | Args
+  ): DAG<Context> {
+    // $FlowFixMe
     return new DAG(this._next.concat({args, fn}), this._last);
   }
 
-  with(contextify: Object => Object) {
-    return this.next(
-      context => Object.assign(context, contextify(context)),
-      context => [context]
+  with<ContextNext>(map: Context => ContextNext): DAG<Context & ContextNext> {
+    // $FlowFixMe
+    const id = ($: DAGStep<Context>[]) => ($: DAGStep<Context & ContextNext>[]);
+
+    return new DAG(
+      id(this._next).concat({
+        args: context => [context],
+        fn: context => Object.assign({}, context, map(context))
+      }),
+      id(this._last)
     );
   }
 }
@@ -70,11 +93,11 @@ before(() => {
   resize(1024, 768);
 });
 
-const base = new DAG()
+const base = DAG.create()
   .with(() => ({
     user: {
-      email: faker.internet.email(),
-      password: faker.internet.password()
+      email: (faker.internet.email(): string),
+      password: (faker.internet.password(): string)
     }
   }))
   .next(start, ['/'])
@@ -109,94 +132,104 @@ user
 
 const noteNew = user
   .with(() => ({
-    labels: [faker.lorem.word(), faker.lorem.word()],
-    text: faker.lorem.paragraphs(),
-    title: faker.lorem.words()
+    note: {
+      labels: [(faker.lorem.word(): string), (faker.lorem.word(): string)],
+      text: (faker.lorem.paragraphs(): string),
+      title: (faker.lorem.words(): string)
+    }
   }))
   .next(navigate, ['Notes'])
   .next(action, ['Create'])
   .next(note, ['(untitled)', 'light-green'])
-  .next(field, context => [0, 'Name', context.title])
-  .next(field, context => [1, 'Labels', context.labels])
-  .next(field, context => [2, 'Text', context.title])
-  .next(note, context => [context.title, 'light-green']);
+  .next(field, context => [0, 'Name', context.note.title])
+  .next(field, context => [1, 'Labels', context.note.labels])
+  .next(field, context => [2, 'Text', context.note.title])
+  .next(note, context => [context.note.title, 'light-green']);
 
 const noteOne = noteNew
   .next(action, ['Save'])
   .next(toast, ['Saving...'])
   .next(toast, ['Saved.'])
-  .next(note, context => [context.title]);
+  .next(note, context => [context.note.title]);
 
 noteOne.as('Add note');
 noteOne
-  .with(() => ({
-    diff: faker.lorem.paragraphs()
+  .with(context => ({
+    note: Object.assign({}, context.note, {
+      text: faker.lorem.paragraphs()
+    })
   }))
-  .next(select, context => [context.title])
+  .next(select, context => [context.note.title])
   .next(action, ['Edit'])
-  .next(field, context => [2, 'Text', context.diff])
-  .next(note, context => [context.title, 'light-blue'])
+  .next(field, context => [2, 'Text', context.note.text])
+  .next(note, context => [context.note.title, 'light-blue'])
   .next(action, ['Save'])
   .next(toast, ['Saving...'])
   .next(toast, ['Saved.'])
-  .next(note, context => [context.title])
+  .next(note, context => [context.note.title])
   .as('Add and edit note');
 
 noteNew
   .next(action, ['Remove'])
-  .next(note, context => [context.title, 'light-gray'])
+  .next(note, context => [context.note.title, 'light-gray'])
   .next(action, ['Save'])
-  .next(note, context => [context.title, '-'])
+  .next(note, context => [context.note.title, '-'])
   .as('Add and remove note before save');
 
 noteOne
-  .next(select, context => [context.title])
+  .next(select, context => [context.note.title])
   .next(action, ['Edit'])
   .next(action, ['Remove'])
-  .next(note, context => [context.title, 'light-red'])
+  .next(note, context => [context.note.title, 'light-red'])
   .next(action, ['Save'])
-  .next(note, context => [context.title, '-'])
+  .next(note, context => [context.note.title, '-'])
   .next(toast, ['Saving...'])
   .next(toast, ['Saved.'])
   .as('Add and remove note');
 
 user
-  .with(() => ({
-    pass: faker.internet.password()
+  .with(context => ({
+    user: Object.assign({}, context.user, {
+      password: faker.internet.password()
+    })
   }))
   .next(navigate, ['Settings'])
   .next(expand, ['Change password'])
-  .next(type, context => ['#current', context.pass])
-  .next(type, context => ['#new1', context.pass])
-  .next(type, context => ['#new2', context.pass])
+  .next(type, context => ['#current', context.user.password])
+  .next(type, context => ['#new1', context.user.password])
+  .next(type, context => ['#new2', context.user.password])
   .next(click, ['[title="Change password"]'])
   .next(toast, ['Changing password...'])
   .next(toast, ['Incorrect old password.'])
   .as('Change password incorrect');
 
 user
-  .with(() => ({
-    pass: faker.internet.password()
-  }))
   .next(navigate, ['Settings'])
   .next(expand, ['Change password'])
   .next(type, context => ['#current', context.user.password])
   .next(type, context => ['#new1', context.user.password])
-  .next(type, context => ['#new2', context.pass])
+  .with(context => ({
+    user: Object.assign({}, context.user, {
+      password: faker.internet.password()
+    })
+  }))
+  .next(type, context => ['#new2', context.user.password])
   .next(click, ['[title="Change password"]'])
   .next(toast, ['Changing password...'])
   .next(toast, ['Passwords mismatch.'])
   .as('Change password mismatch');
 
 user
-  .with(() => ({
-    pass: faker.internet.password()
-  }))
   .next(navigate, ['Settings'])
   .next(expand, ['Change password'])
   .next(type, context => ['#current', context.user.password])
-  .next(type, context => ['#new1', context.pass])
-  .next(type, context => ['#new2', context.pass])
+  .with(context => ({
+    user: Object.assign({}, context.user, {
+      password: faker.internet.password()
+    })
+  }))
+  .next(type, context => ['#new1', context.user.password])
+  .next(type, context => ['#new2', context.user.password])
   .next(click, ['[title="Change password"]'])
   .next(toast, ['Changing password...'])
   .next(toast, ['Changed password.'])
@@ -205,7 +238,7 @@ user
   .next(toast, ['Logged out.'])
   .next(wait, [1500])
   .next(navigate, ['Log In'])
-  .next(login, context => [{email: context.user.email, password: context.pass}])
+  .next(login, context => [context.user])
   .next(toast, ['Logging in...'])
   .next(toast, ['Logged in.'])
   .next(toast, ['Loading...'])
