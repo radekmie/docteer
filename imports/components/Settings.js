@@ -203,9 +203,9 @@ export function Settings(props: Settings$Props) {
                   </Button>
 
                   <input
-                    class={`b--dark-gray ${disabled
-                      ? 'bg-near-white '
-                      : ''}br-0 bw1 ml1 flex-1 ph1`}
+                    class={`b--dark-gray ${
+                      disabled ? 'bg-near-white ' : ''
+                    }br-0 bw1 ml1 flex-1 ph1`}
                     disabled={disabled}
                     onChange={onSchemaKey}
                     title="Field name"
@@ -213,11 +213,11 @@ export function Settings(props: Settings$Props) {
                   />
 
                   <select
-                    class={`b--dark-gray ba bg-${disabled
-                      ? 'near-'
-                      : ''}white br-0 bw1${disabled
-                      ? ''
-                      : ' dim'} ml1 ph1${disabled ? '' : ' pointer'} tc`}
+                    class={`b--dark-gray ba bg-${
+                      disabled ? 'near-' : ''
+                    }white br-0 bw1${disabled ? '' : ' dim'} ml1 ph1${
+                      disabled ? '' : ' pointer'
+                    } tc`}
                     disabled={disabled}
                     onChange={onSchemaType}
                     title="Field type"

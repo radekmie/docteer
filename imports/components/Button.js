@@ -14,11 +14,9 @@ export function Button({as, ...props}: Button$Props) {
     as,
     Object.assign(props, {
       class: [
-        `b--dark-gray ba bg-${props.disabled
-          ? 'near-'
-          : ''}white bw1 dark-gray db${props.disabled
-          ? ''
-          : ' dim pointer'} tc`,
+        `b--dark-gray ba bg-${
+          props.disabled ? 'near-' : ''
+        }white bw1 dark-gray db${props.disabled ? '' : ' dim pointer'} tc`,
         props.class
       ]
         .filter(Boolean)

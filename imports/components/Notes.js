@@ -25,11 +25,9 @@ function Note({note}: Note$Props) {
 
   return (
     <a
-      class={`${note._active
-        ? 'bg-near-white bl bw2 b--dark-gray '
-        : ''}db ${color} hover-bg-near-white link ph2${note._active
-        ? ' pl1'
-        : ''} truncate`}
+      class={`${note._active ? 'bg-near-white bl bw2 b--dark-gray ' : ''}db ${
+        color
+      } hover-bg-near-white link ph2${note._active ? ' pl1' : ''} truncate`}
       dangerouslySetInnerHTML={{__html: note.name || '(untitled)'}}
       href={note._href}
     />

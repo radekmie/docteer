@@ -83,9 +83,9 @@ export class Note extends Component<Note$Props> {
       <dl class="h-100 ma0 overflow-auto pa3 w-100">
         {props.user.schemas.length > 1 && (
           <select
-            class={`b--dark-gray ba bg-white br-0 bw1 h2 mb1${props.edit
-              ? ' pointer'
-              : ''} tc w-100`}
+            class={`b--dark-gray ba bg-white br-0 bw1 h2 mb1${
+              props.edit ? ' pointer' : ''
+            } tc w-100`}
             disabled={!props.edit}
             onChange={this.onSchema}
             title="Schema"

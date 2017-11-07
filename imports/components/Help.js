@@ -26,9 +26,9 @@ const actions = [
 export function Help(props: Help$Props) {
   return (
     <div
-      class={`bg-dark-gray center fixed${props.active
-        ? ''
-        : ' hidden'} near-white pa3 w5`}
+      class={`bg-dark-gray center fixed${
+        props.active ? '' : ' hidden'
+      } near-white pa3 w5`}
     >
       <div class="flex flex-between flex-end">
         <b>Keyboard Shortcuts</b>

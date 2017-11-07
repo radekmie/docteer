@@ -16,11 +16,12 @@ export function resize(width: number, height: number) {
     const {targetInfos: [{targetId}]} = await browser._connection.send(
       'Target.getTargets'
     );
-    const {
-      windowId
-    } = await browser._connection.send('Browser.getWindowForTarget', {
-      targetId
-    });
+
+    const {windowId} = await browser._connection.send(
+      'Browser.getWindowForTarget',
+      {targetId}
+    );
+
     await browser._connection.send('Browser.setWindowBounds', {
       bounds: {height, width},
       windowId

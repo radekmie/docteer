@@ -140,9 +140,7 @@ export function Actions(props: Actions$Props) {
 }
 
 function button(color, disabled) {
-  return `b--dark-gray ba bg${disabled
-    ? '-near'
-    : ''}-white br-100 bw1 h2 ${disabled
-    ? ''
-    : `hover-${color}`} link mb1 pa1${disabled ? '' : ' pointer'} shadow-4`;
+  return `b--dark-gray ba bg${disabled ? '-near' : ''}-white br-100 bw1 h2 ${
+    disabled ? '' : `hover-${color}`
+  } link mb1 pa1${disabled ? '' : ' pointer'} shadow-4`;
 }

@@ -32,13 +32,9 @@ export function note(title: string, color: string = 'normal') {
 
   it(`should check if note called '${title}' is ${color}`, async () => {
     await page.waitForFunction(
-      `Array.from(document.querySelectorAll('.b--dark-gray.bl > .${color ===
-      'normal'
-        ? 'dark-gray'
-        : `hover-${color}`}')).some(x => x.textContent === '${title.replace(
-        "'",
-        "\\'"
-      )}')`,
+      `Array.from(document.querySelectorAll('.b--dark-gray.bl > .${
+        color === 'normal' ? 'dark-gray' : `hover-${color}`
+      }')).some(x => x.textContent === '${title.replace("'", "\\'")}')`,
       {polling: 'mutation'}
     );
   });
