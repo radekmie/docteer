@@ -193,9 +193,9 @@ const noteNew = user
   .with(() => ({
     note: {
       labels: [
-        (faker.lorem.word(): string),
-        (faker.lorem.word(): string),
-        (faker.lorem.word(): string)
+        'a' + (faker.lorem.word(): string),
+        'b' + (faker.lorem.word(): string),
+        'c' + (faker.lorem.word(): string)
       ],
       text: (faker.lorem.paragraphs(): string),
       title: (faker.lorem.words(): string)
