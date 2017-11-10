@@ -1,5 +1,7 @@
 // @flow
 
+import assert from 'assert';
+
 // $FlowFixMe: No local file.
 import {it} from 'meteor/universe:e2e';
 
@@ -8,8 +10,12 @@ import {page} from './_browser';
 export function field(
   position: number,
   name: string,
-  value: string | string[]
+  value: string | string[],
+  {useAutocomplete = false}: {useAutocomplete: boolean} = {}
 ) {
+  if (name !== 'Labels' && useAutocomplete)
+    throw new Error('Autocomplete works only with labels.');
+
   it(`should check field ${position + 1} to be called '${name}'`, async () => {
     await page.waitForFunction(
       `(document.querySelector('dl > dt:nth-of-type(${position +
@@ -18,7 +24,9 @@ export function field(
     );
   });
 
-  it(`should enter field ${position + 1} value`, async () => {
+  it(`should enter field ${position + 1} value${
+    useAutocomplete ? ' with autocomplete' : ''
+  }`, async () => {
     const selector = `dl > dd:nth-of-type(${position + 1}) > :first-child`;
 
     await page.click(selector);
@@ -29,15 +37,35 @@ export function field(
 
     value = [].concat(value);
 
-    await page.keyboard.type(value.shift());
+    const input = value.slice();
 
-    while (value.length) {
+    if (useAutocomplete) {
+      await page.keyboard.type(input.shift()[0]);
+      await page.keyboard.press('ArrowRight');
+    } else {
+      await page.keyboard.type(input.shift());
+    }
+
+    while (input.length) {
       // FIXME: It's not working in contenteditable.
       // await page.keyboard.press('Enter');
       await page.$eval(selector, input => (input.innerHTML += '<li></li>'));
       await page.keyboard.press('PageDown');
-      await page.keyboard.type(value.shift());
+
+      if (useAutocomplete) {
+        await page.keyboard.type(input.shift()[0]);
+        await page.keyboard.press('ArrowRight');
+      } else {
+        await page.keyboard.type(input.shift());
+      }
     }
+
+    const unify = string => string.replace(/[\n\r]/g, '').replace(/\s/g, ' ');
+
+    assert.equal(
+      unify(value.join('')),
+      unify(await page.$eval(selector, input => input.textContent))
+    );
 
     await page.$eval(selector, input => input.blur());
   });

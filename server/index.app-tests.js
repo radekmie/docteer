@@ -123,69 +123,39 @@ const user = base
   .last(toast, ['Logged out.']);
 
 user.as('Log in success');
+
+user
+  .next(navigate, ['Settings'])
+  .next(expand, ['Change password'])
+  .next(type, context => ['#current', context.user.password])
+  .with(context => ({
+    user: Object.assign({}, context.user, {
+      password: faker.internet.password()
+    })
+  }))
+  .next(type, context => ['#new1', context.user.password])
+  .next(type, context => ['#new2', context.user.password])
+  .next(click, ['[title="Change password"]'])
+  .next(toast, ['Changing password...'])
+  .next(toast, ['Changed password.'])
+  .next(logout, [])
+  .next(toast, ['Logging out...'])
+  .next(toast, ['Logged out.'])
+  .next(wait, [1500])
+  .next(navigate, ['Log In'])
+  .next(login, context => [context.user])
+  .next(toast, ['Logging in...'])
+  .next(toast, ['Logged in.'])
+  .next(toast, ['Loading...'])
+  .next(toast, ['Loaded.'])
+  .as('Change password');
+
 user
   .last(click, ['[href="/r"]'])
   .last(signin, context => [context.user])
   .last(toast, ['Signing in...'])
   .last(toast, ['User already exists.'])
   .as('Sign in fail');
-
-const noteNew = user
-  .with(() => ({
-    note: {
-      labels: [(faker.lorem.word(): string), (faker.lorem.word(): string)],
-      text: (faker.lorem.paragraphs(): string),
-      title: (faker.lorem.words(): string)
-    }
-  }))
-  .next(navigate, ['Notes'])
-  .next(action, ['Create'])
-  .next(note, ['(untitled)', 'light-green'])
-  .next(field, context => [0, 'Name', context.note.title])
-  .next(field, context => [1, 'Labels', context.note.labels])
-  .next(field, context => [2, 'Text', context.note.title])
-  .next(note, context => [context.note.title, 'light-green']);
-
-const noteOne = noteNew
-  .next(action, ['Save'])
-  .next(toast, ['Saving...'])
-  .next(toast, ['Saved.'])
-  .next(note, context => [context.note.title]);
-
-noteOne.as('Add note');
-noteOne
-  .with(context => ({
-    note: Object.assign({}, context.note, {
-      text: faker.lorem.paragraphs()
-    })
-  }))
-  .next(select, context => [context.note.title])
-  .next(action, ['Edit'])
-  .next(field, context => [2, 'Text', context.note.text])
-  .next(note, context => [context.note.title, 'light-blue'])
-  .next(action, ['Save'])
-  .next(toast, ['Saving...'])
-  .next(toast, ['Saved.'])
-  .next(note, context => [context.note.title])
-  .as('Add and edit note');
-
-noteNew
-  .next(action, ['Remove'])
-  .next(note, context => [context.note.title, 'light-gray'])
-  .next(action, ['Save'])
-  .next(note, context => [context.note.title, '-'])
-  .as('Add and remove note before save');
-
-noteOne
-  .next(select, context => [context.note.title])
-  .next(action, ['Edit'])
-  .next(action, ['Remove'])
-  .next(note, context => [context.note.title, 'light-red'])
-  .next(action, ['Save'])
-  .next(note, context => [context.note.title, '-'])
-  .next(toast, ['Saving...'])
-  .next(toast, ['Saved.'])
-  .as('Add and remove note');
 
 user
   .with(context => ({
@@ -219,28 +189,75 @@ user
   .next(toast, ['Passwords mismatch.'])
   .as('Change password mismatch');
 
-user
-  .next(navigate, ['Settings'])
-  .next(expand, ['Change password'])
-  .next(type, context => ['#current', context.user.password])
+const noteNew = user
+  .with(() => ({
+    note: {
+      labels: [
+        (faker.lorem.word(): string),
+        (faker.lorem.word(): string),
+        (faker.lorem.word(): string)
+      ],
+      text: (faker.lorem.paragraphs(): string),
+      title: (faker.lorem.words(): string)
+    }
+  }))
+  .next(navigate, ['Notes'])
+  .next(action, ['Create'])
+  .next(note, ['(untitled)', 'light-green'])
+  .next(field, context => [0, 'Name', context.note.title])
+  .next(field, context => [1, 'Labels', context.note.labels])
+  .next(field, context => [2, 'Text', context.note.title])
+  .next(note, context => [context.note.title, 'light-green']);
+
+noteNew
+  .next(action, ['Remove'])
+  .next(note, context => [context.note.title, 'light-gray'])
+  .next(action, ['Save'])
+  .next(note, context => [context.note.title, '-'])
+  .as('Add and remove note before save');
+
+const noteOne = noteNew
+  .next(action, ['Save'])
+  .next(toast, ['Saving...'])
+  .next(toast, ['Saved.'])
+  .next(note, context => [context.note.title]);
+
+noteOne.as('Add note');
+
+noteOne
   .with(context => ({
-    user: Object.assign({}, context.user, {
-      password: faker.internet.password()
+    note: Object.assign({}, context.note, {
+      text: faker.lorem.paragraphs()
     })
   }))
-  .next(type, context => ['#new1', context.user.password])
-  .next(type, context => ['#new2', context.user.password])
-  .next(click, ['[title="Change password"]'])
-  .next(toast, ['Changing password...'])
-  .next(toast, ['Changed password.'])
-  .next(logout, [])
-  .next(toast, ['Logging out...'])
-  .next(toast, ['Logged out.'])
-  .next(wait, [1500])
-  .next(navigate, ['Log In'])
-  .next(login, context => [context.user])
-  .next(toast, ['Logging in...'])
-  .next(toast, ['Logged in.'])
-  .next(toast, ['Loading...'])
-  .next(toast, ['Loaded.'])
-  .as('Change password');
+  .next(select, context => [context.note.title])
+  .next(action, ['Edit'])
+  .next(field, context => [2, 'Text', context.note.text])
+  .next(note, context => [context.note.title, 'light-blue'])
+  .next(action, ['Save'])
+  .next(toast, ['Saving...'])
+  .next(toast, ['Saved.'])
+  .next(note, context => [context.note.title])
+  .as('Add and edit note');
+
+noteOne
+  .next(select, context => [context.note.title])
+  .next(action, ['Edit'])
+  .next(action, ['Remove'])
+  .next(note, context => [context.note.title, 'light-red'])
+  .next(action, ['Save'])
+  .next(note, context => [context.note.title, '-'])
+  .next(toast, ['Saving...'])
+  .next(toast, ['Saved.'])
+  .as('Add and remove note');
+
+noteOne
+  .next(action, ['Create'])
+  .next(note, ['(untitled)', 'light-green'])
+  .next(field, context => [
+    1,
+    'Labels',
+    context.note.labels,
+    {useAutocomplete: true}
+  ])
+  .as('Add autocompleted labels');
