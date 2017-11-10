@@ -414,7 +414,8 @@ export function onTypeAhead(event: InputEvent$) {
 
   if (search) {
     const names = tree
-      .get(['labelsNames'])
+      .get(['labels'])
+      .map(label => label.name)
       .filter(label => label !== search && label.startsWith(search));
     const match = fuzzysort.go(search, names)[0];
 
