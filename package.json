@@ -26,7 +26,7 @@
     "preact": "8.2.6",
     "preact-render-to-string": "3.7.0",
     "prepack": "0.2.11",
-    "simpl-schema": "0.4.0"
+    "simpl-schema": "0.4.1"
   },
   "devDependencies": {
     "babel-eslint": "8.0.2",
@@ -39,10 +39,10 @@
     "eslint-plugin-react": "7.4.0",
     "eslint-plugin-vazco": "1.0.0",
     "faker": "4.1.0",
-    "flow-bin": "0.58.0",
+    "flow-bin": "0.59.0",
     "husky": "0.14.3",
     "mocha": "4.0.1",
-    "prettier": "1.8.1",
+    "prettier": "1.8.2",
     "puppeteer": "0.12.0"
   }
 }
