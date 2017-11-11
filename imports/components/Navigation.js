@@ -24,7 +24,11 @@ type Navigation$Props = {
 
 export const Navigation = (props: Navigation$Props) => (
   <div class="bg-dark-gray flex flex-around flex-center flex-column h-100 near-white pa3 ph1">
-    <a class="flex flex-0 flex-center mb1 mt1 near-white" href="/">
+    <a
+      class="flex flex-0 flex-center mb1 mt1 near-white"
+      href="/"
+      title="DocTeer"
+    >
       <Logo class={`${props.pend ? '' : 'freeze '}h3 w3`} />
     </a>
 
