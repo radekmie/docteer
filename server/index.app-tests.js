@@ -10,6 +10,7 @@ import {action} from './imports/test/action';
 import {click} from './imports/test/click';
 import {expand} from './imports/test/expand';
 import {field} from './imports/test/field';
+import {logger} from './imports/test/logger';
 import {login} from './imports/test/login';
 import {logout} from './imports/test/logout';
 import {navigate} from './imports/test/navigate';
@@ -90,6 +91,7 @@ class DAG<Context> {
 }
 
 before(() => {
+  logger();
   resize(1024, 768);
 });
 
