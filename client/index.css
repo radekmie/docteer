@@ -4,6 +4,8 @@
 }
 
 :root {
+  --popup-roundness: 5px;
+
   --blue:        rgba(53, 126, 221, 1);
   --dark-blue:   rgba(0, 68, 158, 1);
   --dark-gray:   rgba(34, 40, 49, 1);
@@ -363,6 +365,26 @@ select {
 
 .pl1 {
   padding-left: 0.25rem;
+}
+
+.popup {
+  border-radius: var(--popup-roundness);
+  box-shadow: 0px 4px 8px 2px rgba(0, 0, 0, 0.5);
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.popup :first-child {
+  border-radius: var(--popup-roundness) 0 0 var(--popup-roundness);
+}
+
+.popup :last-child {
+  border-radius: 0 var(--popup-roundness) var(--popup-roundness) 0;
+}
+
+.pr {
+  position: relative;
 }
 
 .pt1 {
