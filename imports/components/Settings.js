@@ -17,15 +17,15 @@ import {onSchemaOrder} from '../actions';
 import {onSchemaRemove} from '../actions';
 import {onSchemaType} from '../actions';
 
-class TUser {
-  _changed: boolean;
-  emails: {address: string, verified: boolean}[];
-  schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[];
-}
+type TUser = {
+  _changed: boolean,
+  emails: {address: string, verified: boolean}[],
+  schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[]
+};
 
-class Credentials$Props {
-  user: TUser;
-}
+type Credentials$Props = {
+  user: TUser
+};
 
 class Credentials extends Component<Credentials$Props> {
   current: ?HTMLInputElement;

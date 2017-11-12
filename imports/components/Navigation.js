@@ -10,11 +10,11 @@ import {iconLogOut} from './Icon';
 import {iconNote} from './Icon';
 import {onLogout} from '../actions';
 
-class TUser {
-  _changed: boolean;
-  emails: {address: string, verified: boolean}[];
-  schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[];
-}
+type TUser = {
+  _changed: boolean,
+  emails: {address: string, verified: boolean}[],
+  schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[]
+};
 
 type Navigation$Props = {
   full: boolean,
@@ -26,6 +26,7 @@ export const Navigation = (props: Navigation$Props) => (
   <div class="bg-dark-gray flex flex-around flex-center flex-column h-100 near-white pa3 ph1">
     <a
       class="flex flex-0 flex-center mb1 mt1 near-white"
+      data-test-navigation="logo"
       href="/"
       title="DocTeer"
     >
@@ -35,6 +36,7 @@ export const Navigation = (props: Navigation$Props) => (
     {!!props.user && (
       <a
         class="hover-bg-shade br-100 flex flex-0 flex-center mb1 mt1 square tc"
+        data-test-navigation="notes"
         href="/d"
         title="Notes"
       >
@@ -45,6 +47,7 @@ export const Navigation = (props: Navigation$Props) => (
     {!!props.user && (
       <a
         class="hover-bg-shade br-100 flex flex-0 flex-center mb1 mt1 square tc"
+        data-test-navigation="settings"
         href="/s"
         title="Settings"
       >
@@ -56,9 +59,10 @@ export const Navigation = (props: Navigation$Props) => (
 
     <a
       class="hover-bg-shade br-100 flex flex-0 flex-center mb1 mt1 square tc"
+      data-test-navigation={props.user ? 'logout' : 'login'}
       href="/l"
       onClick={props.user && onLogout}
-      title={props.user ? 'Log Out' : 'Log In'}
+      title={`Log ${props.user ? 'Out' : 'In'}`}
     >
       <div class="h2 pa1 w2">{props.user ? iconLogOut : iconLogIn}</div>
     </a>

@@ -1,12 +1,11 @@
 // @flow
 
 import {Meteor} from 'meteor/meteor';
-// $FlowFixMe: No local file.
 import {it} from 'meteor/universe:e2e';
 
-import {page} from './_browser';
+import {page} from '../helpers';
 
-export function start(path: string) {
+export function load(path: string) {
   it(`should load ${path}`, async () => {
     const url = Meteor.absoluteUrl(path.slice(1));
 

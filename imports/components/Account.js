@@ -23,7 +23,7 @@ export class Account extends Component<Account$Props> {
     this.email = ref;
   };
 
-  onRefpassword = (ref: ?HTMLInputElement) => {
+  onRefPassword = (ref: ?HTMLInputElement) => {
     this.password = ref;
   };
 
@@ -67,13 +67,17 @@ export class Account extends Component<Account$Props> {
             minlength={4}
             name="password"
             placeholder="Password"
-            ref={this.onRefpassword}
+            ref={this.onRefPassword}
             required
             type="password"
           />
         </label>
 
-        <Button class="h2 w-100" title={`${register ? 'Sign' : 'Log'} In`}>
+        <Button
+          class="h2 w-100"
+          data-test-user={register ? 'signin' : 'login'}
+          title={`${register ? 'Sign' : 'Log'} In`}
+        >
           {`${register ? 'Sign' : 'Log'} In`}
         </Button>
 

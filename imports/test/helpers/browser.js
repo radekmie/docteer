@@ -1,7 +1,6 @@
 // @flow
 
 import {before} from 'meteor/universe:e2e';
-// $FlowFixMe: No local file.
 import {createBrowser} from 'meteor/universe:e2e';
 
 import type {Browser} from 'puppeteer';
@@ -15,4 +14,9 @@ before(async () => {
     args: ['--disable-gpu', '--disable-infobars', '--no-sandbox'],
     slowMo: 0
   }));
+
+  page.on('console', ({args, type}) => {
+    // eslint-disable-next-line no-console
+    console[type]('[page]', ...args.map(arg => arg.toString()));
+  });
 });

@@ -7,10 +7,10 @@ import {Labels} from './Labels';
 import {iconSearch} from './Icon';
 import {onSearch} from '../actions';
 
-class TNote {
-  _id: string;
-  _href: string;
-}
+type TNote = {
+  _id: string,
+  _href: string
+};
 
 type Note$Props = {
   note: TNote
@@ -28,18 +28,19 @@ function Note({note}: Note$Props) {
       class={`${note._active ? 'bg-near-white bl bw2 b--dark-gray ' : ''}db ${
         color
       } hover-bg-near-white link ph2${note._active ? ' pl1' : ''} truncate`}
+      data-test-note={note.name || '(untitled)'}
       dangerouslySetInnerHTML={{__html: note.name || '(untitled)'}}
       href={note._href}
     />
   );
 }
 
-class TLabel {
-  count: number;
-  href: string;
-  name: string;
-  total: number;
-}
+type TLabel = {
+  count: number,
+  href: string,
+  name: string,
+  total: number
+};
 
 type Notes$Props = {
   labels: TLabel[],

@@ -3,12 +3,12 @@
 
 import {h} from 'preact';
 
-class TLabel {
-  count: number;
-  href: string;
-  name: string;
-  total: number;
-}
+type TLabel = {
+  count: number,
+  href: string,
+  name: string,
+  total: number
+};
 
 type Label$Props = {
   label: TLabel

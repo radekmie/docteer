@@ -1,12 +1,11 @@
 // @flow
 
-// $FlowFixMe: No local file.
 import {it} from 'meteor/universe:e2e';
 
-import {page} from './_browser';
+import {page} from '../helpers';
 
 export function wait(time: number) {
-  it(`should wait ${time}ms`, async () => {
+  it(`should wait for ${time}`, async () => {
     await page.waitFor(time);
   });
 }

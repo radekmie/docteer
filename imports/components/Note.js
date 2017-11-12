@@ -11,16 +11,16 @@ import {onTypeAhead} from '../actions';
 import {schemaIsArray} from '../lib';
 import {schemaKey} from '../lib';
 
-class TNote {
-  _id: string;
-  _href: string;
-}
+type TNote = {
+  _id: string,
+  _href: string
+};
 
-class TUser {
-  _changed: boolean;
-  emails: {address: string, verified: boolean}[];
-  schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[];
-}
+type TUser = {
+  _changed: boolean,
+  emails: {address: string, verified: boolean}[],
+  schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[]
+};
 
 type Note$Props = {
   edit: boolean,
@@ -86,6 +86,7 @@ export class Note extends Component<Note$Props> {
             class={`b--dark-gray ba bg-white br-0 bw1 h2 mb1${
               props.edit ? ' pointer' : ''
             } tc w-100`}
+            data-test-note-schema
             disabled={!props.edit}
             onChange={this.onSchema}
             title="Schema"
@@ -105,13 +106,21 @@ export class Note extends Component<Note$Props> {
         {Object.keys(props.note._outline).reduce((fields, key, index) => {
           if (props.edit || key === 'name' || props.note[key].length) {
             fields.push(
-              <dt key={`${key}-dt`} class={index === 0 ? null : 'mt3'}>
+              <dt
+                key={`${key}-dt`}
+                class={index === 0 ? null : 'mt3'}
+                data-test-note-label={schemaKey(key)}
+              >
                 <b>{`${schemaKey(key)}:`}</b>
               </dt>
             );
 
             fields.push(
-              <dd key={`${key}-dd`} class="ml4">
+              <dd
+                key={`${key}-dd`}
+                class="ml4"
+                data-test-note-field={schemaKey(key)}
+              >
                 <Editable
                   class={
                     schemaIsArray(props.note._outline[key]) ? 'mv0 pl0' : null

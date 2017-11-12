@@ -31,29 +31,29 @@ const watcher = tree.watch({
   view: ['view']
 });
 
-class TLabel {
-  count: number;
-  href: string;
-  name: string;
-  total: number;
-}
+type TLabel = {
+  count: number,
+  href: string,
+  name: string,
+  total: number
+};
 
-class TNote {
-  _id: string;
-  _href: string;
-}
+type TNote = {
+  _id: string,
+  _href: string
+};
 
-class TToast {
-  _id: number;
-  type: 'info' | 'error' | 'success';
-  text: string;
-}
+type TToast = {
+  _id: number,
+  type: 'info' | 'error' | 'success',
+  text: string
+};
 
-class TUser {
-  _changed: boolean;
-  emails: {address: string, verified: boolean}[];
-  schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[];
-}
+type TUser = {
+  _changed: boolean,
+  emails: {address: string, verified: boolean}[],
+  schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[]
+};
 
 type Application$Props = {};
 type Application$State = {

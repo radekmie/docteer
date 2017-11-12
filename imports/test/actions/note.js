@@ -2,12 +2,39 @@
 
 import assert from 'assert';
 
-// $FlowFixMe: No local file.
 import {it} from 'meteor/universe:e2e';
 
-import {page} from './_browser';
+import {page} from '../helpers';
+import {type} from '../helpers';
 
-export function field(
+export function noteAction(title: string) {
+  it(`should perform '${title}' notes action`, async () => {
+    const selector = `[data-test-notes-action="${title}"]`;
+    await page.waitForSelector(selector);
+    await page.click(selector);
+  });
+}
+
+export function noteCheck(title: string, color: string = 'normal') {
+  if (color === '-') {
+    it(`should check if note called '${title}' is not visible`, async () => {
+      await page.waitForSelector(`[data-test-note="${title}"]`, {hidden: true});
+    });
+
+    return;
+  }
+
+  it(`should check if note called '${title}' is visible`, async () => {
+    await page.waitForSelector(`[data-test-note="${title}"]`);
+  });
+
+  it(`should check if note called '${title}' is ${color}`, async () => {
+    const type = color === 'normal' ? 'dark-gray' : `hover-${color}`;
+    await page.waitForSelector(`.${type}[data-test-note="${title}"]`);
+  });
+}
+
+export function noteField(
   position: number,
   name: string,
   value: string | string[],
@@ -17,23 +44,17 @@ export function field(
     throw new Error('Autocomplete works only with labels.');
 
   it(`should check field ${position + 1} to be called '${name}'`, async () => {
-    await page.waitForFunction(
-      `(document.querySelector('dl > dt:nth-of-type(${position +
-        1}) > b') || {}).textContent === '${name}:'`,
-      {polling: 'mutation'}
-    );
+    const part = `:nth-of-type(${position + 1})[data-test-note-`;
+    await page.waitForSelector(`dt${part}label="${name}"]`);
+    await page.waitForSelector(`dd${part}field="${name}"]`);
   });
 
   it(`should enter field ${position + 1} value${
     useAutocomplete ? ' with autocomplete' : ''
   }`, async () => {
-    const selector = `dl > dd:nth-of-type(${position + 1}) > :first-child`;
+    const selector = `[data-test-note-field="${name}"] > :first-child`;
 
-    await page.click(selector);
-    await page.keyboard.down('Control');
-    await page.keyboard.down('A');
-    await page.keyboard.up('A');
-    await page.keyboard.up('Control');
+    await type(selector, '');
 
     value = [].concat(value);
 
@@ -68,5 +89,11 @@ export function field(
     );
 
     await page.$eval(selector, input => input.blur());
+  });
+}
+
+export function noteSelect(title: string) {
+  it(`should select note called '${title}'`, async () => {
+    await page.click(`[data-test-note="${title}"]`);
   });
 }

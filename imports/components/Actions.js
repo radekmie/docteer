@@ -17,11 +17,11 @@ import {onSave} from '../actions';
 import {onSettingsReset} from '../actions';
 import {onSettingsSave} from '../actions';
 
-class TUser {
-  _changed: boolean;
-  emails: {address: string, verified: boolean}[];
-  schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[];
-}
+type TUser = {
+  _changed: boolean,
+  emails: {address: string, verified: boolean}[],
+  schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[]
+};
 
 type Actions$Props = {
   note: boolean,
@@ -36,6 +36,7 @@ export function Actions(props: Actions$Props) {
       {props.view === 'd' && (
         <div
           class={button('dark-pink')}
+          data-test-notes-action="create"
           key="Create"
           onClick={onAdd}
           tabIndex="0"
@@ -50,6 +51,7 @@ export function Actions(props: Actions$Props) {
         props.note && (
           <div
             class={button('red')}
+            data-test-notes-action="remove"
             key="Remove"
             onClick={onRemove}
             tabIndex="0"
@@ -63,6 +65,7 @@ export function Actions(props: Actions$Props) {
         props.edit && (
           <div
             class={button('green')}
+            data-test-notes-action="save"
             key="Save"
             onClick={onSave}
             tabIndex="0"
@@ -76,6 +79,7 @@ export function Actions(props: Actions$Props) {
         !props.edit && (
           <div
             class={button('dark-blue')}
+            data-test-notes-action="edit"
             key="Edit"
             onClick={onEdit}
             tabIndex="0"
@@ -89,6 +93,7 @@ export function Actions(props: Actions$Props) {
         props.edit && (
           <div
             class={button('blue')}
+            data-test-notes-action="cancel"
             key="Cancel"
             onClick={onEdit}
             tabIndex="0"
@@ -101,6 +106,7 @@ export function Actions(props: Actions$Props) {
       {props.view === 'd' && (
         <div
           class={button('orange')}
+          data-test-notes-action="refresh"
           key="Refresh"
           onClick={onRefresh}
           tabIndex="0"
@@ -114,6 +120,7 @@ export function Actions(props: Actions$Props) {
         props.user && (
           <div
             class={button('green', !props.user._changed)}
+            data-test-settings-action="save"
             key="Save"
             onClick={onSettingsSave}
             tabIndex="0"
@@ -127,6 +134,7 @@ export function Actions(props: Actions$Props) {
         props.user && (
           <div
             class={button('red', !props.user._changed)}
+            data-test-settings-action="cancel"
             key="Cancel"
             onClick={onSettingsReset}
             tabIndex="0"

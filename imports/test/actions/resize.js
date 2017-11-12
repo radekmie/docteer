@@ -3,8 +3,8 @@
 // $FlowFixMe: No local file.
 import {it} from 'meteor/universe:e2e';
 
-import {browser} from './_browser';
-import {page} from './_browser';
+import {browser} from '../helpers';
+import {page} from '../helpers';
 
 export function resize(width: number, height: number) {
   it(`should resize to ${width}x${height}`, async () => {
