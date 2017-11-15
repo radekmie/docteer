@@ -119,10 +119,6 @@ select {
   background-color: var(--near-white);
 }
 
-.bg-red {
-  background-color: var(--red);
-}
-
 .bg-white {
   background-color: var(--white);
 }
@@ -151,11 +147,6 @@ select {
 
 .br-100 {
   border-radius: 100%;
-}
-
-.bt {
-  border-top-style: solid;
-  border-top-width: 1px;
 }
 
 .bw0 {
@@ -202,10 +193,6 @@ select {
 .dim:focus,
 .dim:hover {
   transition: opacity 0.15s ease-in;
-}
-
-.f4 {
-  font-size: 1.25rem;
 }
 
 .fixed {
@@ -293,10 +280,6 @@ select {
 .link:focus,
 .link:hover {
   transition: color 0.15s ease-in;
-}
-
-.list {
-  list-style-type: none;
 }
 
 .ma0 {
@@ -387,10 +370,6 @@ select {
   position: relative;
 }
 
-.pt1 {
-  padding-top: 0.25rem;
-}
-
 .pt3 {
   padding-top: 1rem;
 }
@@ -412,7 +391,7 @@ select {
   z-index: 2;
 }
 
-@media (max-device-width: 1024px) {
+@media (pointer: coarse) {
   .resizer * {
     margin-left: -.5rem;
   }
@@ -593,12 +572,6 @@ select {
 .hidden {
   opacity: 0;
   pointer-events: none;
-}
-
-.hide-child:focus .child,
-.hide-child:hover .child {
-  opacity: 1;
-  transition: opacity 0.15s ease-in;
 }
 
 .app:not(.hidden) + .logo path,
