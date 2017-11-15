@@ -12,6 +12,7 @@ import {noteField} from './actions';
 import {noteSchema} from './actions';
 import {noteSelect} from './actions';
 import {resize} from './actions';
+import {statsCSS} from './actions';
 import {toastCheck} from './actions';
 import {userAddSchema} from './actions';
 import {userChangePassword} from './actions';
@@ -35,6 +36,7 @@ const base = DAG.create()
       password: (faker.internet.password(): string)
     }
   }))
+  .next(statsCSS, [])
   .next(load, ['/']);
 
 base
