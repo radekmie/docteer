@@ -8,6 +8,17 @@ import {type} from '../helpers';
 
 import {navigate} from './navigate';
 
+export function userAddSchema(name: string) {
+  navigate('settings');
+
+  it(`should create schema '${name}'`, async () => {
+    await page.click('[data-test-schema-add]');
+    await page.click('[data-test-schema]:last-of-type');
+    await page.waitFor(25);
+    await type('[data-test-schema]:last-of-type [data-test-schema-name]', name);
+  });
+}
+
 export function userChangePassword({
   current,
   new1,

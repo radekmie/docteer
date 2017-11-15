@@ -16,21 +16,25 @@ export function noteAction(title: string) {
 }
 
 export function noteCheck(title: string, color: string = 'normal') {
+  const selector = `[data-test-note="${title}"]`;
+
   if (color === '-') {
     it(`should check if note called '${title}' is not visible`, async () => {
-      await page.waitForSelector(`[data-test-note="${title}"]`, {hidden: true});
+      await page.waitForSelector(selector, {hidden: true});
+      await page.waitForSelector(selector, {hidden: true});
     });
 
     return;
   }
 
   it(`should check if note called '${title}' is visible`, async () => {
-    await page.waitForSelector(`[data-test-note="${title}"]`);
+    await page.waitForSelector(selector);
+    await page.hover(selector);
   });
 
   it(`should check if note called '${title}' is ${color}`, async () => {
     const type = color === 'normal' ? 'dark-gray' : `hover-${color}`;
-    await page.waitForSelector(`.${type}[data-test-note="${title}"]`);
+    await page.waitForSelector(`.${type}${selector}`);
   });
 }
 
@@ -89,6 +93,13 @@ export function noteField(
     );
 
     await page.$eval(selector, input => input.blur());
+  });
+}
+
+export function noteSchema(name: string) {
+  it(`should select schema '${name}'`, async () => {
+    await page.waitForSelector('[data-test-note-schema]');
+    await page.select('[data-test-note-schema]', name);
   });
 }
 

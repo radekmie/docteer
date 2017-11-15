@@ -9,9 +9,11 @@ import {navigate} from './actions';
 import {noteAction} from './actions';
 import {noteCheck} from './actions';
 import {noteField} from './actions';
+import {noteSchema} from './actions';
 import {noteSelect} from './actions';
 import {resize} from './actions';
 import {toastCheck} from './actions';
+import {userAddSchema} from './actions';
 import {userChangePassword} from './actions';
 import {userLogIn} from './actions';
 import {userLogOut} from './actions';
@@ -139,6 +141,20 @@ const noteNew = user
   .next(noteCheck, context => [context.note.title, 'light-green']);
 
 noteNew
+  .with(() => ({
+    schema: (faker.lorem.word(): string)
+  }))
+  .next(userAddSchema, context => [context.schema])
+  .next(navigate, ['notes'])
+  .next(noteSelect, context => [context.note.title])
+  .next(noteSchema, context => [context.schema])
+  .next(noteAction, ['save'])
+  .next(toastCheck, ['Saving...'])
+  .next(toastCheck, ['Saved.'])
+  .next(noteCheck, context => [context.note.title])
+  .save('Add note with different schema');
+
+noteNew
   .next(noteAction, ['remove'])
   .next(noteCheck, context => [context.note.title, 'light-gray'])
   .next(noteAction, ['save'])
@@ -190,3 +206,9 @@ noteOne
     {useAutocomplete: true}
   ])
   .save('Add autocompleted labels');
+
+noteOne
+  .next(noteAction, ['refresh'])
+  .next(toastCheck, ['Refreshing...'])
+  .next(toastCheck, ['Refreshed.'])
+  .save('Refresh notes');

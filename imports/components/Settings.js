@@ -154,17 +154,23 @@ export function Settings(props: Settings$Props) {
       </dt>
 
       <dd class="ml4">
-        <Button class="w-100" onClick={onSchemaAdd} title="Add schema">
+        <Button
+          class="w-100"
+          data-test-schema-add
+          onClick={onSchemaAdd}
+          title="Add schema"
+        >
           Add schema
         </Button>
 
         {props.user.schemas.map((schema, index) => (
-          <details class="mt1" key={index}>
+          <details class="mt1" data-test-schema={schema.name} key={index}>
             <summary class="pointer">{schema.name}</summary>
 
             <div class="flex mt1" data-name={schema.name}>
               <input
                 class="b--dark-gray br-0 bw1 flex-1 ph1"
+                data-test-schema-name
                 onChange={onSchemaName}
                 type="Schema name"
                 value={schema.name}

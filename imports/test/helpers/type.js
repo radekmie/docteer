@@ -8,5 +8,5 @@ export async function type(selector: string, value: string) {
   await page.keyboard.down('A');
   await page.keyboard.up('A');
   await page.keyboard.up('Control');
-  await page.keyboard.type(value);
+  await page.type(selector, value);
 }
