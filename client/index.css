@@ -75,6 +75,10 @@ select {
   appearance: none;
 }
 
+select:not([disabled]) {
+  background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0Ljk1IDEwIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAwaDQuOTV2MTBIMHoiLz48cGF0aCBmaWxsPSIjNDQ0IiBkPSJNMS40MSA0LjY3bDEuMDctMS40OSAxLjA2IDEuNDlIMS40MXptMi4xMy42NkwyLjQ4IDYuODIgMS40MSA1LjMzaDIuMTN6Ii8+PC9zdmc+) no-repeat calc(100% - 10px) 50%;
+}
+
 .app {
   height: 100vh;
   width: 100vw;
