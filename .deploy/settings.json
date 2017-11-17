@@ -6,5 +6,11 @@
       "endpoint": "https://engine.kadira.docteer.com/"
     }
   },
-  "public": {}
+  "public": {},
+  "universe:e2e": {
+    "mocha": {
+      "bail": true,
+      "timeout": 5000
+    }
+  }
 }

@@ -10,6 +10,18 @@ const id = x => x.styleSheetId.split('.', 2)[0];
 before(() => {
   page._rulesUsages = new Map();
   page._stylesheets = new Map();
+
+  page._client.on('CSS.styleSheetAdded', async ({header}) => {
+    if (!page._stylesheets.has(id(header))) {
+      page._stylesheets.set(id(header), header);
+      Object.assign(
+        header,
+        await page._client.send('CSS.getStyleSheetText', {
+          styleSheetId: header.styleSheetId
+        })
+      );
+    }
+  });
 });
 
 after(() => {
@@ -52,18 +64,6 @@ export function statsCSS() {
     await page._client.send('DOM.enable');
     await page._client.send('CSS.enable');
     await page._client.send('CSS.startRuleUsageTracking');
-
-    page._client.on('CSS.styleSheetAdded', async ({header}) => {
-      if (!page._stylesheets.has(id(header))) {
-        page._stylesheets.set(id(header), header);
-        Object.assign(
-          header,
-          await page._client.send('CSS.getStyleSheetText', {
-            styleSheetId: header.styleSheetId
-          })
-        );
-      }
-    });
   });
 
   after(async () => {
