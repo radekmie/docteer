@@ -19,7 +19,6 @@ import {userChangePassword} from './actions';
 import {userLogIn} from './actions';
 import {userLogOut} from './actions';
 import {userSignIn} from './actions';
-import {wait} from './actions';
 
 import {DAG} from './helpers';
 
@@ -114,7 +113,6 @@ user
   .next(userLogOut, [])
   .next(toastCheck, ['Logging out...'])
   .next(toastCheck, ['Logged out.'])
-  .next(wait, [1500])
   .next(userLogIn, context => [context.user])
   .next(toastCheck, ['Logging in...'])
   .next(toastCheck, ['Logged in.'])

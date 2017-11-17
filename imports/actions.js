@@ -478,6 +478,8 @@ function call(path, options) {
   });
 }
 
+const TOAST_TIME_MODIFIER = process.env.NODE_ENV === 'production' ? 1 : 0.05;
+
 function toast(type, message) {
   const _id = Math.random().toString(36);
   const text =
@@ -503,19 +505,19 @@ function toast(type, message) {
 
     setTimeout(() => {
       tree.set(['pend'], tree.get(['pend']) - 1);
-    }, 500);
+    }, 500 * TOAST_TIME_MODIFIER);
 
     setTimeout(() => {
       tree.set(['toasts', {_id: info}, 'dead'], true);
-    }, 1000);
+    }, 1000 * TOAST_TIME_MODIFIER);
 
     setTimeout(() => {
       tree.set(['toasts', {_id}, 'dead'], true);
-    }, 1250);
+    }, 1250 * TOAST_TIME_MODIFIER);
 
     setTimeout(() => {
       tree.unset(['toasts', {_id}]);
       tree.unset(['toasts', {_id: info}]);
-    }, 1500);
+    }, 1500 * TOAST_TIME_MODIFIER);
   }
 }

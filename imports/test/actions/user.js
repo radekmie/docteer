@@ -13,8 +13,9 @@ export function userAddSchema(name: string) {
 
   it(`should create schema '${name}'`, async () => {
     await page.click('[data-test-schema-add]');
+    await page.waitFor(10);
     await page.click('[data-test-schema]:last-of-type');
-    await page.waitFor(25);
+    await page.waitFor(10);
     await type('[data-test-schema]:last-of-type [data-test-schema-name]', name);
   });
 }

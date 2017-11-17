@@ -129,15 +129,9 @@ export class Application extends Component<
           />
         )}
 
-        {state.view === 'l' && (
+        {(state.view === 'l' || state.view === 'r') && (
           <div class="flex flex-center w-100">
-            <Account />
-          </div>
-        )}
-
-        {state.view === 'r' && (
-          <div class="flex flex-center w-100">
-            <Account register />
+            <Account register={state.view === 'r'} />
           </div>
         )}
 

@@ -221,9 +221,9 @@ export function Settings(props: Settings$Props) {
                   <select
                     class={`b--dark-gray ba bg-${
                       disabled ? 'near-' : ''
-                    }white br-0 bw1${disabled ? '' : ' dim'} ml1 ph1${
+                    }white br-0 bw1${disabled ? '' : ' dim'} ml1${
                       disabled ? '' : ' pointer'
-                    } tc`}
+                    } tc trans`}
                     disabled={disabled}
                     onChange={onSchemaType}
                     title="Field type"

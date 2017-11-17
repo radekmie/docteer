@@ -11,7 +11,7 @@ import {onLogin} from '../actions';
 import {onRegister} from '../actions';
 
 type Account$Props = {
-  register: ?boolean
+  register: boolean
 };
 
 export class Account extends Component<Account$Props> {
@@ -76,15 +76,15 @@ export class Account extends Component<Account$Props> {
         <Button
           class="h2 w-100"
           data-test-user={register ? 'signin' : 'login'}
-          title={`${register ? 'Sign' : 'Log'} In`}
+          title={`${register ? 'Sign' : 'Log'} in`}
         >
-          {`${register ? 'Sign' : 'Log'} In`}
+          {`${register ? 'Sign' : 'Log'} in`}
         </Button>
 
         <span class="db mt1 tc">
           {`${register ? 'Already a' : 'New'} member?`}
           <a class="ml1" href={`/${register ? 'l' : 'r'}`}>
-            {`${register ? 'Log' : 'Sign'} In`}
+            {`${register ? 'Log' : 'Sign'} in`}
           </a>
           .
         </span>

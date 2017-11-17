@@ -16,7 +16,9 @@ export function Button({as, ...props}: Button$Props) {
       class: [
         `b--dark-gray ba bg-${
           props.disabled ? 'near-' : ''
-        }white bw1 dark-gray db${props.disabled ? '' : ' dim pointer'} tc`,
+        }white bw1 dark-gray db${
+          props.disabled ? '' : ' dim pointer'
+        } tc trans`,
         props.class
       ]
         .filter(Boolean)
