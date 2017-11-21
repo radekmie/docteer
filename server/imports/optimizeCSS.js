@@ -8,6 +8,8 @@ import {readFile} from 'fs';
 import {Meteor} from 'meteor/meteor';
 import {WebAppInternals} from 'meteor/webapp';
 
+import {cache} from './cache';
+
 const bundledCSSFile = Object.keys(WebAppInternals.staticFiles)
   .map(file => WebAppInternals.staticFiles[file])
   .find(file => file.type === 'css');
@@ -21,8 +23,10 @@ const processor = postcss([
   cssnano({preset: ['advanced', {discardComments: {removeAll: true}}]})
 ]);
 
-export const optimize = (css: string) =>
-  processor
-    .process(css + bundledCSS)
-    .then()
-    .await().css;
+export const optimize = cache(
+  (css: string) =>
+    processor
+      .process(css + bundledCSS)
+      .then()
+      .await().css
+);

@@ -7,6 +7,7 @@ import {Meteor} from 'meteor/meteor';
 import {Tracker} from 'meteor/tracker';
 
 import {onRefresh} from '../../imports/actions';
+import {titleForView} from '../../imports/lib';
 import {tree} from '../../imports/state';
 
 const history = createHistory();
@@ -171,6 +172,8 @@ function syncHistory(location) {
     )
   )
     state.view = '';
+
+  document.title = `${titleForView(state.view)} | DocTeer`;
 
   tree.set(
     ['noteId'],

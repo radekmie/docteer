@@ -24,3 +24,11 @@ export function schemaKey(name: string) {
     '$1 $2'
   );
 }
+
+export function titleForView(view: string) {
+  if (view === 'd') return 'Notes';
+  if (view === 'l') return 'Log in';
+  if (view === 'r') return 'Sign in';
+  if (view === 's') return 'Settings';
+  return 'Copy anything. Paste it. Stay organized';
+}

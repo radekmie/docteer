@@ -55,8 +55,11 @@ type TUser = {
   schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[]
 };
 
-type Application$Props = {};
-type Application$State = {
+type Application$Props = {|
+  view?: string
+|};
+
+type Application$State = {|
   edit: boolean,
   full: boolean,
   help: boolean,
@@ -69,7 +72,7 @@ type Application$State = {
   toasts: TToast[],
   user: TUser,
   view: ?string
-};
+|};
 
 export class Application extends Component<
   Application$Props,
@@ -92,8 +95,8 @@ export class Application extends Component<
     watcher.off('update', this._sync);
   }
 
-  render() {
-    const state = this.state;
+  render(props: Application$Props, state: Application$State) {
+    const view = props.view || state.view;
 
     return (
       <main class={`app dark-gray flex lh-copy${state.load ? ' hidden' : ''}`}>
@@ -101,16 +104,16 @@ export class Application extends Component<
           full={state.full}
           pend={state.pend}
           user={state.user}
-          view={state.view}
+          view={view}
         />
 
-        {state.view === '' && (
+        {view === '' && (
           <div class="flex flex-center w-100">
             <Splashscreen />
           </div>
         )}
 
-        {state.view === 'd' && (
+        {view === 'd' && (
           <Notes
             labels={state.labels}
             notes={state.notes}
@@ -118,9 +121,9 @@ export class Application extends Component<
           />
         )}
 
-        {state.view === 'd' && <Resizer />}
+        {view === 'd' && <Resizer />}
 
-        {state.view === 'd' && (
+        {view === 'd' && (
           <Note
             labels={state.labels}
             note={state.note}
@@ -129,13 +132,13 @@ export class Application extends Component<
           />
         )}
 
-        {(state.view === 'l' || state.view === 'r') && (
+        {(view === 'l' || view === 'r') && (
           <div class="flex flex-center w-100">
-            <Account register={state.view === 'r'} />
+            <Account register={view === 'r'} />
           </div>
         )}
 
-        {state.view === 's' && (
+        {view === 's' && (
           <div class="h-100 overflow-auto pa3 w-100">
             <Settings user={state.user} />
           </div>
@@ -145,7 +148,7 @@ export class Application extends Component<
           note={!!state.note}
           edit={state.edit}
           user={state.user}
-          view={state.view}
+          view={view}
         />
 
         <Help active={state.help} />
