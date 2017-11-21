@@ -2,7 +2,7 @@
 
 import {minify} from 'html-minifier';
 
-import {cache} from './cache';
+import {cache} from '../../imports/lib';
 import {optimize as minifyCSS} from './optimizeCSS';
 import {optimize as minifyJS} from './optimizeJS';
 

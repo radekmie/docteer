@@ -10,17 +10,13 @@ import {iconLogOut} from './Icon';
 import {iconNote} from './Icon';
 import {onLogout} from '../actions';
 
-type TUser = {
-  _changed: boolean,
-  emails: {address: string, verified: boolean}[],
-  schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[]
-};
+import type {UserType} from '../types.flow';
 
-type Navigation$Props = {
+type Navigation$Props = {|
   full: boolean,
   pend: number,
-  user: ?TUser
-};
+  user: ?UserType
+|};
 
 export const Navigation = (props: Navigation$Props) => (
   <div class="bg-dark-gray flex flex-around flex-center flex-column h-100 near-white pa3 ph1">

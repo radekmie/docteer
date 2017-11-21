@@ -3,9 +3,9 @@
 
 import {h} from 'preact';
 
-type Help$Props = {
+type Help$Props = {|
   active: boolean
-};
+|};
 
 const actions = [
   ['?', 'Show help'],

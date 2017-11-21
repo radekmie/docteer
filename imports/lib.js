@@ -1,12 +1,15 @@
 // @flow
 
-export function schemaEmpty({
-  fields,
-  name
-}: {
-  fields: {[string]: string},
-  name: string
-}) {
+import type {SchemaOutlineFieldType} from './types.flow';
+import type {SchemaType} from './types.flow';
+
+export function cache<A, B>(fn: A => B): A => B {
+  const cached: {[A]: B} = {};
+
+  return (x: A): B => cached[x] || (cached[x] = fn(x));
+}
+
+export function schemaEmpty({fields, name}: SchemaType<any>) {
   return Object.keys(fields).reduce(
     (empty, key) =>
       Object.assign(empty, {[key]: schemaIsArray(fields[key]) ? [] : ''}),
@@ -14,7 +17,7 @@ export function schemaEmpty({
   );
 }
 
-export function schemaIsArray(tag: string) {
+export function schemaIsArray(tag: SchemaOutlineFieldType): boolean {
   return tag === 'ol' || tag === 'ul';
 }
 
@@ -25,10 +28,13 @@ export function schemaKey(name: string) {
   );
 }
 
+const TITLES = {
+  d: 'Notes',
+  l: 'Log in',
+  r: 'Sign in',
+  s: 'Settings'
+};
+
 export function titleForView(view: string) {
-  if (view === 'd') return 'Notes';
-  if (view === 'l') return 'Log in';
-  if (view === 'r') return 'Sign in';
-  if (view === 's') return 'Settings';
-  return 'Copy anything. Paste it. Stay organized';
+  return TITLES[view] || 'Copy anything. Paste it. Stay organized';
 }

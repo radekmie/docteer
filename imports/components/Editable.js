@@ -4,12 +4,13 @@
 import {Component} from 'preact';
 import {h} from 'preact';
 
-type Editable$Props = {
-  disabled: ?boolean,
+type Editable$Props = {|
+  class?: string,
+  disabled: boolean,
   html: string,
   onChange: string => void,
   tag: string
-};
+|};
 
 export class Editable extends Component<Editable$Props> {
   element: ?HTMLElement;
@@ -51,12 +52,11 @@ export class Editable extends Component<Editable$Props> {
       this.element.innerHTML = content(this.props.disabled, this.props.html);
   }
 
-  render() {
-    const {disabled, html, tag, ...props} = this.props;
-
+  // $FlowFixMe
+  render({disabled, html, tag, ...props}: Editable$Props) {
     return h(
       tag,
-      Object.assign(props, {
+      Object.assign({}, props, {
         class: ['ph1', props.class, disabled ? '' : 'bg-near-white']
           .filter(Boolean)
           .join(' '),

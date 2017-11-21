@@ -3,9 +3,9 @@
 
 import {h} from 'preact';
 
-type Logo$Props = {
+type Logo$Props = {|
   class?: string
-};
+|};
 
 export function Logo(props: Logo$Props) {
   return (

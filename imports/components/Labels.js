@@ -3,16 +3,11 @@
 
 import {h} from 'preact';
 
-type TLabel = {
-  count: number,
-  href: string,
-  name: string,
-  total: number
-};
+import type {LabelType} from '../types.flow';
 
-type Label$Props = {
-  label: TLabel
-};
+type Label$Props = {|
+  label: LabelType
+|};
 
 function Label({label}: Label$Props) {
   return (
@@ -30,9 +25,9 @@ function Label({label}: Label$Props) {
   );
 }
 
-type Labels$Props = {
-  labels: TLabel[]
-};
+type Labels$Props = {|
+  labels: LabelType[]
+|};
 
 export function Labels(props: Labels$Props) {
   return (

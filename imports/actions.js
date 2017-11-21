@@ -7,6 +7,10 @@ import {Meteor} from 'meteor/meteor';
 import {schemaEmpty} from './lib';
 import {tree} from './state';
 
+import type {EventType} from './types.flow';
+import type {InputEventType} from './types.flow';
+import type {SchemaType} from './types.flow';
+
 export function onAdd() {
   const _id = Math.random()
     .toString(36)
@@ -40,10 +44,7 @@ export function onChangePassword(
   });
 }
 
-export function onChangeSchema(
-  _id: string,
-  schema: {fields: {[string]: string}, name: string}
-) {
+export function onChangeSchema(_id: string, schema: SchemaType<any>) {
   const doc = tree.get(['notes', {_id}]);
 
   if (doc) {
@@ -295,12 +296,7 @@ export function onSchemaAdd() {
   });
 }
 
-// TODO: Should use Event instead, but Flow definition is not complete.
-type Event$ = {
-  target: {dataset: {[string]: string}, parentNode: HTMLElement, value: string}
-};
-
-export function onSchemaDelete(event: Event$) {
+export function onSchemaDelete(event: EventType) {
   const name = event.target.parentNode.dataset.name;
   const index = +event.target.parentNode.dataset.index;
   const schema = tree.get(['user', 'schemas', {name}, 'fields']);
@@ -315,7 +311,7 @@ export function onSchemaDelete(event: Event$) {
   );
 }
 
-export function onSchemaField(event: Event$) {
+export function onSchemaField(event: EventType) {
   const name = event.target.parentNode.dataset.name;
   const schema = tree.get(['user', 'schemas', {name}, 'fields']);
 
@@ -325,7 +321,7 @@ export function onSchemaField(event: Event$) {
   );
 }
 
-export function onSchemaKey(event: Event$) {
+export function onSchemaKey(event: EventType) {
   const name = event.target.parentNode.dataset.name;
   const index = +event.target.parentNode.dataset.index;
   const schema = tree.get(['user', 'schemas', {name}, 'fields']);
@@ -342,13 +338,13 @@ export function onSchemaKey(event: Event$) {
   );
 }
 
-export function onSchemaName(event: Event$) {
+export function onSchemaName(event: EventType) {
   const name = event.target.parentNode.dataset.name;
 
   tree.set(['userDiff', 'schemas', {name}, 'name'], event.target.value);
 }
 
-export function onSchemaOrder(event: Event$) {
+export function onSchemaOrder(event: EventType) {
   const name = event.target.parentNode.dataset.name;
   const index = +event.target.parentNode.dataset.index;
   const schema = tree.get(['user', 'schemas', {name}, 'fields']);
@@ -366,13 +362,13 @@ export function onSchemaOrder(event: Event$) {
   );
 }
 
-export function onSchemaRemove(event: Event$) {
+export function onSchemaRemove(event: EventType) {
   const name = event.target.parentNode.dataset.name;
 
   tree.unset(['userDiff', 'schemas', {name}]);
 }
 
-export function onSchemaType(event: Event$) {
+export function onSchemaType(event: EventType) {
   const name = event.target.parentNode.dataset.name;
   const field = event.target.parentNode.dataset.field;
 
@@ -382,10 +378,7 @@ export function onSchemaType(event: Event$) {
   );
 }
 
-// TODO: Should use Event instead, but Flow definition is not complete.
-type InputEvent$ = {target: HTMLInputElement & {|__skip: ?boolean|}};
-
-export function onSearch(event: InputEvent$) {
+export function onSearch(event: InputEventType) {
   tree.set(['search'], event.target.value);
 }
 
@@ -405,7 +398,7 @@ export function onSettingsSave() {
   }
 }
 
-export function onTypeAhead(event: InputEvent$) {
+export function onTypeAhead(event: InputEventType) {
   if (event.target.__skip) return;
 
   const selection = window.getSelection();

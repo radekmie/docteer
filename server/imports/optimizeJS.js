@@ -4,7 +4,7 @@ import {prepackSources} from 'prepack/lib/prepack-standalone';
 
 import {meteorJsMinify} from 'meteor/minifier-js';
 
-import {cache} from './cache';
+import {cache} from '../../imports/lib';
 
 export const optimizeOptions = {
   delayInitializations: true,

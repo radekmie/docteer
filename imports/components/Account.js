@@ -10,9 +10,9 @@ import {iconUser} from './Icon';
 import {onLogin} from '../actions';
 import {onRegister} from '../actions';
 
-type Account$Props = {
+type Account$Props = {|
   register: boolean
-};
+|};
 
 export class Account extends Component<Account$Props> {
   email: ?HTMLInputElement;
@@ -41,6 +41,7 @@ export class Account extends Component<Account$Props> {
     }
   };
 
+  // $FlowFixMe
   render({register}: Account$Props) {
     return (
       <form class="w5" onSubmit={this.onSubmit}>

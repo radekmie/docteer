@@ -9,9 +9,8 @@ import {WebApp} from 'meteor/webapp';
 
 import {Application} from '../../imports/components/Application';
 import {Logo} from '../../imports/components/Logo';
+import {cache} from '../../imports/lib';
 import {titleForView} from '../../imports/lib';
-
-import {cache} from './cache';
 
 const ssr = cache(view => ({
   dynamicBody: render(

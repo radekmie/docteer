@@ -17,15 +17,11 @@ import {onSchemaOrder} from '../actions';
 import {onSchemaRemove} from '../actions';
 import {onSchemaType} from '../actions';
 
-type TUser = {
-  _changed: boolean,
-  emails: {address: string, verified: boolean}[],
-  schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[]
-};
+import type {UserType} from '../types.flow';
 
-type Credentials$Props = {
-  user: TUser
-};
+type Credentials$Props = {|
+  user: UserType
+|};
 
 class Credentials extends Component<Credentials$Props> {
   current: ?HTMLInputElement;
@@ -60,7 +56,8 @@ class Credentials extends Component<Credentials$Props> {
     }
   };
 
-  render(props) {
+  // $FlowFixMe
+  render(props: Credentials$Props) {
     return (
       <details class="pointer">
         <summary>Change password</summary>
@@ -134,9 +131,9 @@ class Credentials extends Component<Credentials$Props> {
   }
 }
 
-type Settings$Props = {
-  user: TUser
-};
+type Settings$Props = {|
+  user: UserType
+|};
 
 export function Settings(props: Settings$Props) {
   return (

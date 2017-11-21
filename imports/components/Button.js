@@ -3,11 +3,11 @@
 
 import {h} from 'preact';
 
-type Button$Props = {
+type Button$Props = {|
   as: string,
   class?: string,
   tabIndex?: any
-};
+|};
 
 export function Button({as, ...props}: Button$Props) {
   return h(

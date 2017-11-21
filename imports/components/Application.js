@@ -16,6 +16,11 @@ import {Splashscreen} from './Splashscreen';
 import {Toasts} from './Toasts';
 import {tree} from '../state';
 
+import type {LabelType} from '../types.flow';
+import type {NoteType} from '../types.flow';
+import type {ToastType} from '../types.flow';
+import type {UserType} from '../types.flow';
+
 const watcher = tree.watch({
   edit: ['edit'],
   full: ['full'],
@@ -31,30 +36,6 @@ const watcher = tree.watch({
   view: ['view']
 });
 
-type TLabel = {
-  count: number,
-  href: string,
-  name: string,
-  total: number
-};
-
-type TNote = {
-  _id: string,
-  _href: string
-};
-
-type TToast = {
-  _id: number,
-  type: 'info' | 'error' | 'success',
-  text: string
-};
-
-type TUser = {
-  _changed: boolean,
-  emails: {address: string, verified: boolean}[],
-  schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[]
-};
-
 type Application$Props = {|
   view?: string
 |};
@@ -63,14 +44,14 @@ type Application$State = {|
   edit: boolean,
   full: boolean,
   help: boolean,
-  labels: TLabel[],
+  labels: LabelType[],
   load: boolean,
-  note: ?TNote,
-  notes: TNote[],
+  note: ?NoteType<any>,
+  notes: NoteType<any>[],
   pend: number,
   search: string,
-  toasts: TToast[],
-  user: TUser,
+  toasts: ToastType[],
+  user: UserType,
   view: ?string
 |};
 
@@ -95,6 +76,7 @@ export class Application extends Component<
     watcher.off('update', this._sync);
   }
 
+  // $FlowFixMe
   render(props: Application$Props, state: Application$State) {
     const view = props.view || state.view;
 

@@ -5,58 +5,42 @@ import {Component} from 'preact';
 import {h} from 'preact';
 
 import {Editable} from './Editable';
+import {cache} from '../lib';
 import {onChangeSchema} from '../actions';
 import {onChange} from '../actions';
 import {onTypeAhead} from '../actions';
 import {schemaIsArray} from '../lib';
 import {schemaKey} from '../lib';
 
-type TNote = {
-  _id: string,
-  _href: string
-};
+import type {EventType} from '../types.flow';
+import type {NoteType} from '../types.flow';
+import type {UserType} from '../types.flow';
 
-type TUser = {
-  _changed: boolean,
-  emails: {address: string, verified: boolean}[],
-  schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[]
-};
-
-type Note$Props = {
+type Note$Props = {|
   edit: boolean,
-  note: ?TNote,
-  user: TUser
-};
+  note: NoteType<any>,
+  user: UserType
+|};
 
 export class Note extends Component<Note$Props> {
-  onChangeMap = {};
-  onChange = (key: string) => {
-    return (this.onChangeMap[key] =
-      this.onChangeMap[key] ||
-      ((html: string) => {
-        onChange(
-          this.props.note._id,
-          key,
-          schemaIsArray(this.props.note._outline[key])
-            ? listToSteps(html)
-            : html
-        );
-      }));
-  };
+  onChange = cache((key: string) => (html: string) => {
+    onChange(
+      this.props.note._id,
+      key,
+      schemaIsArray(this.props.note._outline[key]) ? listToSteps(html) : html
+    );
+  });
 
-  onFocusMap = {};
-  onFocus = (key: string) => {
+  onFocus = cache((key: string) => {
     if (!schemaIsArray(this.props.note._outline[key])) return undefined;
 
-    return (this.onFocusMap[key] =
-      this.onFocusMap[key] ||
-      (() => {
-        if (!this.props.note[key].length)
-          onChange(this.props.note._id, key, ['']);
-      }));
-  };
+    return () => {
+      if (!this.props.note[key].length)
+        onChange(this.props.note._id, key, ['']);
+    };
+  });
 
-  onSchema = (event: {target: {value: string}}) => {
+  onSchema = (event: EventType) => {
     const schema = this.props.user.schemas.find(
       schema => schema.name === event.target.value
     );
@@ -72,10 +56,9 @@ export class Note extends Component<Note$Props> {
       : // $FlowFixMe: Look up.
         (html: string);
 
-  render() {
-    const props = this.props;
-
-    if (!props.note) {
+  // $FlowFixMe
+  render(props: Note$Props) {
+    if (props.note === null || props.note === undefined) {
       return <dl class="flex-1 h-100 ma0 overflow-auto pa3 w-100" />;
     }
 

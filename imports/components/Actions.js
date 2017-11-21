@@ -17,18 +17,14 @@ import {onSave} from '../actions';
 import {onSettingsReset} from '../actions';
 import {onSettingsSave} from '../actions';
 
-type TUser = {
-  _changed: boolean,
-  emails: {address: string, verified: boolean}[],
-  schemas: {name: string, fields: {[string]: 'div' | 'ol' | 'ul'}}[]
-};
+import type {UserType} from '../types.flow';
 
-type Actions$Props = {
+type Actions$Props = {|
   note: boolean,
   edit: boolean,
-  user: ?TUser,
+  user: ?UserType,
   view: ?string
-};
+|};
 
 export function Actions(props: Actions$Props) {
   return (

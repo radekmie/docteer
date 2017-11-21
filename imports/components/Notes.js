@@ -7,14 +7,12 @@ import {Labels} from './Labels';
 import {iconSearch} from './Icon';
 import {onSearch} from '../actions';
 
-type TNote = {
-  _id: string,
-  _href: string
-};
+import type {LabelType} from '../types.flow';
+import type {NoteType} from '../types.flow';
 
-type Note$Props = {
-  note: TNote
-};
+type Note$Props = {|
+  note: NoteType<any>
+|};
 
 function Note({note}: Note$Props) {
   const color = note._created
@@ -35,18 +33,11 @@ function Note({note}: Note$Props) {
   );
 }
 
-type TLabel = {
-  count: number,
-  href: string,
-  name: string,
-  total: number
-};
-
-type Notes$Props = {
-  labels: TLabel[],
-  notes: TNote[],
+type Notes$Props = {|
+  labels: LabelType[],
+  notes: NoteType<any>[],
   search: string
-};
+|};
 
 export function Notes(props: Notes$Props) {
   return (

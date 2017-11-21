@@ -8,7 +8,7 @@ import {readFile} from 'fs';
 import {Meteor} from 'meteor/meteor';
 import {WebAppInternals} from 'meteor/webapp';
 
-import {cache} from './cache';
+import {cache} from '../../imports/lib';
 
 const bundledCSSFile = Object.keys(WebAppInternals.staticFiles)
   .map(file => WebAppInternals.staticFiles[file])

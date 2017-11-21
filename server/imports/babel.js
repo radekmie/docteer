@@ -6,9 +6,15 @@ module.exports = function transform() {
       // Transforms:
       //   import {a} from 'x';
       //   import {b} from 'x';
+      //   import type {c} from 'x';
       // To:
       //   import {a, b} from 'x';
       ImportDeclaration(path) {
+        if (path.node.importKind === 'type') {
+          path.remove();
+          return;
+        }
+
         const file = path.node.source.value;
 
         if (seen.has(file)) {

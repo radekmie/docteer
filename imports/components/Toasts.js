@@ -3,22 +3,17 @@
 
 import {h} from 'preact';
 
+import type {ToastType} from '../types.flow';
+
 const COLOR = {
   error: 'red',
   info: 'blue',
   success: 'green'
 };
 
-type TToast = {
-  _id: number,
-  dead: boolean,
-  type: 'info' | 'error' | 'success',
-  text: string
-};
-
-type Toasts$Props = {
-  toasts: TToast[]
-};
+type Toasts$Props = {|
+  toasts: ToastType[]
+|};
 
 export function Toasts(props: Toasts$Props) {
   return (
