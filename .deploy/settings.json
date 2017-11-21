@@ -5,12 +5,5 @@
     "options": {
       "endpoint": "https://engine.kadira.docteer.com/"
     }
-  },
-  "public": {},
-  "universe:e2e": {
-    "mocha": {
-      "bail": true,
-      "timeout": 5000
-    }
   }
 }
