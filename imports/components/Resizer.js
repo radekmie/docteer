@@ -73,7 +73,5 @@ if (Meteor.isClient) {
 }
 
 export const Resizer = () => (
-  <div class="b--dark-gray bl br bw1 resizer" ref={onMoved}>
-    <div />
-  </div>
+  <div class="b--dark-gray bl br bw1 resizer" ref={onMoved} />
 );

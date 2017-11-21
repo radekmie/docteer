@@ -16,6 +16,8 @@ type Toasts$Props = {|
 |};
 
 export function Toasts(props: Toasts$Props) {
+  if (props.toasts.length === 0) return null;
+
   return (
     <div
       class="bottom-1 center-h fixed w5"

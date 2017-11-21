@@ -44,7 +44,7 @@ export class Account extends Component<Account$Props> {
   // $FlowFixMe
   render({register}: Account$Props) {
     return (
-      <form class="w5" onSubmit={this.onSubmit}>
+      <form action="#" class="w5" onSubmit={this.onSubmit}>
         <label class="flex h2 mb1" for="email" title="Email">
           {iconUser}
           <input
@@ -78,6 +78,7 @@ export class Account extends Component<Account$Props> {
           class="h2 w-100"
           data-test-user={register ? 'signin' : 'login'}
           title={`${register ? 'Sign' : 'Log'} in`}
+          type="submit"
         >
           {`${register ? 'Sign' : 'Log'} in`}
         </Button>

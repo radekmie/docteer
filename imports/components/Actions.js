@@ -27,6 +27,8 @@ type Actions$Props = {|
 |};
 
 export function Actions(props: Actions$Props) {
+  if (props.view !== 'd' && props.view !== 's') return null;
+
   return (
     <div class="bottom-1 fixed right-1 w2">
       {props.view === 'd' && (

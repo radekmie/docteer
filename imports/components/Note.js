@@ -58,9 +58,7 @@ export class Note extends Component<Note$Props> {
 
   // $FlowFixMe
   render(props: Note$Props) {
-    if (props.note === null || props.note === undefined) {
-      return <dl class="flex-1 h-100 ma0 overflow-auto pa3 w-100" />;
-    }
+    if (!props.note) return null;
 
     return (
       <dl class="h-100 ma0 overflow-auto pa3 pr w-100">

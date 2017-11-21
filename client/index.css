@@ -382,12 +382,12 @@ select:not([disabled]) {
   position: relative;
 }
 
-.resizer * {
+.resizer::after {
   bottom: 0;
+  content: '';
   position: absolute;
   top: 0;
   width: 1rem;
-  z-index: 2;
 }
 
 @media (pointer: coarse) {

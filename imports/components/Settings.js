@@ -62,7 +62,7 @@ class Credentials extends Component<Credentials$Props> {
       <details class="pointer">
         <summary>Change password</summary>
 
-        <form onSubmit={this.onChangePassword}>
+        <form action="#" onSubmit={this.onChangePassword}>
           <label class="flex flex-column mt1" for="email" title="Email">
             <b>Email</b>
             <input
@@ -122,7 +122,7 @@ class Credentials extends Component<Credentials$Props> {
             />
           </label>
 
-          <Button class="mt1 w-100" title="Change password">
+          <Button class="mt1 w-100" title="Change password" type="submit">
             Change password
           </Button>
         </form>
