@@ -35,9 +35,8 @@ export class Account extends Component<Account$Props> {
     event.preventDefault();
 
     if (this.email && this.password) {
-      if (this.props.register)
-        onRegister(this.email.value, this.password.value).catch(() => {});
-      else onLogin(this.email.value, this.password.value).catch(() => {});
+      const action = this.props.register ? onRegister : onLogin;
+      action(this.email.value, this.password.value).catch(() => {});
     }
   };
 
