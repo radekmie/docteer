@@ -10,7 +10,6 @@ export function load(path: string) {
     const url = Meteor.absoluteUrl(path.slice(1));
 
     await page.goto(url);
-    await page.waitForSelector('main:not(.loading)');
-    await page.waitFor(25);
+    await page.waitForSelector('main:not(.hidden)');
   });
 }
