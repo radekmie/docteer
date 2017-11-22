@@ -5,8 +5,12 @@ import {Accounts} from 'meteor/accounts-base';
 import {Meteor} from 'meteor/meteor';
 import {check} from 'meteor/check';
 
-Meteor.methods({
-  'users.password'(old, new1, new2) {
+import {endpoint} from '../../lib';
+
+import type {SchemaType} from '../../../types.flow';
+
+endpoint('POST /users/password', {
+  handle({new1, new2, old}: {|new1: string, new2: string, old: string|}) {
     try {
       check(this.userId, String);
       check(old, String);
@@ -32,7 +36,16 @@ Meteor.methods({
     Accounts.setPassword(this.userId, new1, {logout: false});
   },
 
-  'users.register'(email, password) {
+  schema: {
+    old: String,
+    new1: String,
+    new2: String
+  }
+});
+
+endpoint('POST /users/register', {
+  authorize: false,
+  handle({email, password}: {|email: string, password: string|}) {
     try {
       check(this.userId, null);
       check(email, String);
@@ -65,7 +78,14 @@ Meteor.methods({
     }
   },
 
-  'users.settings'(settings) {
+  schema: {
+    email: String,
+    password: String
+  }
+});
+
+endpoint('POST /users/settings', {
+  handle({settings}: {|settings: {|schemas: SchemaType<>[]|}|}) {
     try {
       check(this.userId, String);
       check(settings, {schemas: [Object]});
@@ -102,5 +122,9 @@ Meteor.methods({
     });
 
     Meteor.users.update({_id: this.userId}, {$set: settings});
+  },
+
+  schema: {
+    settings: String
   }
 });

@@ -1,32 +1,17 @@
 // @flow
 
-import SimpleSchema from 'simpl-schema';
-
-import {Meteor} from 'meteor/meteor';
 import {MongoInternals} from 'meteor/mongo';
 
 import {NotesArchive} from '.';
 import {Notes} from '.';
+import {endpoint} from '../../lib';
+
+import type {PatchType} from '../../../types.flow';
 
 const ObjectId = MongoInternals.NpmModules.mongodb.module.ObjectId;
 
-const endpoint = (name, {handle, schema: definition}) => {
-  const schema = new SimpleSchema(definition);
-
-  Meteor.methods({
-    [name](data) {
-      if (!this.userId) throw new Meteor.Error('not-authorized');
-
-      schema.clean(data, {mutate: true});
-      schema.validate(data);
-
-      return handle.call(this, data);
-    }
-  });
-};
-
 endpoint('GET /notes', {
-  handle({refresh}) {
+  handle({refresh}: {|refresh: number|}): PatchType<> {
     return notesByUser(this.userId, refresh);
   },
 
@@ -40,7 +25,13 @@ endpoint('GET /notes', {
 });
 
 endpoint('POST /notes', {
-  handle({patch, refresh}) {
+  handle({
+    patch,
+    refresh
+  }: {|
+    patch: PatchType<>,
+    refresh: number
+  |}): PatchType<> {
     notesPatch(patch, this.userId);
 
     const notes = notesByUser(this.userId, refresh);
@@ -106,7 +97,7 @@ function notesArchive() {
     .await();
 }
 
-function notesByUser(userId, after) {
+function notesByUser(userId: string, after: number): PatchType<> {
   const refresh = new Date(after || 0);
   const fields = {
     _id: 0,
@@ -115,10 +106,10 @@ function notesByUser(userId, after) {
     _version: 0
   };
 
-  const diff = {created: [], removed: [], updated: []};
+  const diff: PatchType<> = {created: [], removed: [], updated: []};
 
   Notes.find(
-    {_id_user: userId, ...(after && {_updated: {$gt: refresh}})},
+    {_id_user: userId, ...(after ? {_updated: {$gt: refresh}} : {})},
     {fields}
   ).forEach(note => {
     note._id = note._id_slug;
@@ -138,7 +129,7 @@ function notesByUser(userId, after) {
   return diff;
 }
 
-function notesPatch(patch, userId) {
+function notesPatch(patch: PatchType<>, userId: string) {
   if (!patch.created.length && !patch.removed.length && !patch.updated.length)
     return;
 

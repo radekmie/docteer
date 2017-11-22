@@ -9,6 +9,7 @@ import {tree} from './state';
 
 import type {EventType} from './types.flow';
 import type {InputEventType} from './types.flow';
+import type {PatchType} from './types.flow';
 import type {SchemaType} from './types.flow';
 
 export function onAdd() {
@@ -35,16 +36,12 @@ export function onChangePassword(
 ): Promise<void> {
   toast('info', 'Changing password...');
 
-  return new Promise((resolve, reject) => {
-    Meteor.call('users.password', old, new1, new2, error => {
-      toast(error ? 'error' : 'success', error || 'Changed password.');
-      if (error) reject(error);
-      else resolve();
-    });
+  return call('POST /users/password', {new1, new2, old}).then(() => {
+    toast('success', 'Changed password.');
   });
 }
 
-export function onChangeSchema(_id: string, schema: SchemaType<any>) {
+export function onChangeSchema(_id: string, schema: SchemaType<>) {
   const doc = tree.get(['notes', {_id}]);
 
   if (doc) {
@@ -215,23 +212,20 @@ export function onRefresh(firstRun: ?boolean): Promise<void> {
   const last = new Date();
 
   return call('GET /notes', {
-    refresh: tree.get(['last']).valueOf()
-  }).then(response => {
+    refresh: +tree.get(['last'])
+  }).then((patch: PatchType<>) => {
     tree.set(['last'], last);
     toast('success', firstRun === true ? 'Loaded.' : 'Refreshed.');
-    merge(response);
+    merge(patch);
   });
 }
 
 export function onRegister(email: string, password: string): Promise<void> {
   toast('info', 'Signing in...');
 
-  return new Promise((resolve, reject) => {
-    Meteor.call('users.register', email, password, error => {
-      toast(error ? 'error' : 'success', error || 'Signed in.');
-      if (error) reject(error);
-      else onLogin(email, password);
-    });
+  return call('POST /users/register', {email, password}).then(() => {
+    toast('success', 'Signed in.');
+    onLogin(email, password);
   });
 }
 
@@ -280,11 +274,11 @@ export function onSave(): Promise<void> {
 
   return call('POST /notes', {
     patch,
-    refresh: tree.get(['last']).valueOf()
-  }).then(response => {
+    refresh: +tree.get(['last'])
+  }).then((patch: PatchType<>) => {
     tree.set(['last'], last);
     toast('success', 'Saved.');
-    merge(response);
+    merge(patch);
     onReset();
   });
 }
@@ -390,10 +384,9 @@ export function onSettingsSave() {
   if (tree.get(['userDiff'])) {
     toast('info', 'Saving...');
 
-    Meteor.call('users.settings', tree.get(['userDiff']), error => {
-      toast(error ? 'error' : 'success', error || 'Saved.');
-
-      if (!error) onSettingsReset();
+    call('POST /users/settings', tree.get(['userDiff'])).then(() => {
+      toast('success', 'Saved.');
+      onSettingsReset();
     });
   }
 }

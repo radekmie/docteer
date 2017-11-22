@@ -18,7 +18,7 @@ import type {UserType} from '../types.flow';
 
 type Note$Props = {|
   edit: boolean,
-  note: NoteType<any>,
+  note: NoteType<>,
   user: UserType
 |};
 

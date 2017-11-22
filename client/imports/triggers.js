@@ -15,7 +15,7 @@ const history = createHistory();
 let firstRun = true;
 
 // Collections
-Meteor.subscribe('users.self', {
+Meteor.subscribe('LIVE /users/self', {
   onReady() {
     if (!Meteor.userId()) update();
   },

@@ -19,12 +19,26 @@ export type LabelType = {|
   total: number
 |};
 
-export type NoteType<T = *> = {|
-  _href: string,
+export type NotePatchType<T = *> = {|
   _id: string,
   _outline: SchemaOutlineType<T>,
   _outname: string,
   ...T
+|};
+
+export type NoteType<T = *> = {|
+  _href: string,
+  ...NotePatchType<T>
+|};
+
+export type PatchType<
+  Created: string = *,
+  Removed: string = *,
+  Updated: string = *
+> = {|
+  created: Created[],
+  removed: Removed[],
+  updated: ({_id: Created | Removed | Updated} & NotePatchType<any>)[]
 |};
 
 export type SchemaOutlineFieldType = 'div' | 'ol' | 'ul';
