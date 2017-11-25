@@ -43,14 +43,14 @@ export type PatchType<
 
 export type SchemaOutlineFieldType = 'div' | 'ol' | 'ul';
 
-export type SchemaOutlineType<T = *> = {
+export type SchemaOutlineType<T = *> = {|
   [$Keys<T>]: SchemaOutlineFieldType
-};
+|};
 
-export type SchemaType<T = *> = {
+export type SchemaType<T = *> = {|
   fields: SchemaOutlineType<T>,
   name: string
-};
+|};
 
 export type ToastType = {|
   _id: number,
