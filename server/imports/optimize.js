@@ -1,5 +1,7 @@
 // @flow
 
+import {Transform} from 'stream';
+
 import {Boilerplate} from 'meteor/boilerplate-generator';
 
 import {optimize as optimizeCSS} from './optimizeCSS';
@@ -13,5 +15,11 @@ if (process.env.NODE_ENV === 'production') optimizeStatics();
 
 const rawToHTML = Boilerplate.prototype.toHTML;
 Boilerplate.prototype.toHTML = function toHTML() {
-  return optimizeHTML(rawToHTML.apply(this, arguments));
+  return rawToHTML.apply(this, arguments).pipe(
+    new Transform({
+      async transform(chunk, encoding, callback) {
+        callback(null, optimizeHTML(chunk));
+      }
+    })
+  );
 };

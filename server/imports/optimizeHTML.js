@@ -7,8 +7,10 @@ import {optimize as minifyCSS} from './optimizeCSS';
 import {optimize as minifyJS} from './optimizeJS';
 
 export const optimizeOptions = {collapseWhitespace: true, minifyCSS, minifyJS};
-export const optimize = cache((html: string) =>
-  minify(html, optimizeOptions)
-    .replace('?meteor_js_resource=true', '')
-    .replace(/<link .*?>/, '')
+export const optimize = cache((html: Buffer) =>
+  Buffer.from(
+    minify(html.toString(), optimizeOptions)
+      .replace('?meteor_js_resource=true', '')
+      .replace(/<link .*?>/, '')
+  )
 );

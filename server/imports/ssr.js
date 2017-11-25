@@ -1,6 +1,7 @@
 // @flow
 // @jsx h
 
+import etag from 'etag';
 import {h} from 'preact';
 import {render} from 'preact-render-to-string';
 
@@ -12,23 +13,45 @@ import {Logo} from '../../imports/components/Logo';
 import {cache} from '../../imports/lib';
 import {titleForView} from '../../imports/lib';
 
-const ssr = cache(view => ({
-  dynamicBody: render(
+const ssr = cache(view => {
+  const dynamicBody = render(
     <body>
       <Application view={view} />
       <Logo class="center dark-gray fixed" />
     </body>
-  ).slice(6, -7),
+  ).slice(6, -7);
 
-  dynamicHead: `<title>${titleForView(
-    view
-  )} | DocTeer</title><style>/* _ */</style>`
-}));
+  const dynamicHead = [
+    `<title>${titleForView(view)} | DocTeer</title>`,
+    '<style>/* _ */</style>'
+  ].join('');
+
+  return {
+    dynamicBody,
+    dynamicHead,
+    headers: {
+      etag: etag(dynamicBody),
+      'x-ua-compatible': 'IE=edge,chrome=1'
+    }
+  };
+});
 
 WebApp.addHtmlAttributeHook(() => ({lang: 'en'}));
-WebAppInternals.registerBoilerplateDataCallback('SSR', (request, data) => {
-  let view = request.url.pathname.slice(1, 2);
+WebApp.rawConnectHandlers.stack.unshift({
+  route: '',
+  handle(req, res, next) {
+    res.setHeader('x-content-type-options', 'nosniff');
+    next();
+  }
+});
+
+WebAppInternals.registerBoilerplateDataCallback('SSR', (req, data) => {
+  let view = req.url.pathname.slice(1, 2);
   if (!['l', 'r'].includes(view)) view = '';
 
   Object.assign(data, ssr(view));
+
+  if (data.headers.etag === req.headers['if-none-match']) {
+    data.statusCode = 304;
+  }
 });
