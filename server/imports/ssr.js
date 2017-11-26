@@ -30,8 +30,12 @@ const ssr = cache(view => {
     dynamicBody,
     dynamicHead,
     headers: {
-      etag: etag(`${Date.now()}${dynamicBody}`),
-      'x-ua-compatible': 'IE=edge,chrome=1'
+      'content-security-policy': "script-src 'self'",
+      'referrer-policy': 'no-referrer',
+      'x-frame-options': 'sameorigin',
+      'x-ua-compatible': 'IE=edge,chrome=1',
+      'x-xss-protection': '1; mode=block',
+      etag: etag(`${Date.now()}${dynamicBody}`)
     }
   };
 });
