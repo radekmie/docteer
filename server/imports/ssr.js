@@ -30,10 +30,16 @@ const ssr = cache(view => {
     dynamicBody,
     dynamicHead,
     headers: {
-      'content-security-policy': "script-src 'self'",
+      'content-security-policy': [
+        "default-src 'none'; ",
+        'connect-src *; ',
+        'img-src *; ',
+        "script-src 'self' 'unsafe-inline'; ",
+        "style-src 'self' 'unsafe-inline';"
+      ].join(''),
       'referrer-policy': 'no-referrer',
       'x-frame-options': 'sameorigin',
-      'x-ua-compatible': 'IE=edge,chrome=1',
+      'x-ua-compatible': 'IE=edge',
       'x-xss-protection': '1; mode=block',
       etag: etag(`${Date.now()}${dynamicBody}`)
     }
