@@ -30,7 +30,7 @@ const ssr = cache(view => {
     dynamicBody,
     dynamicHead,
     headers: {
-      etag: etag(dynamicBody),
+      etag: etag(`${Date.now()}${dynamicBody}`),
       'x-ua-compatible': 'IE=edge,chrome=1'
     }
   };
