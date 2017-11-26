@@ -2,6 +2,7 @@
 // @jsx h
 
 import etag from 'etag';
+import shrinkRay from 'shrink-ray-current';
 import {h} from 'preact';
 import {render} from 'preact-render-to-string';
 
@@ -47,6 +48,9 @@ const ssr = cache(view => {
 });
 
 WebApp.addHtmlAttributeHook(() => ({lang: 'en'}));
+
+WebApp.connectApp.stack.splice(1, 1, {route: '', handle: shrinkRay()});
+
 WebApp.rawConnectHandlers.stack.unshift({
   route: '',
   handle(req, res, next) {
