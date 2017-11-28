@@ -23,7 +23,7 @@ export const Navigation = (props: Navigation$Props) => (
     <a
       class="flex flex-0 flex-center mb1 mt1 near-white"
       data-test-navigation="logo"
-      href="/"
+      href={props.user ? '/notes' : '/'}
       title="DocTeer"
     >
       <Logo class={`${props.pend ? '' : 'freeze '}h3 w3`} />

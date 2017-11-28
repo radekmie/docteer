@@ -174,7 +174,7 @@ function syncHistory(location) {
       user && 'settings'
     ].includes(state.view)
   )
-    state.view = '';
+    state.view = user ? 'notes' : '';
 
   document.title = `${titleForView(state.view)} | DocTeer`;
 

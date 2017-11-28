@@ -13,7 +13,6 @@ import {Notes} from './Notes';
 import {Note} from './Note';
 import {Resizer} from './Resizer';
 import {Settings} from './Settings';
-import {Splashscreen} from './Splashscreen';
 import {Toasts} from './Toasts';
 import {tree} from '../state';
 
@@ -92,7 +91,7 @@ export class Application extends Component<
 
         {view === '' && (
           <div class="flex flex-center w-100">
-            {state.user ? <Splashscreen /> : <Landing />}
+            <Landing />
           </div>
         )}
 
