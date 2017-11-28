@@ -67,6 +67,10 @@ input {
   width: 100%;
 }
 
+input[disabled] {
+  cursor: default;
+}
+
 path {
   fill: currentcolor;
 }
