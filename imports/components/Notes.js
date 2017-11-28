@@ -36,12 +36,17 @@ function Note({note}: Note$Props) {
 type Notes$Props = {|
   labels: LabelType[],
   notes: NoteType<>[],
-  search: string
+  search: string,
+  standalone?: boolean
 |};
 
 export function Notes(props: Notes$Props) {
   return (
-    <div class="column flex flex-column">
+    <div
+      class={`${props.standalone ? 'ba bw1 ' : ''}column flex flex-column${
+        props.standalone ? ' w-100' : ''
+      }`}
+    >
       <div class="b--dark-gray bb bg-near-white bw1">
         <label class="flex flex-center" for="search" title="Search">
           <span class="flex flex-center input-icon pa2">{iconSearch}</span>

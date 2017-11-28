@@ -132,6 +132,11 @@ select:not([disabled]) {
   background-color: var(--white);
 }
 
+.big {
+  font-size: 1.8rem;
+  line-height: 1.5;
+}
+
 .bl {
   border-left-style: solid;
   border-left-width: 1px;
@@ -353,6 +358,10 @@ select:not([disabled]) {
   padding-left: 0.25rem;
 }
 
+.pl4 {
+  padding-left: 5rem;
+}
+
 .popup {
   border-radius: var(--popup-roundness);
   box-shadow: 0px 4px 8px 2px rgba(0, 0, 0, 0.5);
@@ -371,10 +380,6 @@ select:not([disabled]) {
 
 .pr {
   position: relative;
-}
-
-.pt3 {
-  padding-top: 1rem;
 }
 
 .red {

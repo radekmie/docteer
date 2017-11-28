@@ -3,16 +3,15 @@
 
 import {h} from 'preact';
 
-type Button$Props = {|
+type Button$Props = {
   as: string,
-  class?: string,
-  tabIndex?: any
-|};
+  class?: string
+};
 
 export function Button({as, ...props}: Button$Props) {
   return h(
     as,
-    Object.assign(props, {
+    Object.assign({}, props, {
       class: [
         `b--dark-gray ba bg-${
           props.disabled ? 'near-' : ''

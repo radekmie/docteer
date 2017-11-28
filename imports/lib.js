@@ -29,10 +29,10 @@ export function schemaKey(name: string) {
 }
 
 const TITLES = {
-  d: 'Notes',
-  l: 'Log in',
-  r: 'Sign in',
-  s: 'Settings'
+  notes: 'Notes',
+  login: 'Log in',
+  signup: 'Sign in',
+  settings: 'Settings'
 };
 
 export function titleForView(view: string) {

@@ -8,10 +8,10 @@ import {Button} from './Button';
 import {iconLock} from './Icon';
 import {iconUser} from './Icon';
 import {onLogin} from '../actions';
-import {onRegister} from '../actions';
+import {onSignup} from '../actions';
 
 type Account$Props = {|
-  register: boolean
+  signup?: boolean
 |};
 
 export class Account extends Component<Account$Props> {
@@ -35,15 +35,13 @@ export class Account extends Component<Account$Props> {
     event.preventDefault();
 
     if (this.email && this.password) {
-      const action = this.props.register ? onRegister : onLogin;
+      const action = this.props.signup ? onSignup : onLogin;
       action(this.email.value, this.password.value).catch(() => {});
     }
   };
 
   // $FlowFixMe
-  render({register}: Account$Props) {
-    const action = register ? 'Sign Up' : 'Log In';
-
+  render({signup}: Account$Props) {
     return (
       <form action="#" class="w5" onSubmit={this.onSubmit}>
         <label class="flex h2 mb1" for="email" title="Email">
@@ -63,7 +61,7 @@ export class Account extends Component<Account$Props> {
         <label class="flex h2 mb1" for="password" title="Password">
           {iconLock}
           <input
-            autocomplete={`${register ? 'new' : 'current'}-password`}
+            autocomplete={`${signup ? 'new' : 'current'}-password`}
             class="ba bg-near-white br-0 bw1 flex-1 ml1 ph1"
             id="password"
             minlength={4}
@@ -77,17 +75,19 @@ export class Account extends Component<Account$Props> {
 
         <Button
           class="h2 w-100"
-          data-test-user={register ? 'signup' : 'login'}
-          title={action}
+          data-test-user={signup ? 'signup' : 'login'}
+          title={signup ? 'Sign up' : 'Log in'}
           type="submit"
         >
-          {action}
+          {signup ? 'Sign up' : 'Log in'}
         </Button>
 
-        <span class="db mt1 tc">
-          {`${register ? 'Already a' : 'New'} member?`}
-          <a class="ml1" href={`/${register ? 'l' : 'r'}`}>
-            {action}
+        <hr class="ba mt3" />
+
+        <span class="db tc">
+          {`${signup ? 'Already a' : 'New'} member?`}
+          <a class="ml1" href={`/${signup ? 'login' : 'signup'}`}>
+            {signup ? 'Log in' : 'Sign up'}
           </a>
           .
         </span>

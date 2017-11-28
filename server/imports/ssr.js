@@ -60,8 +60,8 @@ WebApp.rawConnectHandlers.stack.unshift({
 });
 
 WebAppInternals.registerBoilerplateDataCallback('SSR', (req, data) => {
-  let view = req.url.pathname.slice(1, 2);
-  if (view !== 'l' && view !== 'r') view = '';
+  let view = req.url.pathname.split('/', 3)[1];
+  if (view !== 'login' && view !== 'signup') view = '';
 
   Object.assign(data, ssr(view));
 

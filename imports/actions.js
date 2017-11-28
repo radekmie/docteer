@@ -168,7 +168,7 @@ export function onImport() {
         tree.merge(['notesUpdated'], updated);
         tree.merge(['notesCreated'], created);
         tree.set(['edit'], true);
-        tree.set(['view'], 'd');
+        tree.set(['view'], 'notes');
 
         toast('success', 'Imported.');
       } catch (error) {
@@ -217,15 +217,6 @@ export function onRefresh(firstRun: ?boolean): Promise<void> {
     tree.set(['last'], last);
     toast('success', firstRun === true ? 'Loaded.' : 'Refreshed.');
     merge(patch);
-  });
-}
-
-export function onRegister(email: string, password: string): Promise<void> {
-  toast('info', 'Signing up...');
-
-  return call('POST /users/register', {email, password}).then(() => {
-    toast('success', 'Signed in.');
-    onLogin(email, password);
   });
 }
 
@@ -391,6 +382,15 @@ export function onSettingsSave() {
   }
 }
 
+export function onSignup(email: string, password: string): Promise<void> {
+  toast('info', 'Signing up...');
+
+  return call('POST /users/register', {email, password}).then(() => {
+    toast('success', 'Signed in.');
+    onLogin(email, password);
+  });
+}
+
 export function onTypeAhead(event: InputEventType) {
   if (event.target.__skip) return;
 
@@ -464,7 +464,7 @@ function call(path, options) {
   });
 }
 
-const TOAST_TIME_MODIFIER = process.env.NODE_ENV === 'production' ? 1 : 0.05;
+const TOAST_TIME_MODIFIER = Meteor.isE2E ? 0.05 : 1;
 
 function toast(type, message) {
   const _id = Math.random().toString(36);

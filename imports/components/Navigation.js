@@ -33,7 +33,7 @@ export const Navigation = (props: Navigation$Props) => (
       <a
         class="hover-bg-shade br-100 flex flex-0 flex-center mb1 mt1 square tc"
         data-test-navigation="notes"
-        href="/d"
+        href="/notes"
         title="Notes"
       >
         <div class="h2 pa1 w2">{iconNote}</div>
@@ -44,7 +44,7 @@ export const Navigation = (props: Navigation$Props) => (
       <a
         class="hover-bg-shade br-100 flex flex-0 flex-center mb1 mt1 square tc"
         data-test-navigation="settings"
-        href="/s"
+        href="/settings"
         title="Settings"
       >
         <div class="h2 pa1 w2">{iconCog}</div>
@@ -56,7 +56,7 @@ export const Navigation = (props: Navigation$Props) => (
     <a
       class="hover-bg-shade br-100 flex flex-0 flex-center mb1 mt1 square tc"
       data-test-navigation={props.user ? 'logout' : 'login'}
-      href="/l"
+      href="/login"
       onClick={props.user && onLogout}
       title={`Log ${props.user ? 'Out' : 'In'}`}
     >

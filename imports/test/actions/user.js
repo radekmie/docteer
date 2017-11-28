@@ -62,7 +62,7 @@ export function userSignUp(user: {email: string, password: string}) {
   navigate('login');
 
   it(`should sign in as ${user.email}:${user.password}`, async () => {
-    const selector = '[href="/r"]';
+    const selector = '[href="/signup"]';
     await page.waitForSelector(selector);
     await page.click(selector);
 

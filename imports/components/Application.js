@@ -96,7 +96,7 @@ export class Application extends Component<
           </div>
         )}
 
-        {view === 'd' && (
+        {view === 'notes' && (
           <Notes
             labels={state.labels}
             notes={state.notes}
@@ -104,9 +104,9 @@ export class Application extends Component<
           />
         )}
 
-        {view === 'd' && <Resizer />}
+        {view === 'notes' && <Resizer />}
 
-        {view === 'd' && (
+        {view === 'notes' && (
           <Note
             labels={state.labels}
             note={state.note}
@@ -115,13 +115,13 @@ export class Application extends Component<
           />
         )}
 
-        {(view === 'l' || view === 'r') && (
+        {(view === 'login' || view === 'signup') && (
           <div class="flex flex-center w-100">
-            <Account register={view === 'r'} />
+            <Account signup={view === 'signup'} />
           </div>
         )}
 
-        {view === 's' && (
+        {view === 'settings' && (
           <div class="h-100 overflow-auto pa3 w-100">
             <Settings user={state.user} />
           </div>

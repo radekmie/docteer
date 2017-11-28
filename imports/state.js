@@ -83,7 +83,7 @@ export const tree = new Baobab(
             {
               _active: note._id === noteId,
               _href: stateToHref(
-                'd',
+                'notes',
                 note._id !== noteId && note._id,
                 filter,
                 search
@@ -125,7 +125,7 @@ export const tree = new Baobab(
             return {
               active,
               name,
-              href: stateToHref('d', noteId, toggle, search),
+              href: stateToHref('notes', noteId, toggle, search),
               count: notesVisible.reduce(
                 (count, note) => count + note.labels.includes(name),
                 0

@@ -27,11 +27,11 @@ type Actions$Props = {|
 |};
 
 export function Actions(props: Actions$Props) {
-  if (props.view !== 'd' && props.view !== 's') return null;
+  if (props.view !== 'notes' && props.view !== 'settings') return null;
 
   return (
     <div class="bottom-1 fixed right-1 w2">
-      {props.view === 'd' && (
+      {props.view === 'notes' && (
         <div
           class={button('dark-pink')}
           data-test-notes-action="create"
@@ -44,7 +44,7 @@ export function Actions(props: Actions$Props) {
         </div>
       )}
 
-      {props.view === 'd' &&
+      {props.view === 'notes' &&
         props.edit &&
         props.note && (
           <div
@@ -59,7 +59,7 @@ export function Actions(props: Actions$Props) {
           </div>
         )}
 
-      {props.view === 'd' &&
+      {props.view === 'notes' &&
         props.edit && (
           <div
             class={button('green')}
@@ -73,7 +73,7 @@ export function Actions(props: Actions$Props) {
           </div>
         )}
 
-      {props.view === 'd' &&
+      {props.view === 'notes' &&
         !props.edit && (
           <div
             class={button('dark-blue')}
@@ -87,7 +87,7 @@ export function Actions(props: Actions$Props) {
           </div>
         )}
 
-      {props.view === 'd' &&
+      {props.view === 'notes' &&
         props.edit && (
           <div
             class={button('blue')}
@@ -101,7 +101,7 @@ export function Actions(props: Actions$Props) {
           </div>
         )}
 
-      {props.view === 'd' && (
+      {props.view === 'notes' && (
         <div
           class={button('orange')}
           data-test-notes-action="refresh"
@@ -114,7 +114,7 @@ export function Actions(props: Actions$Props) {
         </div>
       )}
 
-      {props.view === 's' &&
+      {props.view === 'settings' &&
         props.user && (
           <div
             class={button('green', !props.user._changed)}
@@ -128,7 +128,7 @@ export function Actions(props: Actions$Props) {
           </div>
         )}
 
-      {props.view === 's' &&
+      {props.view === 'settings' &&
         props.user && (
           <div
             class={button('red', !props.user._changed)}

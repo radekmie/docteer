@@ -32,7 +32,7 @@ Tracker.autorun(() => {
     tree.set(['userDiff'], {schemas: user.schemas});
     tree.set(['last'], new Date(0));
 
-    if (history.location.pathname === '/') tree.set(['view'], 'd');
+    if (history.location.pathname === '/') tree.set(['view'], 'notes');
   }
 });
 
@@ -141,7 +141,7 @@ tree.select(['userData']).on('update', event => {
 });
 
 // Helpers
-const pattern = /^\/(\w)?(?:\/(\w+))?.*?(?:[&?]filter=([^&?]+))?(?:[&?]search=([^&?]+))?.*$/;
+const pattern = /^\/(\w+)?(?:\/(\w+))?.*?(?:[&?]filter=([^&?]+))?(?:[&?]search=([^&?]+))?.*$/;
 
 function syncHistory(location) {
   if (firstRun) return;
@@ -150,7 +150,7 @@ function syncHistory(location) {
 
   const match = pattern.exec(history.createHref(location)) || [];
   const state = {
-    noteId: (match[1] === 'd' && match[2]) || undefined,
+    noteId: (match[1] === 'notes' && match[2]) || undefined,
     filter: match[3]
       ? decodeURIComponent(match[3])
           .split(',')
@@ -167,9 +167,12 @@ function syncHistory(location) {
   }
 
   if (
-    !['', user && 'd', !user && 'l', !user && 'r', user && 's'].includes(
-      state.view
-    )
+    ![
+      !user && 'login',
+      !user && 'signup',
+      user && 'notes',
+      user && 'settings'
+    ].includes(state.view)
   )
     state.view = '';
 
