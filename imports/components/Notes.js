@@ -68,7 +68,7 @@ export function Notes(props: Notes$Props) {
             </div>
           )}
 
-          {props.notes.map(note => <Note note={note} key={note._id} />)}
+          {props.notes.map(note => <Note key={note._id} note={note} />)}
         </div>
       </div>
     </div>
