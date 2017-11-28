@@ -61,7 +61,7 @@ WebApp.rawConnectHandlers.stack.unshift({
 
 WebAppInternals.registerBoilerplateDataCallback('SSR', (req, data) => {
   let view = req.url.pathname.slice(1, 2);
-  if (!['l', 'r'].includes(view)) view = '';
+  if (view !== 'l' && view !== 'r') view = '';
 
   Object.assign(data, ssr(view));
 

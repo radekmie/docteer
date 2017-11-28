@@ -42,6 +42,8 @@ export class Account extends Component<Account$Props> {
 
   // $FlowFixMe
   render({register}: Account$Props) {
+    const action = register ? 'Sign Up' : 'Log In';
+
     return (
       <form action="#" class="w5" onSubmit={this.onSubmit}>
         <label class="flex h2 mb1" for="email" title="Email">
@@ -75,17 +77,17 @@ export class Account extends Component<Account$Props> {
 
         <Button
           class="h2 w-100"
-          data-test-user={register ? 'signin' : 'login'}
-          title={`${register ? 'Sign' : 'Log'} in`}
+          data-test-user={register ? 'signup' : 'login'}
+          title={action}
           type="submit"
         >
-          {`${register ? 'Sign' : 'Log'} in`}
+          {action}
         </Button>
 
         <span class="db mt1 tc">
           {`${register ? 'Already a' : 'New'} member?`}
           <a class="ml1" href={`/${register ? 'l' : 'r'}`}>
-            {`${register ? 'Log' : 'Sign'} in`}
+            {action}
           </a>
           .
         </span>

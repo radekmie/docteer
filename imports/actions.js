@@ -221,7 +221,7 @@ export function onRefresh(firstRun: ?boolean): Promise<void> {
 }
 
 export function onRegister(email: string, password: string): Promise<void> {
-  toast('info', 'Signing in...');
+  toast('info', 'Signing up...');
 
   return call('POST /users/register', {email, password}).then(() => {
     toast('success', 'Signed in.');

@@ -58,7 +58,7 @@ export function userLogOut() {
   });
 }
 
-export function userSignIn(user: {email: string, password: string}) {
+export function userSignUp(user: {email: string, password: string}) {
   navigate('login');
 
   it(`should sign in as ${user.email}:${user.password}`, async () => {
@@ -69,6 +69,6 @@ export function userSignIn(user: {email: string, password: string}) {
     await type('#email', user.email);
     await type('#password', user.password);
 
-    await page.click('[data-test-user="signin"]');
+    await page.click('[data-test-user="signup"]');
   });
 }

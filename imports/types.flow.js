@@ -44,6 +44,8 @@ export type PatchType<
 export type SchemaOutlineFieldType = 'div' | 'ol' | 'ul';
 
 export type SchemaOutlineType<T = *> = {|
+  labels: 'ul',
+  name: 'div',
   [$Keys<T>]: SchemaOutlineFieldType
 |};
 

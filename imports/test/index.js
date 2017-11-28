@@ -18,7 +18,7 @@ import {userAddSchema} from './actions';
 import {userChangePassword} from './actions';
 import {userLogIn} from './actions';
 import {userLogOut} from './actions';
-import {userSignIn} from './actions';
+import {userSignUp} from './actions';
 
 import {DAG} from './helpers';
 
@@ -45,8 +45,8 @@ base
   .save('Log in fail');
 
 const user = base
-  .next(userSignIn, context => [context.user])
-  .next(toastCheck, ['Signing in...'])
+  .next(userSignUp, context => [context.user])
+  .next(toastCheck, ['Signing up...'])
   .next(toastCheck, ['Signed in.'])
   .next(toastCheck, ['Logging in...'])
   .next(toastCheck, ['Logged in.'])
@@ -59,8 +59,8 @@ const user = base
 user.save('Log in success');
 
 user
-  .last(userSignIn, context => [context.user])
-  .last(toastCheck, ['Signing in...'])
+  .last(userSignUp, context => [context.user])
+  .last(toastCheck, ['Signing up...'])
   .last(toastCheck, ['User already exists.'])
   .save('Sign in fail');
 

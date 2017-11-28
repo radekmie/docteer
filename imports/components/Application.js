@@ -7,6 +7,7 @@ import {h} from 'preact';
 import {Account} from './Account';
 import {Actions} from './Actions';
 import {Help} from './Help';
+import {Landing} from './Landing';
 import {Navigation} from './Navigation';
 import {Notes} from './Notes';
 import {Note} from './Note';
@@ -91,7 +92,7 @@ export class Application extends Component<
 
         {view === '' && (
           <div class="flex flex-center w-100">
-            <Splashscreen />
+            {state.user ? <Splashscreen /> : <Landing />}
           </div>
         )}
 
