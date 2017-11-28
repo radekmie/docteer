@@ -7,7 +7,26 @@ import {check} from 'meteor/check';
 
 import {endpoint} from '../../lib';
 
+import type {PatchType} from '../../../types.flow';
 import type {SchemaType} from '../../../types.flow';
+
+const defaultPatch: PatchType<> = {
+  created: ['introduction'],
+  removed: [],
+  updated: [
+    {
+      _id: 'introduction',
+      _outline: {name: 'div', labels: 'ul'},
+      _outname: 'Example',
+      name: 'Introduction',
+      labels: []
+    }
+  ]
+};
+
+const defaultSchemas: SchemaType<>[] = [
+  {name: 'Default', fields: {name: 'div', labels: 'ul', text: 'div'}}
+];
 
 endpoint('POST /users/password', {
   handle({new1, new2, old}: {|new1: string, new2: string, old: string|}) {
@@ -54,28 +73,19 @@ endpoint('POST /users/register', {
       throw new Meteor.Error('validation-error', 'Validation error.');
     }
 
+    let _id;
     try {
-      const _id = Accounts.createUser({email, password});
-
-      Meteor.users.update(_id, {
-        $set: {
-          schemas: [
-            {
-              name: 'Default',
-              fields: {
-                name: 'div',
-                labels: 'ul',
-                text: 'div'
-              }
-            }
-          ]
-        }
-      });
+      _id = Accounts.createUser({email, password});
     } catch (error) {
       if (error.error === 403)
         throw new Meteor.Error('user-exists', 'User already exists.');
       throw error;
     }
+
+    this.setUserId(_id);
+
+    Meteor.users.update({_id}, {$set: {schemas: defaultSchemas}});
+    Meteor.call('POST /notes', {patch: defaultPatch, refresh: Infinity});
   },
 
   schema: {

@@ -12,7 +12,7 @@ export function Landing() {
         With <b>DocTeer</b> your data are easier to use.
         <br />
         <br />
-        <a href="/signup">Try it.</a>
+        <a href="/signup">Sign up</a>.
       </p>
     </div>
   );
