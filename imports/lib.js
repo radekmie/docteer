@@ -9,7 +9,7 @@ export function cache<A, B>(fn: A => B): A => B {
   return (x: A): B => cached[x] || (cached[x] = fn(x));
 }
 
-export function schemaEmpty({fields, name}: SchemaType<>) {
+export function schemaEmpty({fields, name}: SchemaType<*>) {
   return Object.keys(fields).reduce(
     (empty, key) =>
       Object.assign(empty, {[key]: schemaIsArray(fields[key]) ? [] : ''}),

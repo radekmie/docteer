@@ -11,7 +11,7 @@ import type {LabelType} from '../types.flow';
 import type {NoteType} from '../types.flow';
 
 type Note$Props = {|
-  note: NoteType<>
+  note: NoteType<*>
 |};
 
 function Note({note}: Note$Props) {
@@ -35,7 +35,7 @@ function Note({note}: Note$Props) {
 
 type Notes$Props = {|
   labels: LabelType[],
-  notes: NoteType<>[],
+  notes: NoteType<*>[],
   search: string,
   standalone?: boolean
 |};

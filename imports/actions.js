@@ -41,7 +41,7 @@ export function onChangePassword(
   });
 }
 
-export function onChangeSchema(_id: string, schema: SchemaType<>) {
+export function onChangeSchema(_id: string, schema: SchemaType<*>) {
   const doc = tree.get(['notes', {_id}]);
 
   if (doc) {
@@ -213,7 +213,7 @@ export function onRefresh(firstRun: ?boolean): Promise<void> {
 
   return call('GET /notes', {
     refresh: +tree.get(['last'])
-  }).then((patch: PatchType<>) => {
+  }).then((patch: PatchType<*, *, *>) => {
     tree.set(['last'], last);
     toast('success', firstRun === true ? 'Loaded.' : 'Refreshed.');
     merge(patch);
@@ -266,7 +266,7 @@ export function onSave(): Promise<void> {
   return call('POST /notes', {
     patch,
     refresh: +tree.get(['last'])
-  }).then((patch: PatchType<>) => {
+  }).then((patch: PatchType<*, *, *>) => {
     tree.set(['last'], last);
     toast('success', 'Saved.');
     merge(patch);

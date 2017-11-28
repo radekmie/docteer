@@ -19,35 +19,29 @@ export type LabelType = {|
   total: number
 |};
 
-export type NotePatchType<T = *> = {|
+export type NotePatchType<T> = {|
   _id: string,
   _outline: SchemaOutlineType<T>,
   _outname: string,
   ...T
 |};
 
-export type NoteType<T = *> = {|
+export type NoteType<T> = {|
   _href: string,
   ...NotePatchType<T>
 |};
 
-export type PatchType<
-  Created: string = *,
-  Removed: string = *,
-  Updated: string = *
-> = {|
+export type PatchType<Created: string, Removed: string, Updated: string> = {|
   created: Created[],
   removed: Removed[],
-  updated: ({_id: Created | Removed | Updated} & NotePatchType<any>)[]
+  updated: {|_id: Created | Removed | Updated, ...NotePatchType<*>|}[]
 |};
 
 export type SchemaOutlineFieldType = 'div' | 'ol' | 'ul';
 
-export type SchemaOutlineType<T = *> = {|
-  [$Keys<T>]: SchemaOutlineFieldType
-|};
+export type SchemaOutlineType<T> = $ObjMap<T, () => SchemaOutlineFieldType>;
 
-export type SchemaType<T = *> = {|
+export type SchemaType<T> = {|
   fields: SchemaOutlineType<T>,
   name: string
 |};
@@ -62,5 +56,5 @@ export type ToastType = {|
 export type UserType = {|
   _changed: boolean,
   emails: {address: string, verified: boolean}[],
-  schemas: SchemaType<any>[]
+  schemas: SchemaType<*>[]
 |};

@@ -11,7 +11,7 @@ import type {PatchType} from '../../../types.flow';
 const ObjectId = MongoInternals.NpmModules.mongodb.module.ObjectId;
 
 endpoint('GET /notes', {
-  handle({refresh}: {|refresh: number|}): PatchType<> {
+  handle({refresh}: {|refresh: number|}): PatchType<*, *, *> {
     return notesByUser(this.userId, refresh);
   },
 
@@ -29,9 +29,9 @@ endpoint('POST /notes', {
     patch,
     refresh
   }: {|
-    patch: PatchType<>,
+    patch: PatchType<*, *, *>,
     refresh: number
-  |}): PatchType<> {
+  |}): PatchType<*, *, *> {
     notesPatch(patch, this.userId);
 
     const notes = notesByUser(this.userId, refresh);
@@ -97,7 +97,7 @@ function notesArchive() {
     .await();
 }
 
-function notesByUser(userId: string, after: number): PatchType<> {
+function notesByUser(userId: string, after: number): PatchType<*, *, *> {
   const refresh = new Date(after || 0);
   const fields = {
     _id: 0,
@@ -106,7 +106,7 @@ function notesByUser(userId: string, after: number): PatchType<> {
     _version: 0
   };
 
-  const diff: PatchType<> = {created: [], removed: [], updated: []};
+  const diff: PatchType<*, *, *> = {created: [], removed: [], updated: []};
 
   Notes.find(
     {_id_user: userId, ...(after ? {_updated: {$gt: refresh}} : {})},
@@ -129,7 +129,7 @@ function notesByUser(userId: string, after: number): PatchType<> {
   return diff;
 }
 
-function notesPatch(patch: PatchType<>, userId: string) {
+function notesPatch(patch: PatchType<*, *, *>, userId: string) {
   if (!patch.created.length && !patch.removed.length && !patch.updated.length)
     return;
 

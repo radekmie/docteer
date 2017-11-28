@@ -10,7 +10,7 @@ import {endpoint} from '../../lib';
 import type {PatchType} from '../../../types.flow';
 import type {SchemaType} from '../../../types.flow';
 
-const defaultPatch: PatchType<> = {
+const defaultPatch: PatchType<*, *, *> = {
   created: ['introduction'],
   removed: [],
   updated: [
@@ -24,7 +24,7 @@ const defaultPatch: PatchType<> = {
   ]
 };
 
-const defaultSchemas: SchemaType<>[] = [
+const defaultSchemas: SchemaType<*>[] = [
   {name: 'Default', fields: {name: 'div', labels: 'ul', text: 'div'}}
 ];
 
@@ -95,7 +95,7 @@ endpoint('POST /users/register', {
 });
 
 endpoint('POST /users/settings', {
-  handle({settings}: {|settings: {|schemas: SchemaType<>[]|}|}) {
+  handle({settings}: {|settings: {|schemas: SchemaType<*>[]|}|}) {
     try {
       check(this.userId, String);
       check(settings, {schemas: [Object]});
