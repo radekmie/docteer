@@ -42,6 +42,7 @@
     "eslint-plugin-vazco": "1.0.0",
     "faker": "4.1.0",
     "flow-bin": "0.60.1",
+    "flow-typed": "2.2.3",
     "husky": "0.14.3",
     "mocha": "4.0.1",
     "prettier": "1.8.2",
