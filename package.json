@@ -8,7 +8,7 @@
     "flow": "flow",
     "lint": "eslint .",
     "precommit": "npm run test",
-    "start": "meteor run",
+    "start": "meteor run --settings .deploy/settings-dev.json",
     "test": "npm run lint && npm run flow && CI=1 npm run e2e -- --once"
   },
   "dependencies": {
