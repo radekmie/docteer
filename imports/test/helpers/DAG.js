@@ -2,16 +2,19 @@
 
 import {describe} from 'meteor/universe:e2e';
 
-type DAGStep<Context, Args = any> = {
+type DAGStep<Context, Args: Array<*>> = {
   args: (Context => Args) | Args,
   fn: (...Args) => ?Context
 };
 
 export class DAG<Context> {
-  _last: DAGStep<Context>[];
-  _next: DAGStep<Context>[];
+  _last: DAGStep<Context, *>[];
+  _next: DAGStep<Context, *>[];
 
-  constructor(next: DAGStep<Context>[] = [], last: DAGStep<Context>[] = []) {
+  constructor(
+    next: DAGStep<Context, *>[] = [],
+    last: DAGStep<Context, *>[] = []
+  ) {
     this._last = last;
     this._next = next;
   }
@@ -29,19 +32,17 @@ export class DAG<Context> {
     };
   }
 
-  last<Args>(
+  last<Args: Array<*>>(
     fn: (...Args) => ?Context,
     args: (Context => Args) | Args
   ): DAG<Context> {
-    // $FlowFixMe
     return new DAG(this._next, this._last.concat({args, fn}));
   }
 
-  next<Args>(
+  next<Args: Array<*>>(
     fn: (...Args) => ?Context,
     args: (Context => Args) | Args
   ): DAG<Context> {
-    // $FlowFixMe
     return new DAG(this._next.concat({args, fn}), this._last);
   }
 
@@ -54,15 +55,15 @@ export class DAG<Context> {
   }
 
   with<ContextNext>(map: Context => ContextNext): DAG<Context & ContextNext> {
-    // $FlowFixMe
-    const id = ($: DAGStep<Context>[]) => ($: DAGStep<Context & ContextNext>[]);
-
     return new DAG(
-      id(this._next).concat({
+      // $FlowFixMe
+      (this._next: DAGStep<Context & ContextNext>[]).concat({
         args: context => [context],
-        fn: context => Object.assign({}, context, map(context))
+        fn: context =>
+          Object.assign(({}: $Shape<Context>), context, map(context))
       }),
-      id(this._last)
+      // $FlowFixMe
+      (this._last: DAGStep<Context & ContextNext>[])
     );
   }
 }

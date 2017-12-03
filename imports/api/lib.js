@@ -4,7 +4,7 @@ import SimpleSchema from 'simpl-schema';
 
 import {Meteor} from 'meteor/meteor';
 
-export function endpoint<Schema>(
+export function endpoint<Schema: {}>(
   name: string,
   {
     authorize = true,
@@ -12,8 +12,8 @@ export function endpoint<Schema>(
     schema
   }: {|
     authorize?: boolean,
-    handle: ({|[$Keys<Schema>]: any|}) => any,
-    schema: Schema
+    handle: Schema => *,
+    schema: $ObjMap<Schema, () => mixed>
   |}
 ) {
   const validator = new SimpleSchema(schema);
