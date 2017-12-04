@@ -1,7 +1,6 @@
 [ignore]
-.*/.meteor/local/plugin-cache/.*
-.*/.meteor/packages/meteor-tool/.*
-.*/.meteor/packages/npm-bcrypt/.*
+.*/.meteor/.*\.json
+.*/.npm/.*\.json
 
 [lints]
 unclear-type=error
