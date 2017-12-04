@@ -15,13 +15,17 @@ export function resize(width: number, height: number) {
       'Target.getTargets'
     );
 
-    const {windowId} = await page._client.send('Browser.getWindowForTarget', {
-      targetId
-    });
+    try {
+      const {windowId} = await page._client.send('Browser.getWindowForTarget', {
+        targetId
+      });
 
-    await page._client.send('Browser.setWindowBounds', {
-      bounds: {height, width},
-      windowId
-    });
+      await page._client.send('Browser.setWindowBounds', {
+        bounds: {height, width},
+        windowId
+      });
+    } catch (error) {
+      // Nothing.
+    }
   });
 }
