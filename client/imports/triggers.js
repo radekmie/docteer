@@ -29,6 +29,7 @@ Tracker.autorun(() => {
   const user = Meteor.user();
 
   if (tree.set(['userData'], user && user.schemas ? user : undefined)) {
+    // $FlowFixMe: tree.set is actually a %checks function.
     tree.set(['userDiff'], {schemas: user.schemas});
     tree.set(['last'], new Date(0));
 
