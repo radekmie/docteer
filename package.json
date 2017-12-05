@@ -12,7 +12,7 @@
     "test": "npm run lint && npm run flow && CI=1 npm run e2e -- --once"
   },
   "dependencies": {
-    "babel-runtime": "6.26.0",
+    "@babel/runtime": "7.0.0-beta.34",
     "baobab": "2.5.0",
     "bcrypt": "1.0.3",
     "cssnano": "4.0.0-rc.2",
@@ -26,7 +26,7 @@
     "postcss-cssnext": "3.0.2",
     "preact": "8.2.6",
     "preact-render-to-string": "3.7.0",
-    "prepack": "0.2.13",
+    "prepack": "0.2.14",
     "shrink-ray-current": "2.0.0",
     "simpl-schema": "1.2.0"
   },
@@ -45,7 +45,7 @@
     "flow-typed": "2.2.3",
     "husky": "0.14.3",
     "mocha": "4.0.1",
-    "prettier": "1.8.2",
+    "prettier": "1.9.0",
     "puppeteer": "0.13.0"
   }
 }
