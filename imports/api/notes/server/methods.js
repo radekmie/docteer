@@ -25,18 +25,18 @@ endpoint('GET /notes', {
 });
 
 endpoint('POST /notes', {
-  handle({
+  async handle({
     patch,
     refresh
   }: {|
     patch: PatchType<*, *, *>,
     refresh: number
-  |}): PatchType<*, *, *> {
-    notesPatch(patch, this.userId);
+  |}): Promise<PatchType<*, *, *>> {
+    await notesPatch(patch, this.userId);
 
     const notes = notesByUser(this.userId, refresh);
 
-    if (patch.removed.length) notesArchive();
+    if (patch.removed.length) await notesArchive();
 
     return notes;
   },
@@ -80,7 +80,7 @@ endpoint('POST /notes', {
   }
 });
 
-function notesArchive() {
+async function notesArchive() {
   const archive = Notes.find({_removed: {$ne: null}}).map(note =>
     Object.assign(note, {_id: new ObjectId(note._id._str)})
   );
@@ -89,12 +89,10 @@ function notesArchive() {
 
   const $in = archive.map(note => note._id);
 
-  NotesArchive.rawCollection()
-    .insertMany(archive)
-    .await();
-  Notes.rawCollection()
-    .deleteMany({_id: {$in}})
-    .await();
+  await Promise.all([
+    Notes.rawCollection().deleteMany({_id: {$in}}),
+    NotesArchive.rawCollection().insertMany(archive)
+  ]);
 }
 
 function notesByUser(userId: string, after: number): PatchType<*, *, *> {
@@ -131,7 +129,7 @@ function notesByUser(userId: string, after: number): PatchType<*, *, *> {
 
 function notesPatch(patch: PatchType<*, *, *>, userId: string) {
   if (!patch.created.length && !patch.removed.length && !patch.updated.length)
-    return;
+    return Promise.resolve();
 
   const now = new Date();
   const bulk = [];
@@ -208,7 +206,5 @@ function notesPatch(patch: PatchType<*, *, *>, userId: string) {
     }
   });
 
-  Notes.rawCollection()
-    .bulkWrite(bulk)
-    .await();
+  return Notes.rawCollection().bulkWrite(bulk);
 }
