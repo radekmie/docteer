@@ -7,6 +7,7 @@
     "flowtype"
   ],
   "rules": {
+    "flowtype/space-after-type-colon": "off",
     "prettier/prettier": [
       "error",
       {
