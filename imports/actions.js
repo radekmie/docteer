@@ -387,7 +387,10 @@ export function onSignup(email: string, password: string): Promise<void> {
 
   return call('POST /users/register', {email, password}).then(() => {
     toast('success', 'Signed in.');
-    onLogin(email, password);
+    onLogin(email, password).then(() => {
+      tree.set(['view'], 'notes');
+      tree.set(['noteId'], 'introduction');
+    });
   });
 }
 
