@@ -1,6 +1,4 @@
 module.exports = function transform() {
-  const seen = new Map();
-
   return {
     visitor: {
       // Transforms:
@@ -9,22 +7,22 @@ module.exports = function transform() {
       //   import type {c} from 'x';
       // To:
       //   import {a, b} from 'x';
-      ImportDeclaration(path) {
+      ImportDeclaration(path, {file}) {
         if (path.node.importKind === 'type') {
           path.remove();
           return;
         }
 
-        const file = path.node.source.value;
+        const source = path.node.source.value;
 
-        if (seen.has(file)) {
-          const prev = seen.get(file);
+        if (file.importsReducer.has(source)) {
+          const prev = file.importsReducer.get(source);
 
-          path.node.specifiers.push(...prev.node.specifiers);
-          prev.remove();
+          prev.node.specifiers.push(...path.node.specifiers);
+          path.remove();
+        } else {
+          file.importsReducer.set(source, path);
         }
-
-        seen.set(file, path);
       },
 
       // Transforms:
@@ -40,8 +38,8 @@ module.exports = function transform() {
       },
 
       // Reset before each file.
-      Program() {
-        seen.clear();
+      Program(path, {file}) {
+        file.importsReducer = new Map();
       }
     }
   };
