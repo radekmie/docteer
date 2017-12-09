@@ -73,7 +73,7 @@ export class Application extends Component<
   }
 
   componentWillUnmount() {
-    watcher.off('update', this._sync);
+    watcher.release();
   }
 
   // $FlowFixMe
