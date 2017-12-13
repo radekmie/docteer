@@ -16,10 +16,38 @@ const defaultPatch: PatchType<*, *, *> = {
   updated: [
     {
       _id: 'introduction',
-      _outline: {name: 'div', labels: 'ul'},
-      _outname: 'Example',
-      name: 'Introduction',
-      labels: []
+      _outname: 'Introduction',
+      _outline: {
+        name: 'div',
+        labels: 'ul',
+        text: 'div',
+        points: 'ul',
+        list: 'ol',
+        snippet: 'div',
+        what: 'div',
+        why: 'div'
+      },
+      name: 'Introduction to DocTeer',
+      labels: [],
+      text: 'DocTeer is a multi-purpose data container.',
+      points: [
+        'Whatever has a form of a text,',
+        'a list,',
+        'a numbered list,',
+        'or a snippet...'
+      ],
+      list: [
+        '...can be easily stored into it,',
+        'and then searched for,',
+        'dynamically aggregated,',
+        'with light-fast fuzzy search functionality and labelling/filtering mechanism.'
+      ],
+      snippet:
+        '<div class="flex flex-center w-100" style="width: 680px; background: aliceblue;"><div class="flex-1"><p class="big pl4"><br class="Apple-interchange-newline">A simple way to store everything.<br>With<span class="Apple-converted-space">&nbsp;</span><b>DocTeer</b><span class="Apple-converted-space">&nbsp;</span>your data are easier to use.<br><br><a href="https://docteer.com/signup">Sign up</a>.</p></div></div><div class="bg-dark-gray center fixed hidden near-white pa3 w5" style="left: 720px; top: 368.5px;"><div class="flex flex-between flex-end"><b>Keyboard Shortcuts</b><small>ESC to close</small></div><hr><div class="flex flex-between"><b><code>?</code></b><i>Show help</i></div><div class="flex flex-between"><b><code>↑</code></b><i>Previous note</i></div><div class="flex flex-between"><b><code>↓</code></b><i>Next note</i></div><div class="flex flex-between"><b><code>←</code></b><i>Previous filter</i></div><div class="flex flex-between"><b><code>→</code></b><i>Next filter</i></div><div class="flex flex-between"><b><code>Enter</code></b><i>Toggle note/filter</i></div></div>',
+      what:
+        "You start with an almost empty data collection, with just a 'read me' doc to scan through. To ginger up your party, you need to define some templates (settings icon on the left) and then create your own documents. Remember to save them when finished (accept icon). Play around for yourself!",
+      why:
+        'To introduce order into your catalogues and notes by getting a grab of whatever can be conceived as a text through functionalities built-in into DocTeer: filtering, labelling, fuzzy search, import/export...'
     }
   ]
 };
