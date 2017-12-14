@@ -187,7 +187,7 @@ export function onLogin(email: string, password: string): Promise<void> {
     Meteor.loginWithPassword(email, password, error => {
       toast(error ? 'error' : 'success', error || 'Logged in.');
       if (error) reject(error);
-      else resolve();
+      else resolve(onRefresh(true));
     });
   });
 }
@@ -200,6 +200,12 @@ export function onLogout() {
   });
 }
 
+let refreshing: null | Promise<void> = null;
+
+function refreshed() {
+  refreshing = null;
+}
+
 export function onRefresh(firstRun: ?boolean): Promise<void> {
   if (tree.get(['user']) === undefined) {
     tree.set(['notesOrigins'], []);
@@ -207,17 +213,20 @@ export function onRefresh(firstRun: ?boolean): Promise<void> {
     return Promise.resolve();
   }
 
+  if (refreshing) return refreshing;
+
   toast('info', firstRun === true ? 'Loading...' : 'Refreshing...');
 
   const last = new Date();
+  refreshing = call('GET /notes', {refresh: +tree.get(['last'])})
+    .then((patch: PatchType<*, *, *>) => {
+      tree.set(['last'], last);
+      toast('success', firstRun === true ? 'Loaded.' : 'Refreshed.');
+      merge(patch);
+    })
+    .then(refreshed, refreshed);
 
-  return call('GET /notes', {
-    refresh: +tree.get(['last'])
-  }).then((patch: PatchType<*, *, *>) => {
-    tree.set(['last'], last);
-    toast('success', firstRun === true ? 'Loaded.' : 'Refreshed.');
-    merge(patch);
-  });
+  return refreshing;
 }
 
 export function onRemove() {
