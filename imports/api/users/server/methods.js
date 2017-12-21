@@ -1,12 +1,13 @@
 // @flow
 
+import SimpleSchema from 'simpl-schema';
+
 import {Accounts} from 'meteor/accounts-base';
-import {Match} from 'meteor/check';
 import {Meteor} from 'meteor/meteor';
-import {check} from 'meteor/check';
 
 import {endpoint} from '../../lib';
 
+import type {PassType} from '../../../types.flow';
 import type {PatchType} from '../../../types.flow';
 import type {SchemaType} from '../../../types.flow';
 
@@ -56,25 +57,42 @@ const defaultSchemas: SchemaType<*>[] = [
   {name: 'Default', fields: {name: 'div', labels: 'ul', text: 'div'}}
 ];
 
-endpoint('POST /users/password', {
-  handle({
-    new1,
-    new2,
-    old
-  }: {|
-    new1: {|algorithm: string, digest: string|},
-    new2: {|algorithm: string, digest: string|},
-    old: {|algorithm: string, digest: string|}
-  |}) {
-    try {
-      check(this.userId, String);
-      check(old, {algorithm: 'sha-256', digest: String});
-      check(new1, {algorithm: 'sha-256', digest: String});
-      check(new2, {algorithm: 'sha-256', digest: String});
-    } catch (error) {
-      throw new Meteor.Error('validation-error', 'Validation error.');
-    }
+const PassSchema = new SimpleSchema({
+  algorithm: {type: String, regEx: /^sha-256$/},
+  digest: String
+});
 
+const SettingsSchema = new SimpleSchema({
+  schemas: Array,
+  'schemas.$': Object,
+  'schemas.$.name': String,
+  'schemas.$.fields': {
+    type: Object,
+    blackbox: true,
+    custom() {
+      const entries = Object.entries(this.value);
+
+      const pattern = /^[^$][^.]*$/;
+      const invalid = entries.find(entry => pattern.test(entry[0]));
+      if (invalid) return 'regEx';
+
+      const allowed = ['div', 'ol', 'ul'];
+      const unknown = entries.find(entry => allowed.includes(entry[1]));
+      if (unknown) return 'notAllowed';
+
+      return undefined;
+    }
+  }
+});
+
+endpoint('POST /users/password', {
+  schema: {
+    new1: PassSchema,
+    new2: PassSchema,
+    old: PassSchema
+  },
+
+  handle({new1, new2, old}: {|new1: PassType, new2: PassType, old: PassType|}) {
     if (new1.digest !== new2.digest)
       throw new Meteor.Error('password-mismatch', 'Passwords mismatch.');
 
@@ -89,32 +107,18 @@ endpoint('POST /users/password', {
     if (user.emails[0].address === 'demo@docteer.com') return;
 
     Accounts.setPassword(this.userId, new1, {logout: false});
-  },
-
-  schema: {
-    old: {type: Object, blackbox: true},
-    new1: {type: Object, blackbox: true},
-    new2: {type: Object, blackbox: true}
   }
 });
 
 endpoint('POST /users/register', {
   authorize: false,
-  handle({
-    email,
-    password
-  }: {|
-    email: string,
-    password: {|algorithm: string, digest: string|}
-  |}) {
-    try {
-      check(this.userId, null);
-      check(email, String);
-      check(password, {algorithm: 'sha-256', digest: String});
-    } catch (error) {
-      throw new Meteor.Error('validation-error', 'Validation error.');
-    }
 
+  schema: {
+    email: String,
+    password: PassSchema
+  },
+
+  handle({email, password}: {|email: string, password: PassType|}) {
     let _id;
     try {
       _id = Accounts.createUser({email, password});
@@ -128,55 +132,15 @@ endpoint('POST /users/register', {
 
     Meteor.users.update({_id}, {$set: {schemas: defaultSchemas}});
     Meteor.call('POST /notes', {patch: defaultPatch, refresh: Infinity});
-  },
-
-  schema: {
-    email: String,
-    password: {type: Object, blackbox: true}
   }
 });
 
 endpoint('POST /users/settings', {
-  handle({settings}: {|settings: {|schemas: SchemaType<*>[]|}|}) {
-    try {
-      check(this.userId, String);
-      check(settings, {schemas: [Object]});
-      check(
-        settings.schemas,
-        Match.Where(schemas => {
-          schemas.forEach(schema => {
-            check(schema, {name: String, fields: Object});
-            Object.keys(schema.fields).forEach(key => {
-              check(schema.fields[key], Match.OneOf('div', 'ol', 'ul'));
-            });
-          });
-
-          return true;
-        })
-      );
-    } catch (error) {
-      throw new Meteor.Error('validation-error', 'Validation error.');
-    }
-
-    settings.schemas.forEach(schema => {
-      Object.keys(schema.fields).forEach(key => {
-        if (key[0] === '$')
-          throw new Meteor.Error(
-            'field-with-dollar',
-            'Field cannot start with a dollar sign.'
-          );
-        if (key.indexOf('.') !== -1)
-          throw new Meteor.Error(
-            'field-with-dot',
-            'Field cannot contain a dot.'
-          );
-      });
-    });
-
-    Meteor.users.update({_id: this.userId}, {$set: settings});
+  schema: {
+    settings: SettingsSchema
   },
 
-  schema: {
-    settings: String
+  handle({settings}: {|settings: {|schemas: SchemaType<*>[]|}|}) {
+    Meteor.users.update({_id: this.userId}, {$set: settings});
   }
 });

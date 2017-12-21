@@ -20,7 +20,10 @@ export function endpoint<Schema: {}>(
 
   Meteor.methods({
     [name](data) {
-      if (authorize && !this.userId) throw new Meteor.Error('not-authorized');
+      if (authorize && !this.userId)
+        throw new Meteor.Error('user-logged-in', 'You must be logged in.');
+      if (!authorize && this.userId)
+        throw new Meteor.Error('user-logged-out', 'You must be logged out.');
 
       validator.clean(data, {mutate: true});
       validator.validate(data);

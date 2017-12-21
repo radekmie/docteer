@@ -31,6 +31,11 @@ export type NoteType<T> = {|
   ...NotePatchType<T>
 |};
 
+export type PassType = {|
+  algorithm: string,
+  digest: string
+|};
+
 export type PatchType<Created: string, Removed: string, Updated: string> = {|
   created: Created[],
   removed: Removed[],
