@@ -2,6 +2,7 @@
 
 import fuzzysort from 'fuzzysort';
 
+import {Accounts} from 'meteor/accounts-base';
 import {Meteor} from 'meteor/meteor';
 
 import {schemaEmpty} from './lib';
@@ -36,7 +37,11 @@ export function onChangePassword(
 ): Promise<void> {
   toast('info', 'Changing password...');
 
-  return call('POST /users/password', {new1, new2, old}).then(() => {
+  return call('POST /users/password', {
+    new1: Accounts._hashPassword(new1),
+    new2: Accounts._hashPassword(new2),
+    old: Accounts._hashPassword(old)
+  }).then(() => {
     toast('success', 'Changed password.');
   });
 }
@@ -394,7 +399,10 @@ export function onSettingsSave() {
 export function onSignup(email: string, password: string): Promise<void> {
   toast('info', 'Signing up...');
 
-  return call('POST /users/register', {email, password}).then(() => {
+  return call('POST /users/register', {
+    email,
+    password: Accounts._hashPassword(password)
+  }).then(() => {
     toast('success', 'Signed in.');
     onLogin(email, password).then(() => {
       tree.set(['view'], 'notes');

@@ -1,7 +1,7 @@
 // @flow
 
-import {Match} from 'meteor/check';
 import {Accounts} from 'meteor/accounts-base';
+import {Match} from 'meteor/check';
 import {Meteor} from 'meteor/meteor';
 import {check} from 'meteor/check';
 
@@ -57,17 +57,25 @@ const defaultSchemas: SchemaType<*>[] = [
 ];
 
 endpoint('POST /users/password', {
-  handle({new1, new2, old}: {|new1: string, new2: string, old: string|}) {
+  handle({
+    new1,
+    new2,
+    old
+  }: {|
+    new1: {|algorithm: string, digest: string|},
+    new2: {|algorithm: string, digest: string|},
+    old: {|algorithm: string, digest: string|}
+  |}) {
     try {
       check(this.userId, String);
-      check(old, String);
-      check(new1, String);
-      check(new2, String);
+      check(old, {algorithm: 'sha-256', digest: String});
+      check(new1, {algorithm: 'sha-256', digest: String});
+      check(new2, {algorithm: 'sha-256', digest: String});
     } catch (error) {
       throw new Meteor.Error('validation-error', 'Validation error.');
     }
 
-    if (new1 !== new2)
+    if (new1.digest !== new2.digest)
       throw new Meteor.Error('password-mismatch', 'Passwords mismatch.');
 
     const user = Meteor.users.findOne({_id: this.userId});
@@ -84,19 +92,25 @@ endpoint('POST /users/password', {
   },
 
   schema: {
-    old: String,
-    new1: String,
-    new2: String
+    old: {type: Object, blackbox: true},
+    new1: {type: Object, blackbox: true},
+    new2: {type: Object, blackbox: true}
   }
 });
 
 endpoint('POST /users/register', {
   authorize: false,
-  handle({email, password}: {|email: string, password: string|}) {
+  handle({
+    email,
+    password
+  }: {|
+    email: string,
+    password: {|algorithm: string, digest: string|}
+  |}) {
     try {
       check(this.userId, null);
       check(email, String);
-      check(password, String);
+      check(password, {algorithm: 'sha-256', digest: String});
     } catch (error) {
       throw new Meteor.Error('validation-error', 'Validation error.');
     }
@@ -118,7 +132,7 @@ endpoint('POST /users/register', {
 
   schema: {
     email: String,
-    password: String
+    password: {type: Object, blackbox: true}
   }
 });
 
