@@ -4,7 +4,7 @@ import {WebApp} from 'meteor/webapp';
 
 WebApp.rawConnectHandlers.stack.unshift({
   route: '',
-  handle(req, res, next) {
+  handle(req, res, next: () => void) {
     const host = req.headers.host || '';
 
     if (host.startsWith('www.')) {
