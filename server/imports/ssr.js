@@ -33,8 +33,8 @@ const ssr = cache(view => {
     headers: {
       'content-security-policy': [
         "default-src 'none'; ",
-        'connect-src *; ',
-        'img-src *; ',
+        'connect-src ws:; ',
+        'img-src * data:; ',
         "script-src 'self' 'unsafe-inline'; ",
         "style-src 'self' 'unsafe-inline';"
       ].join(''),
