@@ -62,29 +62,6 @@ const PassSchema = new SimpleSchema({
   digest: String
 });
 
-const SettingsSchema = new SimpleSchema({
-  schemas: Array,
-  'schemas.$': Object,
-  'schemas.$.name': String,
-  'schemas.$.fields': {
-    type: Object,
-    blackbox: true,
-    custom() {
-      const entries = Object.entries(this.value);
-
-      const pattern = /^[^$][^.]*$/;
-      const invalid = entries.find(entry => pattern.test(entry[0]));
-      if (invalid) return 'regEx';
-
-      const allowed = ['div', 'ol', 'ul'];
-      const unknown = entries.find(entry => allowed.includes(entry[1]));
-      if (unknown) return 'notAllowed';
-
-      return undefined;
-    }
-  }
-});
-
 endpoint('POST /users/password', {
   schema: {
     new1: PassSchema,
@@ -137,10 +114,29 @@ endpoint('POST /users/register', {
 
 endpoint('POST /users/settings', {
   schema: {
-    settings: SettingsSchema
+    schemas: Array,
+    'schemas.$': Object,
+    'schemas.$.name': String,
+    'schemas.$.fields': {
+      type: Object,
+      blackbox: true,
+      custom() {
+        const entries = Object.entries(this.value);
+
+        const pattern = /^[^$][^.]*$/;
+        const invalid = entries.find(entry => !pattern.test(entry[0]));
+        if (invalid) return 'regEx';
+
+        const allowed = ['div', 'ol', 'ul', 'textarea'];
+        const unknown = entries.find(entry => !allowed.includes(entry[1]));
+        if (unknown) return 'notAllowed';
+
+        return undefined;
+      }
+    }
   },
 
-  handle({settings}: {|settings: {|schemas: SchemaType<*>[]|}|}) {
+  handle(settings: {|schemas: SchemaType<*>[]|}) {
     Meteor.users.update({_id: this.userId}, {$set: settings});
   }
 });
