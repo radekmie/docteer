@@ -20,9 +20,14 @@ export class Editable extends Component<Editable$Props> {
 
     if (!this.element) return;
 
-    if (this.element.innerHTML === this.props.html) return;
+    // $FlowFixMe: Hard to define this constraint.
+    const value = this.element[
+      this.props.tag === 'textarea' ? 'value' : 'innerHTML'
+    ];
 
-    this.props.onChange(this.element.innerHTML);
+    if (value === this.props.html) return;
+
+    this.props.onChange(value);
   };
 
   onElement = (element: ?HTMLElement) => {
@@ -54,18 +59,26 @@ export class Editable extends Component<Editable$Props> {
 
   // $FlowFixMe
   render({disabled, html, tag, ...props}: Editable$Props) {
+    const __html = content(disabled, html);
+
     return h(
       tag,
       Object.assign({}, props, {
-        class: ['ph1', props.class, disabled ? '' : 'bg-near-white']
+        class: [
+          'db bw0 ph1 w-100',
+          props.class,
+          disabled ? '' : 'bg-near-white'
+        ]
           .filter(Boolean)
           .join(' '),
         contentEditable: !disabled,
-        dangerouslySetInnerHTML: {__html: content(disabled, html)},
+        disabled,
+        dangerouslySetInnerHTML: {__html},
 
         onBlur: this.onChange,
         onChange: this.onChange,
-        ref: this.onElement
+        ref: this.onElement,
+        rows: tag === 'textarea' ? (__html.match(/\n/g) || []).length + 1 : null
       })
     );
   }

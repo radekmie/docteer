@@ -42,7 +42,7 @@ export type PatchType<Created: string, Removed: string, Updated: string> = {|
   updated: {|_id: Created | Removed | Updated, ...NotePatchType<*>|}[]
 |};
 
-export type SchemaOutlineFieldType = 'div' | 'ol' | 'ul';
+export type SchemaOutlineFieldType = 'div' | 'ol' | 'ul' | 'textarea';
 
 export type SchemaOutlineType<T> = $ObjMap<T, () => SchemaOutlineFieldType>;
 

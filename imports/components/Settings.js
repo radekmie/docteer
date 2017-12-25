@@ -220,7 +220,7 @@ export function Settings(props: Settings$Props) {
                       disabled ? 'near-' : ''
                     }white br-0 bw1${disabled ? '' : ' dim'} ml1${
                       disabled ? '' : ' pointer'
-                    } tc trans`}
+                    } trans`}
                     disabled={disabled}
                     onChange={onSchemaType}
                     title="Field type"
@@ -228,7 +228,8 @@ export function Settings(props: Settings$Props) {
                   >
                     <option value="ol">List</option>
                     <option value="ul">Tags</option>
-                    <option value="div">Text</option>
+                    <option value="textarea">Text</option>
+                    <option value="div">Snippet</option>
                   </select>
 
                   <Button

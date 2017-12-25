@@ -34,9 +34,10 @@ body,
 div,
 dl,
 form,
+html,
 input,
 label,
-html,
+textarea,
 ul {
   box-sizing: border-box;
 }
@@ -82,6 +83,14 @@ select {
 
 select:not([disabled]) {
   background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0Ljk1IDEwIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAwaDQuOTV2MTBIMHoiLz48cGF0aCBmaWxsPSIjNDQ0IiBkPSJNMS40MSA0LjY3bDEuMDctMS40OSAxLjA2IDEuNDlIMS40MXptMi4xMy42NkwyLjQ4IDYuODIgMS40MSA1LjMzaDIuMTN6Ii8+PC9zdmc+) no-repeat calc(100% - 0.25rem) 50%;
+}
+
+textarea {
+  background: inherit;
+  color: inherit;
+  font: inherit;
+  resize: vertical;
+  white-space: pre;
 }
 
 .app {
