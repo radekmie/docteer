@@ -37,6 +37,8 @@ module.exports = {
     }
   },
 
+  plugins: ['mup-disk'],
+
   proxy: {
     domains: 'docteer.com,www.docteer.com',
 
