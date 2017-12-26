@@ -31,13 +31,14 @@ const ssr = cache(view => {
     dynamicBody,
     dynamicHead,
     headers: {
-      'content-security-policy': [
-        "default-src 'none'; ",
-        'connect-src ws:; ',
-        'img-src * data:; ',
-        "script-src 'self' 'unsafe-inline'; ",
-        "style-src 'self' 'unsafe-inline';"
-      ].join(''),
+      // FIXME: Get all needed.
+      // 'content-security-policy': [
+      //   "default-src 'none'; ",
+      //   'connect-src ws:; ',
+      //   'img-src * data:; ',
+      //   "script-src 'self' 'unsafe-inline'; ",
+      //   "style-src 'self' 'unsafe-inline';"
+      // ].join(''),
       'referrer-policy': 'no-referrer',
       'x-frame-options': 'sameorigin',
       'x-ua-compatible': 'IE=edge',
