@@ -85,14 +85,14 @@ export function noteField(
       }
     }
 
+    await page.$eval(selector, input => input.blur());
+
     const unify = string => string.replace(/[\n\r]/g, '').replace(/\s/g, ' ');
 
     assert.equal(
       unify(value.join('')),
       unify(await page.$eval(selector, input => input.textContent))
     );
-
-    await page.$eval(selector, input => input.blur());
   });
 }
 

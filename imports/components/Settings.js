@@ -188,6 +188,7 @@ export function Settings(props: Settings$Props) {
                   <Button
                     class="ph1"
                     data-order="-1"
+                    data-test-schema-field-up
                     disabled={index === 0}
                     onClick={onSchemaOrder}
                     title="Move up"
@@ -198,6 +199,7 @@ export function Settings(props: Settings$Props) {
                   <Button
                     class="ml1 ph1"
                     data-order="+1"
+                    data-test-schema-field-down
                     disabled={index === array.length - 1}
                     onClick={onSchemaOrder}
                     title="Move down"
@@ -209,6 +211,7 @@ export function Settings(props: Settings$Props) {
                     class={`b--dark-gray ${
                       disabled ? 'bg-near-white ' : ''
                     }br-0 bw1 ml1 flex-1 ph1`}
+                    data-test-schema-field-name
                     disabled={disabled}
                     onChange={onSchemaKey}
                     title="Field name"
@@ -221,6 +224,7 @@ export function Settings(props: Settings$Props) {
                     }white br-0 bw1${disabled ? '' : ' dim'} ml1${
                       disabled ? '' : ' pointer'
                     } trans`}
+                    data-test-schema-field-type
                     disabled={disabled}
                     onChange={onSchemaType}
                     title="Field type"
@@ -234,6 +238,7 @@ export function Settings(props: Settings$Props) {
 
                   <Button
                     class="ml1 ph1"
+                    data-test-schema-field-remove
                     disabled={disabled}
                     onClick={onSchemaDelete}
                     title="Remove field"
@@ -245,7 +250,12 @@ export function Settings(props: Settings$Props) {
             })}
 
             <div class="flex mt1" data-name={schema.name}>
-              <Button class="flex-1" onClick={onSchemaField} title="Add field">
+              <Button
+                class="flex-1"
+                data-test-schema-field-add
+                onClick={onSchemaField}
+                title="Add field"
+              >
                 Add field
               </Button>
 

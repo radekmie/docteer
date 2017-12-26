@@ -142,12 +142,20 @@ const noteNew = user
 
 noteNew
   .with(() => ({
-    schema: (faker.lorem.word(): string)
+    schema: {
+      name: (faker.lorem.word(): string),
+      fields: {
+        textA: 'div',
+        textB: 'textarea'
+      }
+    }
   }))
   .next(userAddSchema, context => [context.schema])
   .next(navigate, ['notes'])
   .next(noteSelect, context => [context.note.title])
-  .next(noteSchema, context => [context.schema])
+  .next(noteSchema, context => [context.schema.name])
+  .next(noteField, context => [2, 'Text A', context.note.title])
+  .next(noteField, context => [3, 'Text B', context.note.title])
   .next(noteAction, ['save'])
   .next(toastCheck, ['Saving...'])
   .next(toastCheck, ['Saved.'])
