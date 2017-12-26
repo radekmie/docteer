@@ -4,7 +4,7 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "deploy": "cd .deploy && mup deploy && mup disk clean && mup disk show",
+    "deploy": "cd .deploy && mup deploy && echo y | mup disk clean && mup disk show",
     "e2e": "meteor test --full-app --driver-package universe:e2e --raw-logs --settings .deploy/settings-test.json",
     "flow": "flow",
     "lint": "eslint .",
