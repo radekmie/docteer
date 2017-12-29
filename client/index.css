@@ -93,6 +93,10 @@ textarea {
   white-space: pre;
 }
 
+[contenteditable] {
+  min-height: 1.75em;
+}
+
 .app {
   height: 100vh;
   width: 100vw;
