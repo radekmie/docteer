@@ -136,7 +136,8 @@ export function onImport() {
         JSON.parse(reader.result).forEach(row => {
           if (
             typeof row._id !== 'string' ||
-            row._id.length !== 6 ||
+            row._id.length === 0 ||
+            row._id.length > 100 ||
             (row._outname !== undefined && typeof row._outname !== 'string')
           )
             throw new Error();
