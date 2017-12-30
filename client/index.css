@@ -353,7 +353,8 @@ textarea {
   padding: 1rem;
 }
 
-.ph1 {
+.ph1,
+.ph1 > li {
   padding-left: 0.25rem;
   padding-right: 0.25rem;
 }

@@ -36,8 +36,16 @@ export class Note extends Component<Note$Props> {
     if (!schemaIsArray(this.props.note._outline[key])) return undefined;
 
     return () => {
-      if (!this.props.note[key].length)
+      if (!this.props.note[key].length) {
         onChange(this.props.note._id, key, ['']);
+
+        // FIXME: Firefox has problems with selection when DOM is changing.
+        setTimeout(() => {
+          const selection = window.getSelection();
+          if (selection.focusNode && selection.focusNode.firstChild)
+            selection.setPosition(selection.focusNode.firstChild);
+        });
+      }
     };
   });
 
@@ -132,7 +140,7 @@ function listToSteps(html) {
     ? html
         .split('<li>')
         .slice(1)
-        .map(element => element.slice(0, -5))
+        .map(element => element.slice(0, -5).replace(/(<br>)+$/, ''))
     : html ? [html] : [];
 }
 
