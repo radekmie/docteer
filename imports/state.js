@@ -5,6 +5,9 @@ import fuzzysort from 'fuzzysort';
 
 import {Minimongo} from 'meteor/minimongo';
 
+import {compare} from './lib';
+import {compareDocs} from './lib';
+
 export const tree = new Baobab(
   {
     // Data
@@ -28,9 +31,7 @@ export const tree = new Baobab(
               updated[x._id]
             )
           )
-          .sort(
-            (a, b) => a.name.localeCompare(b.name) || a._id.localeCompare(b._id)
-          )
+          .sort(compareDocs)
     ),
 
     notesVisible: Baobab.monkey(
@@ -54,7 +55,9 @@ export const tree = new Baobab(
 
             const matcher = new Minimongo.Matcher(selector, false);
 
-            notes = notes.filter(note => matcher.documentMatches(note).result);
+            notes = notes
+              .filter(note => matcher.documentMatches(note).result)
+              .sort(compareDocs);
           } catch (error) {
             notes = notes
               .reduce((notes, note) => {
@@ -66,8 +69,7 @@ export const tree = new Baobab(
               }, [])
               .sort(
                 (a, b) =>
-                  b.match.score - a.match.score ||
-                  a.note.name.localeCompare(b.note.name)
+                  b.match.score - a.match.score || compareDocs(a.note, b.note)
               )
               .slice(0, 50)
               .map(single =>
@@ -115,7 +117,7 @@ export const tree = new Baobab(
 
             return labels;
           }, [])
-          .sort()
+          .sort(compare)
           .map(name => {
             const active = filter.includes(name);
             const toggle = active
@@ -181,7 +183,7 @@ function stateToHref(view, noteId, filter, search) {
       filter.length &&
         `filter=${filter
           .slice()
-          .sort()
+          .sort(compare)
           .join(',')}`,
       search && `search=${search}`
     ]

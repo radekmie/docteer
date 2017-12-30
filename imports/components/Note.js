@@ -6,6 +6,7 @@ import {h} from 'preact';
 
 import {Editable} from './Editable';
 import {cache} from '../lib';
+import {compareDocs} from '../lib';
 import {onChangeSchema} from '../actions';
 import {onChange} from '../actions';
 import {onTypeAhead} from '../actions';
@@ -75,7 +76,7 @@ export class Note extends Component<Note$Props> {
           >
             {props.user.schemas
               .slice()
-              .sort((a, b) => a.name.localeCompare(b.name))
+              .sort(compareDocs)
               .map((schema, index) => (
                 <option key={index} value={schema.name}>
                   {schema.name}

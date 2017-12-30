@@ -6,6 +6,7 @@ import {createLocation} from 'history/LocationUtils';
 import {Meteor} from 'meteor/meteor';
 import {Tracker} from 'meteor/tracker';
 
+import {compare} from '../../imports/lib';
 import {onRefresh} from '../../imports/actions';
 import {titleForView} from '../../imports/lib';
 import {tree} from '../../imports/state';
@@ -155,7 +156,7 @@ function syncHistory(location) {
     filter: match[3]
       ? decodeURIComponent(match[3])
           .split(',')
-          .sort()
+          .sort(compare)
       : [],
     search: match[4] ? decodeURIComponent(match[4]) : '',
     view: match[1] || ''
