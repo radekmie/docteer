@@ -26,7 +26,7 @@ const processor = postcss([
 export const optimize = cache(
   (css: string) =>
     processor
-      .process(css + bundledCSS)
+      .process(css + bundledCSS, {from: undefined})
       .then()
       .await().css
 );
