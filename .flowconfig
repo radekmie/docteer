@@ -3,7 +3,8 @@
 .*/.npm/.*\.json
 
 [lints]
-unclear-type=error
+all=error
+sketchy-null=off
 
 [options]
 module.name_mapper='^\/\(.*\)$' -> '<PROJECT_ROOT>/\1'
