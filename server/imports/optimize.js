@@ -13,9 +13,9 @@ export {optimizeCSS, optimizeHTML, optimizeJS, optimizeStatics};
 
 if (process.env.NODE_ENV === 'production') optimizeStatics();
 
-const rawToHTML = Boilerplate.prototype.toHTML;
+const rawToHTML = Boilerplate.prototype.toHTMLStream;
 // $FlowFixMe: Weird error.
-Boilerplate.prototype.toHTML = function toHTML() {
+Boilerplate.prototype.toHTMLStream = function toHTMLStream() {
   return rawToHTML.apply(this, arguments).pipe(
     new Transform({
       async transform(chunk, encoding, callback) {
