@@ -5,5 +5,10 @@ import {render} from 'preact';
 
 import {Application} from '../../imports/components/Application';
 
-// $FlowFixMe
-render(h(Application), document.body, document.querySelector('.app'));
+render(
+  h(Application),
+  // $FlowFixMe
+  document.body,
+  // $FlowFixMe
+  document.querySelector('[data-application]')
+);

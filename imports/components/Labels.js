@@ -17,6 +17,7 @@ function Label({label}: Label$Props) {
       }dark-gray flex hover-bg-near-white link ph2${
         label.active ? ' pl1' : ''
       } pointer`}
+      data-item
       href={label.href}
     >
       <div class="flex-1 truncate">{label.name}</div>

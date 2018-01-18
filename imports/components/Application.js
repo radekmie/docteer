@@ -81,7 +81,10 @@ export class Application extends Component<
     const view = props.view || state.view;
 
     return (
-      <main class={`app dark-gray flex lh-copy${state.load ? ' hidden' : ''}`}>
+      <main
+        class={`app dark-gray flex lh-copy${state.load ? ' hidden' : ''}`}
+        data-application
+      >
         <Navigation
           full={state.full}
           pend={state.pend}

@@ -89,20 +89,22 @@ window.document.addEventListener('keydown', event => {
 
   if (keyBoth.includes(event.key)) {
     const list = window.document.querySelector(
-      `.app > :nth-child(2) > :nth-child(2) > :nth-child(${1 +
+      `[data-application] > :nth-child(2) > :nth-child(2) > :nth-child(${1 +
         keyNote.includes(event.key)}
       )`
     );
     const focus = window.document.activeElement;
     const active =
-      focus && focus.parentNode === list ? focus : list.querySelector('.bl');
+      focus && focus.parentNode === list
+        ? focus
+        : list.querySelector('[data-item]');
     const item =
       (active &&
         active[
           `${keyNext.includes(event.key) ? 'next' : 'previous'}Sibling`
         ]) ||
       (keyNext.includes(event.key) ? list.lastChild : list.children[0]);
-    if (item && item.pathname) {
+    if (item && item.pathname && item !== active) {
       item.focus();
       if (item.pathname !== '/d' && keyNote.includes(event.key)) item.click();
       event.preventDefault();

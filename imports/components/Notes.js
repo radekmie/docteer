@@ -28,6 +28,7 @@ function Note({note}: Note$Props) {
       }db ${color} hover-bg-near-white link ph2${
         note._active ? ' pl1' : ''
       } truncate`}
+      data-item
       data-test-note={note.name || '(untitled)'}
       dangerouslySetInnerHTML={{__html: note.name || '(untitled)'}}
       href={note._href}
