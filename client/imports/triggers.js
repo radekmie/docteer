@@ -93,6 +93,9 @@ window.document.addEventListener('keydown', event => {
         keyNote.includes(event.key)}
       )`
     );
+
+    if (!list) return;
+
     const focus = window.document.activeElement;
     const active =
       focus && focus.parentNode === list
