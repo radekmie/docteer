@@ -19,9 +19,9 @@ const defaultPatch: PatchType<*, *, *> = {
       _id: 'introduction',
       _outname: 'Introduction',
       _outline: {
-        name: 'div',
+        name: 'textarea',
         labels: 'ul',
-        text: 'div',
+        text: 'textarea',
         points: 'ul',
         list: 'ol',
         snippet: 'div',
@@ -54,7 +54,7 @@ const defaultPatch: PatchType<*, *, *> = {
 };
 
 const defaultSchemas: SchemaType<*>[] = [
-  {name: 'Default', fields: {name: 'div', labels: 'ul', text: 'div'}}
+  {name: 'Default', fields: {name: 'textarea', labels: 'ul', text: 'div'}}
 ];
 
 const PassSchema = new SimpleSchema({

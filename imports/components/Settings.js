@@ -225,13 +225,13 @@ export function Settings(props: Settings$Props) {
                       disabled ? '' : ' pointer'
                     } trans`}
                     data-test-schema-field-type
-                    disabled={disabled}
+                    disabled={key === 'labels'}
                     onChange={onSchemaType}
                     title="Field type"
                     value={schema.fields[key]}
                   >
-                    <option value="ol">List</option>
-                    <option value="ul">Tags</option>
+                    {key !== 'name' && <option value="ol">List</option>}
+                    {key !== 'name' && <option value="ul">Tags</option>}
                     <option value="textarea">Text</option>
                     <option value="div">Snippet</option>
                   </select>
