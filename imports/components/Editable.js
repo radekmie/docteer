@@ -77,6 +77,7 @@ export class Editable extends Component<Editable$Props> {
 
         onBlur: this.onChange,
         onChange: this.onChange,
+        onInput: tag === 'textarea' ? this.onChange : undefined,
         ref: this.onElement,
         rows: tag === 'textarea' ? (__html.match(/\n/g) || []).length + 1 : null
       })
