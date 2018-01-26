@@ -15,8 +15,8 @@ before(async () => {
     slowMo: 0
   }));
 
-  page.on('console', ({args, type}) => {
+  page.on('console', event => {
     // eslint-disable-next-line no-console
-    console[type]('[page]', ...args.map(arg => arg.toString()));
+    console[event.type()]('[page]', ...event.args().map(arg => arg.toString()));
   });
 });

@@ -4,11 +4,14 @@
 import {Component} from 'preact';
 import {h} from 'preact';
 
+import type {InputEventType} from '../types.flow';
+
 type Editable$Props = {|
   class?: string,
   disabled: boolean,
   html: string,
   onChange: string => void,
+  onInput?: InputEventType => void,
   tag: string
 |};
 
@@ -77,7 +80,7 @@ export class Editable extends Component<Editable$Props> {
 
         onBlur: this.onChange,
         onChange: this.onChange,
-        onInput: tag === 'textarea' ? this.onChange : undefined,
+        onInput: tag === 'textarea' ? this.onChange : props.onInput,
         ref: this.onElement,
         rows: tag === 'textarea' ? (__html.match(/\n/g) || []).length + 1 : null
       })

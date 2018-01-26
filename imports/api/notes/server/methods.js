@@ -60,16 +60,16 @@ endpoint('POST /notes', {
   }
 });
 
-async function notesArchive() {
+function notesArchive() {
   const archive = Notes.find({_removed: {$ne: null}}).map(note =>
     Object.assign(note, {_id: new ObjectId(note._id._str)})
   );
 
-  if (archive.length === 0) return;
+  if (archive.length === 0) return Promise.resolve();
 
   const $in = archive.map(note => note._id);
 
-  await Promise.all([
+  return Promise.all([
     Notes.rawCollection().deleteMany({_id: {$in}}),
     NotesArchive.rawCollection().insertMany(archive)
   ]);
