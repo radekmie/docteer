@@ -2,6 +2,7 @@
 
 import createHistory from 'history/createBrowserHistory';
 import {createLocation} from 'history/LocationUtils';
+import {createPath} from 'history/PathUtils';
 
 import {Meteor} from 'meteor/meteor';
 import {Tracker} from 'meteor/tracker';
@@ -61,8 +62,8 @@ window.document.addEventListener('click', event => {
       event.preventDefault();
 
       const href = node.getAttribute('href');
-      const prev = history.createHref(history.location);
-      const next = history.createHref(
+      const prev = createPath(history.location);
+      const next = createPath(
         createLocation(href, undefined, undefined, history.location)
       );
 
@@ -124,7 +125,7 @@ history.listen(syncHistory);
 
 // Tree
 tree.select(['href']).on('update', event => {
-  if (history.createHref(history.location) !== event.data.currentData)
+  if (createPath(history.location) !== event.data.currentData)
     history.push(event.data.currentData);
 });
 
@@ -155,7 +156,7 @@ function syncHistory(location) {
 
   const user = tree.get(['user']);
 
-  const match = pattern.exec(history.createHref(location)) || [];
+  const match = pattern.exec(createPath(location)) || [];
   const state = {
     noteId: (match[1] === 'notes' && match[2]) || undefined,
     filter: match[3]

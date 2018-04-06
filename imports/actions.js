@@ -485,16 +485,15 @@ function call(path, options) {
   });
 }
 
-const TOAST_TIME_MODIFIER = Meteor.isE2E ? 0.05 : 1;
+// $FlowFixMe: Incomplete typings.
+const TOAST_TIME_MODIFIER = (Meteor.isE2E: boolean) ? 0.05 : 1;
 
 function toast(type, message) {
   const _id = Math.random().toString(36);
   const text =
-    message instanceof Error
-      ? message.error === 403
-        ? "Sounds good, doesn't work."
-        : message.reason || message.message
-      : message;
+    message instanceof Meteor.Error
+      ? message.error === 403 ? "Sounds good, doesn't work." : message.reason
+      : message instanceof Error ? message.message : message;
 
   tree.push(['toasts'], {
     _id,

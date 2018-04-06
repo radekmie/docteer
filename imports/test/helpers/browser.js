@@ -3,11 +3,10 @@
 import {before} from 'meteor/universe:e2e';
 import {createBrowser} from 'meteor/universe:e2e';
 
-import type {Browser} from 'puppeteer';
-import type {Page} from 'puppeteer';
-
-export let browser: Browser = null;
-export let page: Page = null;
+// $FlowFixMe: Late initialization.
+export let browser: $npm$puppeteer$Browser = null;
+// $FlowFixMe: Late initialization.
+export let page: $npm$puppeteer$Page = null;
 
 before(async () => {
   ({browser, page} = await createBrowser({

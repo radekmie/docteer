@@ -6,7 +6,7 @@ import {h} from 'preact';
 import type {LabelType} from '../types.flow';
 
 type Label$Props = {|
-  label: LabelType
+  label: {|active: boolean, ...LabelType|}
 |};
 
 function Label({label}: Label$Props) {

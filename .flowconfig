@@ -5,6 +5,7 @@
 [lints]
 all=error
 sketchy-null=off
+untyped-import=warn
 
 [options]
 module.name_mapper='^\/\(.*\)$' -> '<PROJECT_ROOT>/\1'

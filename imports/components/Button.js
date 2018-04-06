@@ -5,7 +5,8 @@ import {h} from 'preact';
 
 type Button$Props = {
   as: string,
-  class?: string
+  class?: string,
+  disabled?: boolean
 };
 
 export function Button({as, ...props}: Button$Props) {
