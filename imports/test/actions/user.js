@@ -21,7 +21,10 @@ export function userAddSchema(schema: SchemaType<*>) {
     await page.waitFor(10);
     await page.click(inA);
     await type(`${inA} [data-test-schema-name]`, schema.name);
-    await page.$eval(`${inA} [data-test-schema-name]`, input => input.blur());
+    await page.$eval(
+      `${inA} [data-test-schema-name]`,
+      /* istanbul ignore next */ input => input.blur()
+    );
 
     for (const [fieldName, fieldType] of Object.entries(schema.fields)) {
       await page.click(`${inA} [data-test-schema-field-add]`);

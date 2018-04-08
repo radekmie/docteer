@@ -7,12 +7,14 @@
     "deploy": "cd .deploy && mup deploy",
     "deploy:clean": "cd .deploy && echo y | mup disk clean && mup disk show",
     "deploy:setup": "cd .deploy && mup setup",
-    "e2e": "meteor test --full-app --driver-package universe:e2e --raw-logs --settings .deploy/settings-test.json",
+    "e2e": "rm -rf .coverage && COVERAGE=1 COVERAGE_APP_FOLDER=\"`pwd`/\" meteor test --full-app --driver-package universe:e2e --raw-logs --settings .deploy/settings-test.json",
+    "e2e:ci": "CI=1 npm run e2e:once",
+    "e2e:once": "npm run e2e -- --once",
     "flow": "flow",
     "lint": "eslint .",
     "precommit": "npm run test",
     "start": "meteor run --settings .deploy/settings-dev.json",
-    "test": "npm run lint && npm run flow && CI=1 npm run e2e -- --once"
+    "test": "npm run lint && npm run flow && npm run e2e:ci"
   },
   "dependencies": {
     "@babel/runtime": "7.0.0-beta.44",

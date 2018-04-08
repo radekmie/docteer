@@ -486,7 +486,7 @@ function call(path, options) {
 }
 
 // $FlowFixMe: Incomplete typings.
-const TOAST_TIME_MODIFIER = (Meteor.isE2E: boolean) ? 0.05 : 1;
+const TOAST_TIME_MODIFIER = (Meteor.isE2E: boolean) ? 0.25 : 1;
 
 function toast(type, message) {
   const _id = Math.random().toString(36);

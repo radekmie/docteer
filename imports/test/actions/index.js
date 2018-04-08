@@ -1,5 +1,6 @@
 // @flow
 
+export * from './coverage';
 export * from './load';
 export * from './navigate';
 export * from './note';

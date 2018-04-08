@@ -74,7 +74,11 @@ export function noteField(
     while (input.length) {
       // FIXME: It's not working in contenteditable.
       // await page.keyboard.press('Enter');
-      await page.$eval(selector, input => (input.innerHTML += '<li></li>'));
+
+      await page.$eval(
+        selector,
+        /* istanbul ignore next */ input => (input.innerHTML += '<li></li>')
+      );
       await page.keyboard.press('PageDown');
 
       if (useAutocomplete) {
@@ -85,13 +89,21 @@ export function noteField(
       }
     }
 
-    await page.$eval(selector, input => input.blur());
+    await page.$eval(
+      selector,
+      /* istanbul ignore next */ input => input.blur()
+    );
 
     const unify = string => string.replace(/[\n\r]/g, '').replace(/\s/g, ' ');
 
     assert.equal(
       unify(value.join('')),
-      unify(await page.$eval(selector, input => input.textContent))
+      unify(
+        await page.$eval(
+          selector,
+          /* istanbul ignore next */ input => input.textContent
+        )
+      )
     );
   });
 }
