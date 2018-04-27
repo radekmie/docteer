@@ -1,12 +1,12 @@
 accounts-base@1.4.2
 accounts-password@1.5.1
-ecmascript@0.11.0-beta162.20
+ecmascript@0.11.0-beta17.25
 lmieulet:meteor-coverage
 mdg:meteor-apm-agent
-meteor-base@1.4.0-beta162.20
+meteor-base@1.4.0-beta17.25
 minifier-js@2.3.4
-mongo@1.4.7
+mongo@1.5.0-beta17.25
 standard-minifier-js@2.3.3
 static-html
-tracker@1.2.0-beta162.20
+tracker@1.2.0-beta17.25
 universe:e2e@0.3.0
