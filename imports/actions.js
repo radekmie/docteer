@@ -492,8 +492,12 @@ function toast(type, message) {
   const _id = Math.random().toString(36);
   const text =
     message instanceof Meteor.Error
-      ? message.error === 403 ? "Sounds good, doesn't work." : message.reason
-      : message instanceof Error ? message.message : message;
+      ? message.error === 403
+        ? "Sounds good, doesn't work."
+        : message.reason
+      : message instanceof Error
+        ? message.message
+        : message;
 
   tree.push(['toasts'], {
     _id,

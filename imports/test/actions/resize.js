@@ -11,9 +11,9 @@ export function resize(width: number, height: number) {
     // Window frame.
     height += 85;
 
-    const {targetInfos: [{targetId}]} = await page._client.send(
-      'Target.getTargets'
-    );
+    const {
+      targetInfos: [{targetId}]
+    } = await page._client.send('Target.getTargets');
 
     try {
       const {windowId} = await page._client.send('Browser.getWindowForTarget', {

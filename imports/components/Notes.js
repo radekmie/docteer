@@ -16,10 +16,14 @@ type Note$Props = {|
 
 function Note({note}: Note$Props) {
   const color = note._created
-    ? note._removed ? 'gray hover-light-gray' : 'green hover-light-green'
+    ? note._removed
+      ? 'gray hover-light-gray'
+      : 'green hover-light-green'
     : note._removed
       ? 'hover-light-red red'
-      : note._updated ? 'blue hover-light-blue' : 'dark-gray';
+      : note._updated
+        ? 'blue hover-light-blue'
+        : 'dark-gray';
 
   return (
     <a
