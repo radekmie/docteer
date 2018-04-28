@@ -19,6 +19,24 @@ export type LabelType = {|
   total: number
 |};
 
+export type NoteDocType<T> = {|
+  _id: Meteor$Mongo$ObjectId,
+  _id_slug: string,
+  _id_user: string,
+  _outline: SchemaOutlineType<T>,
+  _outname: string,
+  _created: Date,
+  _removed: Date | null,
+  _updated: Date,
+  _version: {|
+    _created: Date,
+    _outline: SchemaOutlineType<T>,
+    _outname: string,
+    ...T
+  |}[],
+  ...T
+|};
+
 export type NotePatchType<T> = {|
   _id: string,
   _outline: SchemaOutlineType<T>,

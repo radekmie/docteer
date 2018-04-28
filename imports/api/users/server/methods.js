@@ -80,8 +80,14 @@ endpoint('POST /users/password', {
     if (Accounts._checkPassword(user, old).error)
       throw new Meteor.Error('password-incorrect', 'Incorrect old password.');
 
-    // NOTE: Should we throw an error here?
-    if (user.emails[0].address === 'demo@docteer.com') return;
+    if (
+      user.emails &&
+      user.emails.length &&
+      user.emails[0].address === 'demo@docteer.com'
+    ) {
+      // NOTE: Should we throw an error here?
+      return;
+    }
 
     Accounts.setPassword(this.userId, new1, {logout: false});
   }

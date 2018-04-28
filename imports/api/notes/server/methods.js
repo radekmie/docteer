@@ -89,19 +89,14 @@ function notesByUser(userId: string, after: number): PatchType<*, *, *> {
   Notes.find(
     {_id_user: userId, ...(after ? {_updated: {$gt: refresh}} : {})},
     {fields}
-  ).forEach(note => {
-    note._id = note._id_slug;
-
-    if (note._removed > refresh) diff.removed.push(note._id);
+  ).forEach(({_id_slug, _created, _removed, ...note}) => {
+    if (_removed && _removed > refresh)
+      diff.removed.push(_id_slug);
     else {
-      diff.updated.push(note);
+      diff.updated.push({_id: _id_slug, ...note});
 
-      if (note._created > refresh) diff.created.push(note._id);
+      if (_created > refresh) diff.created.push(_id_slug);
     }
-
-    delete note._id_slug;
-    delete note._created;
-    delete note._removed;
   });
 
   return diff;
