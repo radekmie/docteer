@@ -31,7 +31,7 @@ module.exports = {
   },
 
   mongo: {
-    version: '3.4.14',
+    version: '3.6.5',
     servers: {
       first: {}
     }
