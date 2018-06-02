@@ -46,7 +46,7 @@ after(() => {
     });
 
     const total = ranges.reduce((a, b) => a + b[1] - b[0], 0);
-    const cover = (100 * total / stylesheet.length).toFixed(2);
+    const cover = ((100 * total) / stylesheet.length).toFixed(2);
 
     // eslint-disable-next-line no-console
     console.log(`${stylesheet.sourceURL}: ${cover}%`);

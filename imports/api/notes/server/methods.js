@@ -90,8 +90,7 @@ function notesByUser(userId: string, after: number): PatchType<*, *, *> {
     {_id_user: userId, ...(after ? {_updated: {$gt: refresh}} : {})},
     {fields}
   ).forEach(({_id_slug, _created, _removed, ...note}) => {
-    if (_removed && _removed > refresh)
-      diff.removed.push(_id_slug);
+    if (_removed && _removed > refresh) diff.removed.push(_id_slug);
     else {
       diff.updated.push({_id: _id_slug, ...note});
 
