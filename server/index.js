@@ -2,7 +2,6 @@
 
 import '../imports/api/notes/server';
 import '../imports/api/users/server';
-import './imports/apm';
 import './imports/optimize';
 import './imports/privacy';
 import './imports/seo';

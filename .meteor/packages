@@ -2,7 +2,6 @@ accounts-base@1.4.2
 accounts-password@1.5.1
 ecmascript@0.11.0-beta17.25
 lmieulet:meteor-coverage
-mdg:meteor-apm-agent
 meteor-base@1.4.0-beta17.25
 minifier-js@2.3.4
 mongo@1.5.0-beta17.25

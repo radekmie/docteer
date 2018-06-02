@@ -37,10 +37,8 @@ livedata@1.0.18
 lmieulet:meteor-coverage@2.0.1
 localstorage@1.2.0
 logging@1.1.20
-mdg:meteor-apm-agent@3.1.1
 meteor@1.9.0-beta17.25
 meteor-base@1.4.0-beta17.25
-meteorhacks:meteorx@1.4.1
 minifier-js@2.3.4
 minimongo@1.4.4
 modern-browsers@0.1.0-beta17.25
@@ -49,7 +47,6 @@ modules-runtime@0.10.0-beta17.25
 mongo@1.5.0-beta17.25
 mongo-dev-server@1.1.0
 mongo-id@1.0.7
-mongo-livedata@1.0.12
 npm-bcrypt@0.9.3
 npm-mongo@3.0.7-beta17.25
 ordered-dict@1.1.0
