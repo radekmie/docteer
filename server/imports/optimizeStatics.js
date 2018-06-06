@@ -1,17 +1,40 @@
 // @flow
 
-import {WebAppInternals} from 'meteor/webapp';
+import {readFile} from 'fs';
 
-export const optimizeOptions = {allowed: ['asset', 'js']};
+import {Meteor} from 'meteor/meteor';
+import {WebAppInternals} from 'meteor/webapp';
+import {meteorJsMinify} from 'meteor/minifier-js';
+
+import {optimize as minifyCSS} from './optimizeCSS';
+
+const readFileSync = Meteor.wrapAsync(readFile);
+
+export const optimizeOptions = {
+  allowed: ['asset', 'css', 'js'],
+  minify: {
+    css: minifyCSS,
+    js: js => meteorJsMinify(`(function(){${js}})()`).code
+  }
+};
+
 export const optimize = () => {
   // NOTE: This package requires manifest.json.
-  // eslint-disable-next-line no-undef
   if (global.Package['bundle-visualizer']) return;
 
-  const staticFiles = WebAppInternals.staticFiles;
+  for (const staticFiles of Object.values(WebAppInternals.staticFilesByArch)) {
+    for (const [path, file] of Object.entries(staticFiles)) {
+      if (!optimizeOptions.allowed.includes(file.type)) {
+        delete staticFiles[path];
+        break;
+      }
 
-  for (const path in staticFiles) {
-    if (!optimizeOptions.allowed.includes(staticFiles[path].type))
-      delete staticFiles[path];
+      if (file.type in optimizeOptions.minify) {
+        const source = readFileSync(file.absolutePath, 'utf8');
+        const minified = optimizeOptions.minify[file.type](source);
+
+        file.content = minified;
+      }
+    }
   }
 };

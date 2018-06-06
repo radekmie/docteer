@@ -2,6 +2,7 @@
 
 import {Transform} from 'stream';
 
+import {Meteor} from 'meteor/meteor';
 import {Boilerplate} from 'meteor/boilerplate-generator';
 
 import {optimize as optimizeCSS} from './optimizeCSS';
@@ -11,7 +12,7 @@ import {optimize as optimizeStatics} from './optimizeStatics';
 
 export {optimizeCSS, optimizeHTML, optimizeJS, optimizeStatics};
 
-if (process.env.NODE_ENV === 'production') optimizeStatics();
+if (process.env.NODE_ENV === 'production') Meteor.startup(optimizeStatics);
 
 const rawToHTML = Boilerplate.prototype.toHTMLStream;
 // $FlowFixMe: Weird error.
