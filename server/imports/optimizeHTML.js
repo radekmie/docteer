@@ -11,6 +11,6 @@ export const optimize = cache((html: Buffer) =>
   Buffer.from(
     minify(html.toString(), optimizeOptions)
       .replace('?meteor_js_resource=true', '')
-      .replace(/<link .*?>/, '')
+      .replace(/<link.*?rel=['"]stylesheet['"].*?>/, '')
   )
 );
