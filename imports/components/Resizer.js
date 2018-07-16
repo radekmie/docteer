@@ -53,6 +53,7 @@ if (Meteor.isClient) {
       Object.defineProperty({}, 'passive', {
         get() {
           modifier = {passive: true};
+          return undefined;
         }
       })
     );
