@@ -281,12 +281,18 @@ export function onSave(): Promise<void> {
   return call('POST /notes', {
     patch,
     refresh: +tree.get(['last'])
-  }).then((patch: PatchType<*, *, *>) => {
-    tree.set(['last'], last);
-    toast('success', 'Saved.');
-    merge(patch);
-    onReset();
-  });
+  }).then(
+    (patch: PatchType<*, *, *>) => {
+      tree.set(['last'], last);
+      toast('success', 'Saved.');
+      merge(patch);
+      onReset();
+    },
+    error => {
+      tree.set(['edit'], true);
+      throw error;
+    }
+  );
 }
 
 export function onSchemaAdd() {
@@ -472,16 +478,22 @@ function merge(diff) {
   );
 }
 
-function call(path, options) {
+function call(path, ...args) {
   return new Promise((resolve, reject) => {
-    Meteor.call(path, options, (error, response) => {
+    const id = setTimeout(done, 5000, new Error('Sorry, try again later.'));
+
+    Meteor.apply(path, args, {noRetry: true}, done);
+
+    function done(error, response) {
+      clearTimeout(id);
+
       if (error) {
         toast('error', error);
         reject(error);
       } else {
         resolve(response);
       }
-    });
+    }
   });
 }
 
@@ -494,7 +506,9 @@ function toast(type, message) {
     message instanceof Meteor.Error
       ? message.error === 403
         ? "Sounds good, doesn't work."
-        : message.reason
+        : message.error === 'invocation-failed'
+          ? 'Sorry, try again later.'
+          : message.reason
       : message instanceof Error
         ? message.message
         : message;
