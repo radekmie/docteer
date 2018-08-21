@@ -80,7 +80,9 @@ export function Notes(props: Notes$Props) {
             </div>
           )}
 
-          {props.notes.map(note => <Note key={note._id} note={note} />)}
+          {props.notes.map(note => (
+            <Note key={note._id} note={note} />
+          ))}
         </div>
       </div>
     </div>

@@ -35,7 +35,9 @@ export function Labels(props: Labels$Props) {
     <div class="flex-1 overflow-auto">
       {props.labels.length === 0 && <div className="pa3 tc">(no labels)</div>}
 
-      {props.labels.map(label => <Label key={label.name} label={label} />)}
+      {props.labels.map(label => (
+        <Label key={label.name} label={label} />
+      ))}
     </div>
   );
 }
