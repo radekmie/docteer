@@ -129,7 +129,7 @@ endpoint('POST /users/settings', {
       custom() {
         const entries = Object.entries(this.value);
 
-        const pattern = /^[^$][^.]*$/;
+        const pattern = /^[^$_][^.]*$/;
         const invalid = entries.find(entry => !pattern.test(entry[0]));
         if (invalid) return 'regEx';
 
