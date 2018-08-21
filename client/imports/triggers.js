@@ -39,6 +39,13 @@ Tracker.autorun(() => {
   }
 });
 
+// Errors
+if (process.env.NODE_ENV === 'production') {
+  window.addEventListener('unhandledrejection', event => {
+    event.preventDefault();
+  });
+}
+
 // Events
 window.document.addEventListener('click', event => {
   if (
