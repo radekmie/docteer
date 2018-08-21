@@ -77,6 +77,7 @@ export class Editable extends Component<Editable$Props> {
         contentEditable: !disabled,
         disabled,
         dangerouslySetInnerHTML: {__html},
+        value: tag === 'textarea' ? __html : undefined,
 
         onBlur: this.onChange,
         onChange: this.onChange,
