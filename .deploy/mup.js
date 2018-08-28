@@ -20,7 +20,7 @@ module.exports = {
     },
 
     docker: {
-      image: 'abernix/meteord:node-8.9.4-base',
+      image: 'abernix/meteord:node-8.11.3-base',
       imagePort: 80
     },
 
