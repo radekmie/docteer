@@ -1,5 +1,7 @@
 // @flow
 
+import sha from 'js-sha256';
+
 import type {SchemaOutlineFieldType} from './types.flow';
 import type {SchemaType} from './types.flow';
 
@@ -7,6 +9,10 @@ export function cache<A, B>(fn: A => B): A => B {
   const cached: {[A]: B} = {};
 
   return (x: A): B => cached[x] || (cached[x] = fn(x));
+}
+
+export function hash(text) {
+  return {algorithm: 'sha-256', digest: sha.sha256(text)};
 }
 
 export function schemaEmpty({fields, name}: SchemaType<*>) {

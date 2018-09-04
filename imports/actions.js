@@ -2,9 +2,9 @@
 
 import fuzzysort from 'fuzzysort';
 
-import {Accounts} from 'meteor/accounts-base';
 import {Meteor} from 'meteor/meteor';
 
+import {hash} from './lib';
 import {schemaEmpty} from './lib';
 import {tree} from './state';
 
@@ -38,9 +38,9 @@ export function onChangePassword(
   toast('info', 'Changing password...');
 
   return call('POST /users/password', {
-    new1: Accounts._hashPassword(new1),
-    new2: Accounts._hashPassword(new2),
-    old: Accounts._hashPassword(old)
+    new1: hash(new1),
+    new2: hash(new2),
+    old: hash(old)
   }).then(() => {
     toast('success', 'Changed password.');
   });
@@ -189,20 +189,22 @@ export function onImport() {
 export function onLogin(email: string, password: string): Promise<void> {
   toast('info', 'Logging in...');
 
-  return new Promise((resolve, reject) => {
-    Meteor.loginWithPassword(email, password, error => {
-      toast(error ? 'error' : 'success', error || 'Logged in.');
-      if (error) reject(error);
-      else resolve(onRefresh(true));
-    });
+  return call('login', {
+    password: hash(password),
+    user: {email}
+  }).then(result => {
+    Meteor.connection.setUserId(result.id);
+    toast('success', 'Logged in.');
+    onRefresh(true);
   });
 }
 
 export function onLogout() {
   toast('info', 'Logging out...');
 
-  Meteor.logout(error => {
-    toast(error ? 'error' : 'success', error || 'Logged out.');
+  return call('logout').then(() => {
+    Meteor.connection.setUserId(null);
+    toast('success', 'Logged out.');
   });
 }
 
@@ -408,7 +410,7 @@ export function onSignup(email: string, password: string): Promise<void> {
 
   return call('POST /users/register', {
     email,
-    password: Accounts._hashPassword(password)
+    password: hash(password)
   }).then(() => {
     toast('success', 'Signed in.');
     onLogin(email, password).then(() => {
