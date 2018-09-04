@@ -16,6 +16,12 @@
     "start": "meteor run --settings .deploy/settings-dev.json",
     "test": "npm run lint && npm run flow && npm run e2e:ci"
   },
+  "meteor": {
+    "mainModule": {
+      "client": "client/index.js",
+      "server": "server/index.js"
+    }
+  },
   "dependencies": {
     "@babel/runtime": "7.0.0-rc.1",
     "baobab": "2.5.2",
