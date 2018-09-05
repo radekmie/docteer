@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt';
 import {Meteor} from 'meteor/meteor';
 import {Random} from 'meteor/random';
 
+import {Users} from '..';
 import {endpoint} from '../../lib';
 
 import type {PassType} from '../../../types.flow';
@@ -72,7 +73,7 @@ endpoint('POST /users/login', {
   },
 
   async handle({email, password}: {|email: string, password: PassType|}) {
-    const user = Meteor.users.findOne({'emails.address': email});
+    const user = Users.findOne({'emails.address': email});
 
     if (
       !user ||
@@ -116,7 +117,7 @@ endpoint('POST /users/password', {
     if (new1.digest !== new2.digest)
       throw new Meteor.Error('password-mismatch', 'Passwords mismatch.');
 
-    const user = Meteor.users.findOne({_id: this.userId});
+    const user = Users.findOne({_id: this.userId});
 
     if (!user) throw new Meteor.Error('user-not-found', 'User not found.');
 
@@ -132,7 +133,7 @@ endpoint('POST /users/password', {
       return;
     }
 
-    Meteor.users.update(
+    Users.update(
       {_id: user._id},
       {$set: {'services.password.bcrypt': await bcrypt.hash(new1.digest, 10)}}
     );
@@ -148,10 +149,10 @@ endpoint('POST /users/register', {
   },
 
   async handle({email, password}: {|email: string, password: PassType|}) {
-    const user = Meteor.users.findOne({'emails.address': email});
+    const user = Users.findOne({'emails.address': email});
     if (user) throw new Meteor.Error('user-exists', 'User already exists.');
 
-    const userId = Meteor.users.insert({
+    const userId = Users.insert({
       _id: Random.id(),
       createdAt: new Date(),
       services: {password: {bcrypt: await bcrypt.hash(password.digest, 10)}},
@@ -192,6 +193,6 @@ endpoint('POST /users/settings', {
   },
 
   handle(settings: {|schemas: SchemaType<*>[]|}) {
-    Meteor.users.update({_id: this.userId}, {$set: settings});
+    Users.update({_id: this.userId}, {$set: settings});
   }
 });

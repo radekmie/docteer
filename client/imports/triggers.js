@@ -7,6 +7,7 @@ import {createPath} from 'history/PathUtils';
 import {Meteor} from 'meteor/meteor';
 import {Tracker} from 'meteor/tracker';
 
+import {Users} from '../../imports/api/users';
 import {compare} from '../../imports/lib';
 import {onRefresh} from '../../imports/actions';
 import {titleForView} from '../../imports/lib';
@@ -19,7 +20,7 @@ let firstRun = true;
 // Collections
 Meteor.subscribe('LIVE /users/self', {
   onReady() {
-    if (!Meteor.userId()) update();
+    if (!Users.currentUserId()) update();
   },
 
   onStop(error) {
@@ -28,7 +29,7 @@ Meteor.subscribe('LIVE /users/self', {
 });
 
 Tracker.autorun(() => {
-  const user = Meteor.user();
+  const user = Users.currentUser();
 
   if (tree.set(['userData'], user && user.schemas ? user : undefined)) {
     // $FlowFixMe: tree.set is actually a %checks function.
