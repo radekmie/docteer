@@ -189,11 +189,11 @@ export function onImport() {
 export function onLogin(email: string, password: string): Promise<void> {
   toast('info', 'Logging in...');
 
-  return call('login', {
-    password: hash(password),
-    user: {email}
+  return call('POST /users/login', {
+    email,
+    password: hash(password)
   }).then(result => {
-    Meteor.connection.setUserId(result.id);
+    Meteor.connection.setUserId(result.userId);
     toast('success', 'Logged in.');
     onRefresh(true);
   });
@@ -202,7 +202,7 @@ export function onLogin(email: string, password: string): Promise<void> {
 export function onLogout() {
   toast('info', 'Logging out...');
 
-  return call('logout').then(() => {
+  return call('POST /users/logout', {}).then(() => {
     Meteor.connection.setUserId(null);
     toast('success', 'Logged out.');
   });
@@ -411,12 +411,11 @@ export function onSignup(email: string, password: string): Promise<void> {
   return call('POST /users/register', {
     email,
     password: hash(password)
-  }).then(() => {
+  }).then(result => {
+    Meteor.connection.setUserId(result.userId);
     toast('success', 'Signed in.');
-    onLogin(email, password).then(() => {
-      tree.set(['view'], 'notes');
-      tree.set(['noteId'], 'introduction');
-    });
+    tree.set(['view'], 'notes');
+    tree.set(['noteId'], 'introduction');
   });
 }
 
@@ -506,11 +505,9 @@ function toast(type, message) {
   const _id = Math.random().toString(36);
   const text =
     message instanceof Meteor.Error
-      ? message.error === 403
-        ? "Sounds good, doesn't work."
-        : message.error === 'invocation-failed'
-          ? 'Sorry, try again later.'
-          : message.reason
+      ? message.error === 'invocation-failed'
+        ? 'Sorry, try again later.'
+        : message.reason
       : message instanceof Error
         ? message.message
         : message;

@@ -1,9 +1,10 @@
 // @flow
 
 import SimpleSchema from 'simpl-schema';
+import bcrypt from 'bcrypt';
 
-import {Accounts} from 'meteor/accounts-base';
 import {Meteor} from 'meteor/meteor';
+import {Random} from 'meteor/random';
 
 import {endpoint} from '../../lib';
 
@@ -62,6 +63,40 @@ const PassSchema = new SimpleSchema({
   digest: String
 });
 
+endpoint('POST /users/login', {
+  authorize: false,
+
+  schema: {
+    email: String,
+    password: PassSchema
+  },
+
+  async handle({email, password}: {|email: string, password: PassType|}) {
+    const user = Meteor.users.findOne({'emails.address': email});
+
+    if (
+      !user ||
+      !user.services ||
+      !user.services.password ||
+      !user.services.password.bcrypt ||
+      !(await bcrypt.compare(password.digest, user.services.password.bcrypt))
+    )
+      throw new Meteor.Error('invalid-auth', "Sounds good, doesn't work.");
+
+    this.setUserId(user._id);
+
+    return {userId: user._id};
+  }
+});
+
+endpoint('POST /users/logout', {
+  schema: {},
+
+  handle() {
+    this.setUserId(null);
+  }
+});
+
 endpoint('POST /users/password', {
   schema: {
     new1: PassSchema,
@@ -69,7 +104,15 @@ endpoint('POST /users/password', {
     old: PassSchema
   },
 
-  handle({new1, new2, old}: {|new1: PassType, new2: PassType, old: PassType|}) {
+  async handle({
+    new1,
+    new2,
+    old
+  }: {|
+    new1: PassType,
+    new2: PassType,
+    old: PassType
+  |}) {
     if (new1.digest !== new2.digest)
       throw new Meteor.Error('password-mismatch', 'Passwords mismatch.');
 
@@ -77,7 +120,7 @@ endpoint('POST /users/password', {
 
     if (!user) throw new Meteor.Error('user-not-found', 'User not found.');
 
-    if (Accounts._checkPassword(user, old).error)
+    if (!(await bcrypt.compare(old.digest, user.services.password.bcrypt)))
       throw new Meteor.Error('password-incorrect', 'Incorrect old password.');
 
     if (
@@ -89,7 +132,10 @@ endpoint('POST /users/password', {
       return;
     }
 
-    Accounts.setPassword(this.userId, new1, {logout: false});
+    Meteor.users.update(
+      {_id: user._id},
+      {$set: {'services.password.bcrypt': await bcrypt.hash(new1.digest, 10)}}
+    );
   }
 });
 
@@ -101,20 +147,23 @@ endpoint('POST /users/register', {
     password: PassSchema
   },
 
-  handle({email, password}: {|email: string, password: PassType|}) {
-    let _id;
-    try {
-      _id = Accounts.createUser({email, password});
-    } catch (error) {
-      if (error.error === 403)
-        throw new Meteor.Error('user-exists', 'User already exists.');
-      throw error;
-    }
+  async handle({email, password}: {|email: string, password: PassType|}) {
+    const user = Meteor.users.findOne({'emails.address': email});
+    if (user) throw new Meteor.Error('user-exists', 'User already exists.');
 
-    this.setUserId(_id);
+    const userId = Meteor.users.insert({
+      _id: Random.id(),
+      createdAt: new Date(),
+      services: {password: {bcrypt: await bcrypt.hash(password.digest, 10)}},
+      emails: [{address: email}],
+      schemas: defaultSchemas
+    });
 
-    Meteor.users.update({_id}, {$set: {schemas: defaultSchemas}});
+    this.setUserId(userId);
+
     Meteor.call('POST /notes', {patch: defaultPatch, refresh: Infinity});
+
+    return {userId};
   }
 });
 

@@ -50,8 +50,6 @@ const user = base
   .next(userSignUp, context => [context.user])
   .next(toastCheck, ['Signing up...'])
   .next(toastCheck, ['Signed in.'])
-  .next(toastCheck, ['Logging in...'])
-  .next(toastCheck, ['Logged in.'])
   .next(toastCheck, ['Loading...'])
   .next(toastCheck, ['Loaded.'])
   .last(userLogOut, [])
