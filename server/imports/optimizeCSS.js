@@ -1,13 +1,13 @@
 // @flow
 
-import cssnext from 'postcss-cssnext';
 import cssnano from 'cssnano';
+import env from 'postcss-preset-env';
 import postcss from 'postcss';
 
 import {cache} from '../../imports/lib';
 
 const processor = postcss([
-  cssnext({browsers: ['>1%']}),
+  env({browsers: ['>1%'], preserve: false, stage: 0}),
   cssnano({preset: ['advanced', {discardComments: {removeAll: true}}]})
 ]);
 
