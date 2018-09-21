@@ -37,7 +37,7 @@ export function onChangePassword(
 ): Promise<void> {
   toast('info', 'Changing password...');
 
-  return call('POST /users/password', {
+  return call('POST /api/users/password', {
     new1: hash(new1),
     new2: hash(new2),
     old: hash(old)
@@ -189,7 +189,7 @@ export function onImport() {
 export function onLogin(email: string, password: string): Promise<void> {
   toast('info', 'Logging in...');
 
-  return call('POST /users/login', {
+  return call('POST /api/users/login', {
     email,
     password: hash(password)
   }).then(result => {
@@ -231,7 +231,7 @@ export function onRefresh(firstRun: ?boolean): Promise<void> {
   toast('info', firstRun === true ? 'Loading...' : 'Refreshing...');
 
   const last = new Date();
-  refreshing = call('GET /notes', {refresh: +tree.get(['last'])})
+  refreshing = call('GET /api/notes', {refresh: +tree.get(['last'])})
     .then((patch: PatchType<*, *, *>) => {
       tree.set(['last'], last);
       toast('success', firstRun === true ? 'Loaded.' : 'Refreshed.');
@@ -285,7 +285,7 @@ export function onSave(): Promise<void> {
 
   const last = new Date();
 
-  return call('POST /notes', {
+  return call('POST /api/notes', {
     patch,
     refresh: +tree.get(['last'])
   }).then(
@@ -403,7 +403,7 @@ export function onSettingsSave() {
   if (tree.get(['userDiff'])) {
     toast('info', 'Saving...');
 
-    call('POST /users/settings', tree.get(['userDiff'])).then(() => {
+    call('POST /api/users/settings', tree.get(['userDiff'])).then(() => {
       toast('success', 'Saved.');
       onSettingsReset();
     });
@@ -413,7 +413,7 @@ export function onSettingsSave() {
 export function onSignup(email: string, password: string): Promise<void> {
   toast('info', 'Signing up...');
 
-  return call('POST /users/register', {
+  return call('POST /api/users/register', {
     email,
     password: hash(password)
   }).then(result => {
@@ -486,12 +486,33 @@ function merge(diff) {
   );
 }
 
-function call(path, ...args) {
+function call(name, data) {
+  const [method, path] = name.split(' ', 2);
+  const headers = new Headers({'Content-Type': 'application/json'});
+  const url = new URL(path, location.origin);
+
+  let body;
+  if (method === 'GET') {
+    for (const [key, value] of Object.entries(data))
+      url.searchParams.append(key, value);
+  } else {
+    body = JSON.stringify(data);
+  }
+
+  const token = tree.get(['userToken']);
+  if (token) headers.append('Authorization', `Bearer ${token}`);
+
   return new Promise((resolve, reject) => {
     const id = setTimeout(done, 5000, new Error('Sorry, try again later.'));
 
-    args.unshift(tree.get(['userId']));
-    Meteor.apply(path, args, {noRetry: true}, done);
+    fetch(url, {body, headers, method})
+      .then(response =>
+        response.json().then(data => {
+          if (response.ok) return data;
+          throw Object.assign(new Error(), data);
+        })
+      )
+      .then(response => done(null, response), done);
 
     function done(error, response) {
       clearTimeout(id);
@@ -512,13 +533,11 @@ const TOAST_TIME_MODIFIER = (Meteor.isE2E: boolean) ? 0.25 : 1;
 function toast(type, message) {
   const _id = Math.random().toString(36);
   const text =
-    message instanceof Meteor.Error
-      ? message.error === 'invocation-failed'
-        ? 'Sorry, try again later.'
-        : message.reason
-      : message instanceof Error
-        ? message.message
-        : message;
+    message instanceof Error
+      ? message.code
+        ? message.text
+        : message.message
+      : message;
 
   tree.push(['toasts'], {
     _id,

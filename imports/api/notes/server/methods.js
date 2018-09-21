@@ -10,7 +10,7 @@ import type {PatchType} from '../../../types.flow';
 
 const ObjectId = MongoInternals.NpmModules.mongodb.module.ObjectId;
 
-endpoint('GET /notes', {
+endpoint('GET /api/notes', {
   schema: {
     refresh: {
       type: Number,
@@ -19,12 +19,12 @@ endpoint('GET /notes', {
     }
   },
 
-  handle({refresh}: {|refresh: number|}): PatchType<*, *, *> {
+  async handle({refresh}: {|refresh: number|}): PatchType<*, *, *> {
     return notesByUser(this.userId, refresh);
   }
 });
 
-endpoint('POST /notes', {
+endpoint('POST /api/notes', {
   schema: {
     patch: Object,
     'patch.created': Array,
@@ -60,7 +60,7 @@ endpoint('POST /notes', {
   }
 });
 
-function notesArchive() {
+export function notesArchive() {
   const archive = Notes.find({_removed: {$ne: null}}).map(note =>
     Object.assign(note, {_id: new ObjectId(note._id._str)})
   );
@@ -75,7 +75,7 @@ function notesArchive() {
   ]);
 }
 
-function notesByUser(userId: string, after: number): PatchType<*, *, *> {
+export function notesByUser(userId: string, after: number): PatchType<*, *, *> {
   const refresh = new Date(after || 0);
   const fields = {
     _id: 0,
@@ -101,7 +101,7 @@ function notesByUser(userId: string, after: number): PatchType<*, *, *> {
   return diff;
 }
 
-function notesPatch(patch: PatchType<*, *, *>, userId: string) {
+export function notesPatch(patch: PatchType<*, *, *>, userId: string) {
   if (!patch.created.length && !patch.removed.length && !patch.updated.length)
     return Promise.resolve();
 

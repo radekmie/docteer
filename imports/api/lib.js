@@ -1,17 +1,18 @@
 // @flow
 
 import SimpleSchema from 'simpl-schema';
+import compression from 'compression';
+import jwt from 'jsonwebtoken';
+import text from 'body-parser/lib/types/text';
+import url from 'url';
 
-import {Meteor} from 'meteor/meteor';
+import {WebApp} from 'meteor/webapp';
 
+import {APIError} from './APIError';
 import {Users} from './users';
 
-SimpleSchema.defineValidationErrorTransform(error => {
-  const ddpError = new Meteor.Error(error.message);
-  ddpError.error = 'validation-error';
-  ddpError.details = error.details;
-  return ddpError;
-});
+WebApp.rawConnectHandlers.use('/api', compression());
+WebApp.rawConnectHandlers.use('/api', text({type: 'application/json'}));
 
 export function endpoint<Schema: {}>(
   name: string,
@@ -25,31 +26,79 @@ export function endpoint<Schema: {}>(
     schema: $ObjMap<Schema, () => mixed>
   |}
 ) {
-  const validator = new SimpleSchema({data: new SimpleSchema(schema)});
+  const [method, path] = name.split(' ', 2);
+  const validator = new SimpleSchema(schema);
 
-  Meteor.methods({
-    [name](userId, data) {
-      const context = {userId};
+  // prettier-ignore
+  // eslint-disable-next-line complexity
+  WebApp.rawConnectHandlers.use(path, (request, response, next) => {
+    if (request.method !== method) {
+      next();
+      return;
+    }
 
-      validator.clean({data}, {mutate: true});
-      validator.validate({data});
+    try {
+      if (request.method === 'GET') {
+        try {
+          request.body = url.parse(request.url, true).query;
+        } catch (error) {
+          throw new APIError({code: 'api-url'});
+        }
+      } else {
+        try {
+          request.body = JSON.parse(request.body);
+        } catch (error) {
+          throw new APIError({code: 'api-json'});
+        }
 
-      if (authorize && !context.userId)
-        throw new Meteor.Error('user-logged-in', 'You must be logged in.');
-      if (!authorize && context.userId)
-        throw new Meteor.Error('user-logged-out', 'You must be logged out.');
-
-      if (context.userId) {
-        if (typeof context.userId !== 'string')
-          throw new Meteor.Error('user-not-found', 'User not found.');
-
-        context.user = Users.findOne({_id: context.userId});
-
-        if (!context.user)
-          throw new Meteor.Error('user-not-found', 'User not found.');
+        if (!request.body || request.body.constructor !== Object)
+          throw new APIError({code: 'api-json-body'});
       }
 
-      return handle.call(context, data);
+      validator.clean(request.body, {mutate: true});
+      validator.validate(request.body);
+
+      const context = {
+        jwt: null,
+        jwtDecoded: null,
+        user: null,
+        userId: null
+      };
+
+      const token = request.headers.authorization;
+      if (token) {
+        if (!token.startsWith('Bearer '))
+          throw new APIError({code: 'api-invalid-token'});
+
+        context.jwt = token.replace(/^Bearer (.*?)$/, '$1');
+
+        try {
+          context.jwtDecoded = jwt.verify(context.jwt, 'SECRET');
+        } catch (error) {
+          throw new APIError({code: 'api-failed-token'});
+        }
+
+        context.user = Users.findOne({_id: context.jwtDecoded.sub});
+        if (!context.user) throw new APIError({code: 'api-unknown-token'});
+        context.userId = context.user._id;
+      }
+
+      if (!authorize && context.user)
+        throw new APIError({code: 'log-in'});
+      if (authorize && !context.user)
+        throw new APIError({code: 'log-out'});
+
+      const result = handle.call(context, request.body).await();
+      if (!result || result.constructor !== Object)
+        throw new APIError({code: 'api-internal'});
+
+      response.writeHead(200, {'Content-Type': 'application/json'});
+      response.end(JSON.stringify(result));
+    } catch (_error) {
+      const error = APIError.fromError(_error);
+
+      response.writeHead(error.http, {'Content-Type': 'application/json'});
+      response.end(JSON.stringify(error.toJSON()));
     }
   });
 }

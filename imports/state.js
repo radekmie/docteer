@@ -162,7 +162,8 @@ export const tree = new Baobab(
     last: new Date(0),
     view: '',
 
-    userId: Baobab.monkey(['userData'], data => (data ? data._id : null)),
+    userLoggedIn: Baobab.monkey(['userToken', data => !!data]),
+    userToken: Baobab.monkey(['userData'], data => (data ? data.token : null)),
     user: Baobab.monkey(['userData'], ['userDiff'], (data, diff) => {
       if (!data) return null;
 

@@ -2,12 +2,14 @@
 
 import SimpleSchema from 'simpl-schema';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
-import {Meteor} from 'meteor/meteor';
 import {Random} from 'meteor/random';
 
 import {Users} from '..';
+import {APIError} from '../../APIError';
 import {endpoint} from '../../lib';
+import {notesPatch} from '../../notes/server/methods';
 
 import type {PassType} from '../../../types.flow';
 import type {PatchType} from '../../../types.flow';
@@ -64,7 +66,7 @@ const PassSchema = new SimpleSchema({
   digest: String
 });
 
-endpoint('POST /users/login', {
+endpoint('POST /api/users/login', {
   authorize: false,
 
   schema: {
@@ -82,17 +84,20 @@ endpoint('POST /users/login', {
       !user.services.password.bcrypt ||
       !(await bcrypt.compare(password.digest, user.services.password.bcrypt))
     )
-      throw new Meteor.Error('invalid-auth', "Sounds good, doesn't work.");
+      throw new APIError({code: 'user-invalid-credentials'});
 
     return {
-      _id: user._id,
       emails: user.emails,
-      schemas: user.schemas
+      schemas: user.schemas,
+      token: jwt.sign(
+        {exp: Math.floor(Date.now() / 1000) + 60 * 60, sub: user._id},
+        'SECRET'
+      )
     };
   }
 });
 
-endpoint('POST /users/password', {
+endpoint('POST /api/users/password', {
   schema: {
     new1: PassSchema,
     new2: PassSchema,
@@ -109,32 +114,30 @@ endpoint('POST /users/password', {
     old: PassType
   |}) {
     if (new1.digest !== new2.digest)
-      throw new Meteor.Error('password-mismatch', 'Passwords mismatch.');
+      throw new APIError({code: 'user-password-mismatch'});
 
-    const user = Users.findOne({_id: this.userId});
-
-    if (!user) throw new Meteor.Error('user-not-found', 'User not found.');
-
-    if (!(await bcrypt.compare(old.digest, user.services.password.bcrypt)))
-      throw new Meteor.Error('password-incorrect', 'Incorrect old password.');
+    if (!(await bcrypt.compare(old.digest, this.user.services.password.bcrypt)))
+      throw new APIError({code: 'user-password-incorrect'});
 
     if (
-      user.emails &&
-      user.emails.length &&
-      user.emails[0].address === 'demo@docteer.com'
+      this.user.emails &&
+      this.user.emails.length &&
+      this.user.emails[0].address === 'demo@docteer.com'
     ) {
       // NOTE: Should we throw an error here?
-      return;
+      return {};
     }
 
     Users.update(
-      {_id: user._id},
+      {_id: this.userId},
       {$set: {'services.password.bcrypt': await bcrypt.hash(new1.digest, 10)}}
     );
+
+    return {};
   }
 });
 
-endpoint('POST /users/register', {
+endpoint('POST /api/users/register', {
   authorize: false,
 
   schema: {
@@ -144,7 +147,7 @@ endpoint('POST /users/register', {
 
   async handle({email, password}: {|email: string, password: PassType|}) {
     const user = Users.findOne({'emails.address': email});
-    if (user) throw new Meteor.Error('user-exists', 'User already exists.');
+    if (user) throw new APIError({code: 'user-already-exists'});
 
     const userId = Users.insert({
       _id: Random.id(),
@@ -154,20 +157,20 @@ endpoint('POST /users/register', {
       schemas: defaultSchemas
     });
 
-    Meteor.call('POST /notes', userId, {
-      patch: defaultPatch,
-      refresh: Infinity
-    });
+    notesPatch(defaultPatch, this.userId);
 
     return {
-      _id: userId,
       emails: [{address: email}],
-      schemas: defaultSchemas
+      schemas: defaultSchemas,
+      token: jwt.sign(
+        {exp: Math.floor(Date.now() / 1000) + 60 * 60, sub: userId},
+        'SECRET'
+      )
     };
   }
 });
 
-endpoint('POST /users/settings', {
+endpoint('POST /api/users/settings', {
   schema: {
     schemas: Array,
     'schemas.$': Object,

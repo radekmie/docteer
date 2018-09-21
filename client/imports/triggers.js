@@ -126,9 +126,9 @@ tree.select(['labels']).on('update', event => {
     tree.set(['filter'], filterAvailable);
 });
 
-tree.select(['userId']).on('update', ({data: {currentData, previousData}}) => {
-  if (previousData !== currentData) {
-    if (currentData) {
+tree.select(['userToken']).on('update', ({data}) => {
+  if (data.previousData !== data.currentData) {
+    if (data.currentData) {
       onRefresh(true).then(syncHistory);
     } else {
       syncHistory();
@@ -141,7 +141,7 @@ const pattern = /^\/(\w+)?(?:\/(\w+))?.*?(?:[&?]filter=([^&?]+))?(?:[&?]search=(
 
 // eslint-disable-next-line complexity
 function syncHistory() {
-  const userId = tree.get(['userId']);
+  const loggedIn = tree.get(['userLoggedIn']);
 
   const match = pattern.exec(createPath(history.location)) || [];
   const state = {
@@ -155,7 +155,7 @@ function syncHistory() {
     view: match[1] || ''
   };
 
-  if (!userId) {
+  if (!loggedIn) {
     state.noteId = undefined;
     state.filter = [];
     state.search = '';
@@ -163,13 +163,13 @@ function syncHistory() {
 
   if (
     ![
-      !userId && 'login',
-      !userId && 'signup',
-      userId && 'notes',
-      userId && 'settings'
+      !loggedIn && 'login',
+      !loggedIn && 'signup',
+      loggedIn && 'notes',
+      loggedIn && 'settings'
     ].includes(state.view)
   )
-    state.view = userId ? 'notes' : '';
+    state.view = loggedIn ? 'notes' : '';
 
   document.title = `${titleForView(state.view)} | DocTeer`;
 
