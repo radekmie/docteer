@@ -84,17 +84,11 @@ endpoint('POST /users/login', {
     )
       throw new Meteor.Error('invalid-auth', "Sounds good, doesn't work.");
 
-    this.setUserId(user._id);
-
-    return {userId: user._id};
-  }
-});
-
-endpoint('POST /users/logout', {
-  schema: {},
-
-  handle() {
-    this.setUserId(null);
+    return {
+      _id: user._id,
+      emails: user.emails,
+      schemas: user.schemas
+    };
   }
 });
 
@@ -160,11 +154,16 @@ endpoint('POST /users/register', {
       schemas: defaultSchemas
     });
 
-    this.setUserId(userId);
+    Meteor.call('POST /notes', userId, {
+      patch: defaultPatch,
+      refresh: Infinity
+    });
 
-    Meteor.call('POST /notes', {patch: defaultPatch, refresh: Infinity});
-
-    return {userId};
+    return {
+      _id: userId,
+      emails: [{address: email}],
+      schemas: defaultSchemas
+    };
   }
 });
 

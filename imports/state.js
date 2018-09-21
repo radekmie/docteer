@@ -160,18 +160,19 @@ export const tree = new Baobab(
     edit: false,
     help: false,
     last: new Date(0),
-    view: undefined,
+    view: '',
 
+    userId: Baobab.monkey(['userData'], data => (data ? data._id : null)),
     user: Baobab.monkey(['userData'], ['userDiff'], (data, diff) => {
-      if (data === undefined) return undefined;
+      if (!data) return null;
 
       const user = Object.assign({}, data, diff);
       user._changed = JSON.stringify(data) !== JSON.stringify(user);
       return user;
     }),
 
-    userData: undefined,
-    userDiff: undefined
+    userData: null,
+    userDiff: null
   },
   {immutable: process.env.NODE_ENV === 'development'}
 );

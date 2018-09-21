@@ -4,10 +4,6 @@ import createHistory from 'history/createBrowserHistory';
 import {createLocation} from 'history/LocationUtils';
 import {createPath} from 'history/PathUtils';
 
-import {Meteor} from 'meteor/meteor';
-import {Tracker} from 'meteor/tracker';
-
-import {Users} from '../../imports/api/users';
 import {compare} from '../../imports/lib';
 import {onRefresh} from '../../imports/actions';
 import {titleForView} from '../../imports/lib';
@@ -15,29 +11,12 @@ import {tree} from '../../imports/state';
 
 const history = createHistory();
 
-let firstRun = true;
-
-// Collections
-Meteor.subscribe('LIVE /users/self', {
-  onReady() {
-    if (!Users.currentUserId()) update();
-  },
-
-  onStop(error) {
-    if (error) update();
-  }
-});
-
-Tracker.autorun(() => {
-  const user = Users.currentUser();
-
-  if (tree.set(['userData'], user && user.schemas ? user : undefined)) {
-    // $FlowFixMe: tree.set is actually a %checks function.
-    tree.set(['userDiff'], {schemas: user.schemas});
-    tree.set(['last'], new Date(0));
-
-    if (history.location.pathname === '/') tree.set(['view'], 'notes');
-  }
+(window.requestIdleCallback || window.setTimeout)(() => {
+  setTimeout(() => {
+    tree.set(['load'], tree.get(['load']) - 1);
+    tree.set(['pend'], tree.get(['pend']) - 1);
+    syncHistory();
+  }, 50 + 50 * Math.random());
 });
 
 // Errors
@@ -147,24 +126,24 @@ tree.select(['labels']).on('update', event => {
     tree.set(['filter'], filterAvailable);
 });
 
-tree.select(['userData']).on('update', event => {
-  if (
-    !event.currentData ||
-    !event.previousData ||
-    event.previousData._id !== event.currentData._id
-  )
-    onRefresh(true).then(update);
+tree.select(['userId']).on('update', ({data: {currentData, previousData}}) => {
+  if (previousData !== currentData) {
+    if (currentData) {
+      onRefresh(true).then(syncHistory);
+    } else {
+      syncHistory();
+    }
+  }
 });
 
 // Helpers
 const pattern = /^\/(\w+)?(?:\/(\w+))?.*?(?:[&?]filter=([^&?]+))?(?:[&?]search=([^&?]+))?.*$/;
 
-function syncHistory(location) {
-  if (firstRun) return;
+// eslint-disable-next-line complexity
+function syncHistory() {
+  const userId = tree.get(['userId']);
 
-  const user = tree.get(['user']);
-
-  const match = pattern.exec(createPath(location)) || [];
+  const match = pattern.exec(createPath(history.location)) || [];
   const state = {
     noteId: (match[1] === 'notes' && match[2]) || undefined,
     filter: match[3]
@@ -176,7 +155,7 @@ function syncHistory(location) {
     view: match[1] || ''
   };
 
-  if (!user) {
+  if (!userId) {
     state.noteId = undefined;
     state.filter = [];
     state.search = '';
@@ -184,13 +163,13 @@ function syncHistory(location) {
 
   if (
     ![
-      !user && 'login',
-      !user && 'signup',
-      user && 'notes',
-      user && 'settings'
+      !userId && 'login',
+      !userId && 'signup',
+      userId && 'notes',
+      userId && 'settings'
     ].includes(state.view)
   )
-    state.view = user ? 'notes' : '';
+    state.view = userId ? 'notes' : '';
 
   document.title = `${titleForView(state.view)} | DocTeer`;
 
@@ -205,14 +184,4 @@ function syncHistory(location) {
 
   if (JSON.stringify(tree.get(['filter'])) !== JSON.stringify(state.filter))
     tree.set(['filter'], state.filter);
-}
-
-function update() {
-  if (firstRun) {
-    firstRun = false;
-    tree.set(['load'], tree.get(['load']) - 1);
-    tree.set(['pend'], tree.get(['pend']) - 1);
-  }
-
-  syncHistory(history.location);
 }

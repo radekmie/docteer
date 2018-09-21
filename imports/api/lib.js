@@ -4,6 +4,8 @@ import SimpleSchema from 'simpl-schema';
 
 import {Meteor} from 'meteor/meteor';
 
+import {Users} from './users';
+
 SimpleSchema.defineValidationErrorTransform(error => {
   const ddpError = new Meteor.Error(error.message);
   ddpError.error = 'validation-error';
@@ -26,16 +28,28 @@ export function endpoint<Schema: {}>(
   const validator = new SimpleSchema({data: new SimpleSchema(schema)});
 
   Meteor.methods({
-    [name](data) {
-      if (authorize && !this.userId)
-        throw new Meteor.Error('user-logged-in', 'You must be logged in.');
-      if (!authorize && this.userId)
-        throw new Meteor.Error('user-logged-out', 'You must be logged out.');
+    [name](userId, data) {
+      const context = {userId};
 
       validator.clean({data}, {mutate: true});
       validator.validate({data});
 
-      return handle.call(this, data);
+      if (authorize && !context.userId)
+        throw new Meteor.Error('user-logged-in', 'You must be logged in.');
+      if (!authorize && context.userId)
+        throw new Meteor.Error('user-logged-out', 'You must be logged out.');
+
+      if (context.userId) {
+        if (typeof context.userId !== 'string')
+          throw new Meteor.Error('user-not-found', 'User not found.');
+
+        context.user = Users.findOne({_id: context.userId});
+
+        if (!context.user)
+          throw new Meteor.Error('user-not-found', 'User not found.');
+      }
+
+      return handle.call(context, data);
     }
   });
 }

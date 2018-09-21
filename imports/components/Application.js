@@ -52,7 +52,7 @@ type Application$State = {|
   search: string,
   toasts: ToastType[],
   user: UserType,
-  view: ?string
+  view: string
 |};
 
 export class Application extends Component<

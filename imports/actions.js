@@ -193,7 +193,10 @@ export function onLogin(email: string, password: string): Promise<void> {
     email,
     password: hash(password)
   }).then(result => {
-    Meteor.connection.setUserId(result.userId);
+    tree.set(['last'], new Date(0));
+    tree.set(['userData'], result);
+    tree.set(['userDiff'], {schemas: result.schemas});
+    tree.set(['view'], 'notes');
     toast('success', 'Logged in.');
     onRefresh(true);
   });
@@ -202,10 +205,12 @@ export function onLogin(email: string, password: string): Promise<void> {
 export function onLogout() {
   toast('info', 'Logging out...');
 
-  return call('POST /users/logout', {}).then(() => {
-    Meteor.connection.setUserId(null);
-    toast('success', 'Logged out.');
-  });
+  tree.set(['userData'], null);
+  tree.set(['userDiff'], null);
+
+  toast('success', 'Logged out.');
+
+  tree.set(['view'], 'login');
 }
 
 let refreshing: null | Promise<void> = null;
@@ -412,10 +417,12 @@ export function onSignup(email: string, password: string): Promise<void> {
     email,
     password: hash(password)
   }).then(result => {
-    Meteor.connection.setUserId(result.userId);
-    toast('success', 'Signed in.');
-    tree.set(['view'], 'notes');
+    tree.set(['last'], new Date(0));
     tree.set(['noteId'], 'introduction');
+    tree.set(['userData'], result);
+    tree.set(['userDiff'], {schemas: result.schemas});
+    tree.set(['view'], 'notes');
+    toast('success', 'Signed in.');
   });
 }
 
@@ -483,6 +490,7 @@ function call(path, ...args) {
   return new Promise((resolve, reject) => {
     const id = setTimeout(done, 5000, new Error('Sorry, try again later.'));
 
+    args.unshift(tree.get(['userId']));
     Meteor.apply(path, args, {noRetry: true}, done);
 
     function done(error, response) {

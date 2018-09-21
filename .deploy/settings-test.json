@@ -2,7 +2,7 @@
   "universe:e2e": {
     "mocha": {
       "bail": true,
-      "timeout": 5000
+      "timeout": 10000
     }
   }
 }
