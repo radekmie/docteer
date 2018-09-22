@@ -6,7 +6,7 @@ import {Meteor} from 'meteor/meteor';
 import {WebAppInternals} from 'meteor/webapp';
 import {meteorJsMinify} from 'meteor/minifier-js';
 
-import {optimize as minifyCSS} from './optimizeCSS';
+import {optimize as minifyCSS} from './optimize-css';
 
 const readFileSync = Meteor.wrapAsync(readFile);
 

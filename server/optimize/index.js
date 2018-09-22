@@ -5,12 +5,8 @@ import {Transform} from 'stream';
 import {Meteor} from 'meteor/meteor';
 import {Boilerplate} from 'meteor/boilerplate-generator';
 
-import {optimize as optimizeCSS} from './optimizeCSS';
-import {optimize as optimizeHTML} from './optimizeHTML';
-import {optimize as optimizeJS} from './optimizeJS';
-import {optimize as optimizeStatics} from './optimizeStatics';
-
-export {optimizeCSS, optimizeHTML, optimizeJS, optimizeStatics};
+import {optimize as optimizeHTML} from './optimize-html';
+import {optimize as optimizeStatics} from './optimize-statics';
 
 if (process.env.NODE_ENV === 'production') Meteor.startup(optimizeStatics);
 

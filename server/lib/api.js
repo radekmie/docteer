@@ -9,7 +9,7 @@ import url from 'url';
 import {WebApp} from 'meteor/webapp';
 
 import {APIError} from './APIError';
-import {Users} from './users';
+import * as users from '../services/users/lib';
 
 WebApp.rawConnectHandlers.use('/api', compression());
 WebApp.rawConnectHandlers.use('/api', text({type: 'application/json'}));
@@ -78,7 +78,7 @@ export function endpoint<Schema: {}>(
           throw new APIError({code: 'api-failed-token'});
         }
 
-        context.user = Users.findOne({_id: context.jwtDecoded.sub});
+        context.user = users.byId({_id: context.jwtDecoded.sub}).await();
         if (!context.user) throw new APIError({code: 'api-unknown-token'});
         context.userId = context.user._id;
       }

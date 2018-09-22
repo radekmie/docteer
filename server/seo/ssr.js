@@ -48,15 +48,6 @@ const ssr = cache(view => {
 });
 
 WebApp.addHtmlAttributeHook(() => ({lang: 'en'}));
-
-WebApp.rawConnectHandlers.stack.unshift({
-  route: '',
-  handle(req, res, next: () => void) {
-    res.setHeader('x-content-type-options', 'nosniff');
-    next();
-  }
-});
-
 WebAppInternals.registerBoilerplateDataCallback('SSR', (req, data) => {
   let view = req.url.pathname.split('/', 3)[1];
   if (view !== 'login' && view !== 'signup') view = '';
@@ -64,9 +55,7 @@ WebAppInternals.registerBoilerplateDataCallback('SSR', (req, data) => {
   Object.assign(data, ssr(view));
 
   if (data.headers === undefined) data.headers = {};
-  if (data.headers.etag === req.headers['if-none-match']) {
-    data.statusCode = 304;
-  }
+  if (data.headers.etag === req.headers['if-none-match']) data.statusCode = 304;
 
   return true;
 });

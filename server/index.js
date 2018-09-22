@@ -1,8 +1,8 @@
 // @flow
 
-import '../imports/api/notes/server';
-import '../imports/api/users/server';
-import './imports/optimize';
-import './imports/privacy';
-import './imports/ssr';
-import './imports/www';
+import './optimize';
+import './seo/privacy';
+import './seo/ssr';
+import './seo/www';
+import './services/notes/api';
+import './services/users/api';

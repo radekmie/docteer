@@ -32,10 +32,8 @@ export const APIErrors = {
 function APICheck({code, info, text}) {
   if (typeof code !== 'string')
     throw APICheckError('APIError.code have to be a string.');
-  if (!APIErrors[code]) {
-    console.log(code);
+  if (!APIErrors[code])
     throw APICheckError('APIError.code have to be defined.');
-  }
 
   // Optional.
   if (info !== undefined && typeof info !== 'object')

@@ -2,7 +2,7 @@
   "env": {
     "production": {
       "plugins": [
-        "./server/imports/babel.js"
+        "./script/babel/imports.js"
       ]
     }
   }

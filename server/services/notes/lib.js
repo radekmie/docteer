@@ -1,66 +1,26 @@
 // @flow
 
+import {Meteor} from 'meteor/meteor';
 import {MongoInternals} from 'meteor/mongo';
+import {Mongo} from 'meteor/mongo';
 
-import {NotesArchive} from '.';
-import {Notes} from '.';
-import {endpoint} from '../../lib';
+import type {NoteDocType} from '../../../imports/types.flow';
 
-import type {PatchType} from '../../../types.flow';
+type NotesType = Meteor$Mongo$Collection<NoteDocType<{||}>>;
 
 const ObjectId = MongoInternals.NpmModules.mongodb.module.ObjectId;
 
-endpoint('GET /api/notes', {
-  schema: {
-    refresh: {
-      type: Number,
-      optional: true,
-      min: 0
-    }
-  },
+// prettier-ignore
+export const Notes:        NotesType = new Mongo.Collection('notes');
+export const NotesArchive: NotesType = new Mongo.Collection('notes-archive');
 
-  async handle({refresh}: {|refresh: number|}): PatchType<*, *, *> {
-    return notesByUser(this.userId, refresh);
-  }
+Meteor.startup(() => {
+  Notes._ensureIndex({_id_user: 1, _id_slug: 1}, {unique: true});
+  Notes._ensureIndex({_id_user: 1, _updated: 1});
+  Notes._ensureIndex({_removed: 1});
 });
 
-endpoint('POST /api/notes', {
-  schema: {
-    patch: Object,
-    'patch.created': Array,
-    'patch.created.$': String,
-    'patch.removed': Array,
-    'patch.removed.$': String,
-    'patch.updated': Array,
-    'patch.updated.$': {type: Object, blackbox: true},
-    'patch.updated.$._id': String,
-    'patch.updated.$._outline': {type: Object, optional: true, blackbox: true},
-    'patch.updated.$._outname': {type: String, optional: true},
-    refresh: {
-      type: Number,
-      optional: true,
-      min: 0
-    }
-  },
-
-  async handle({
-    patch,
-    refresh
-  }: {|
-    patch: PatchType<*, *, *>,
-    refresh: number
-  |}): Promise<PatchType<*, *, *>> {
-    await notesPatch(patch, this.userId);
-
-    const notes = notesByUser(this.userId, refresh);
-
-    if (patch.removed.length) await notesArchive();
-
-    return notes;
-  }
-});
-
-export function notesArchive() {
+export function archive() {
   const archive = Notes.find({_removed: {$ne: null}}).map(note =>
     Object.assign(note, {_id: new ObjectId(note._id._str)})
   );
@@ -75,7 +35,7 @@ export function notesArchive() {
   ]);
 }
 
-export function notesByUser(userId: string, after: number): PatchType<*, *, *> {
+export function byUser(userId: string, after: number): PatchType<*, *, *> {
   const refresh = new Date(after || 0);
   const fields = {
     _id: 0,
@@ -101,7 +61,7 @@ export function notesByUser(userId: string, after: number): PatchType<*, *, *> {
   return diff;
 }
 
-export function notesPatch(patch: PatchType<*, *, *>, userId: string) {
+export function patch(patch: PatchType<*, *, *>, userId: string) {
   if (!patch.created.length && !patch.removed.length && !patch.updated.length)
     return Promise.resolve();
 
