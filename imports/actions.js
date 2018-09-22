@@ -2,8 +2,6 @@
 
 import fuzzysort from 'fuzzysort';
 
-import {Meteor} from 'meteor/meteor';
-
 import {hash} from './lib';
 import {schemaEmpty} from './lib';
 import {tree} from './state';
@@ -527,9 +525,6 @@ function call(name, data) {
   });
 }
 
-// $FlowFixMe: Incomplete typings.
-const TOAST_TIME_MODIFIER = (Meteor.isE2E: boolean) ? 0.25 : 1;
-
 function toast(type, message) {
   const _id = Math.random().toString(36);
   const text =
@@ -555,19 +550,19 @@ function toast(type, message) {
 
     setTimeout(() => {
       tree.set(['pend'], tree.get(['pend']) - 1);
-    }, 500 * TOAST_TIME_MODIFIER);
+    }, 500);
 
     setTimeout(() => {
       tree.set(['toasts', {_id: info}, 'dead'], true);
-    }, 1000 * TOAST_TIME_MODIFIER);
+    }, 1000);
 
     setTimeout(() => {
       tree.set(['toasts', {_id}, 'dead'], true);
-    }, 1250 * TOAST_TIME_MODIFIER);
+    }, 1250);
 
     setTimeout(() => {
       tree.unset(['toasts', {_id}]);
       tree.unset(['toasts', {_id: info}]);
-    }, 1500 * TOAST_TIME_MODIFIER);
+    }, 1500);
   }
 }

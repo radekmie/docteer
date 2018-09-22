@@ -3,8 +3,6 @@
 
 import {h} from 'preact';
 
-import {Meteor} from 'meteor/meteor';
-
 let mover = null;
 let sizer = null;
 
@@ -43,7 +41,7 @@ function onStop() {
   }
 }
 
-if (Meteor.isClient) {
+if (typeof window !== 'undefined') {
   let modifier = false;
   try {
     window.addEventListener(
