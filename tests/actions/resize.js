@@ -1,9 +1,10 @@
 // @flow
 
-import {page} from '../helpers';
+import {getPage} from '../helpers';
 
 export function resize(width: number, height: number) {
   it(`should resize to ${width}x${height}`, async () => {
+    const page = await getPage();
     await page.setViewport({height, width});
 
     // Window frame.

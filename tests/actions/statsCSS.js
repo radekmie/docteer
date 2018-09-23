@@ -1,10 +1,11 @@
 // @flow
 
-import {page} from '../helpers';
+import {getPage} from '../helpers';
 
 const id = x => x.styleSheetId.split('.', 2)[0];
 
-beforeAll(() => {
+beforeAll(async () => {
+  const page = await getPage();
   page._rulesUsages = new Map();
   page._stylesheets = new Map();
 
@@ -21,7 +22,8 @@ beforeAll(() => {
   });
 });
 
-afterAll(() => {
+afterAll(async () => {
+  const page = await getPage();
   page._stylesheets.forEach((stylesheet, key) => {
     const ranged = Array.from({length: stylesheet.length}, (_, index) => index);
     const unused = new Set(ranged);
@@ -48,15 +50,19 @@ afterAll(() => {
     // eslint-disable-next-line no-console
     console.log(`${stylesheet.sourceURL}: ${cover}%`);
     ranges.forEach(([a, b]) => {
-      if (a - b)
+      if (a - b) {
+        const code = stylesheet.text.substring(a - 1, b + 1).trim();
+
         // eslint-disable-next-line no-console
-        console.log(`  [${a}-${b}]`, stylesheet.text.substring(a - 1, b + 1));
+        if (code) console.log(`  [${a}-${b}]\n      ` + code);
+      }
     });
   });
 });
 
 export function statsCSS() {
   beforeAll(async () => {
+    const page = await getPage();
     await page._client.send('Page.enable');
     await page._client.send('DOM.enable');
     await page._client.send('CSS.enable');
@@ -64,6 +70,7 @@ export function statsCSS() {
   });
 
   afterAll(async () => {
+    const page = await getPage();
     const {ruleUsage} = await page._client.send('CSS.stopRuleUsageTracking');
 
     ruleUsage.forEach(rule => {

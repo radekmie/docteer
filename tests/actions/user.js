@@ -1,7 +1,7 @@
 // @flow
 
 import {expand} from '../helpers';
-import {page} from '../helpers';
+import {getPage} from '../helpers';
 import {type} from '../helpers';
 
 import {navigate} from './navigate';
@@ -15,6 +15,7 @@ export function userAddSchema(schema: SchemaType<*>) {
     const inA = '[data-test-schema]:last-of-type';
     const inB = '[data-test-schema]:last-of-type > :nth-last-child(2)';
 
+    const page = await getPage();
     await page.click('[data-test-schema-add]');
     await page.waitFor(10);
     await page.click(inA);
@@ -49,6 +50,7 @@ export function userChangePassword({
     await type('#new1', new1);
     await type('#new2', new2);
 
+    const page = await getPage();
     await page.click('[title="Change password"]');
   });
 }
@@ -58,6 +60,7 @@ export function userLogIn(user: {email: string, password: string}) {
 
   it(`should log in as ${user.email}:${user.password}`, async () => {
     const selector = '[href="/signup"]';
+    const page = await getPage();
     await page.waitForSelector(selector);
 
     await type('#email', user.email);
@@ -69,6 +72,7 @@ export function userLogIn(user: {email: string, password: string}) {
 
 export function userLogOut() {
   it('should log out', async () => {
+    const page = await getPage();
     await page.click('[data-test-navigation="logout"]');
   });
 }
@@ -78,6 +82,7 @@ export function userSignUp(user: {email: string, password: string}) {
 
   it(`should sign in as ${user.email}:${user.password}`, async () => {
     const selector = '[href="/signup"]';
+    const page = await getPage();
     await page.waitFor(100);
     await page.waitForSelector(selector);
     await page.waitFor(100);

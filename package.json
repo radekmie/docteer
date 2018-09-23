@@ -8,7 +8,7 @@
     "build:client": "parcel build --detailed-report --no-cache --no-source-maps --out-dir dist/client client/index.html",
     "build:server": "parcel build --detailed-report --no-cache --no-source-maps --out-dir dist/server server/index.js --no-minify --target=node",
     "build:static": "mkdir -p dist/public && cp -R client/public dist",
-    "coverage": "jest --bail --coverage --no-cache --runInBand",
+    "coverage": "jest --all --ci --coverage",
     "prebuild": "npm run reset:build",
     "precommit": "npm test",
     "reset": "run-s -ln reset:*",
