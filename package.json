@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@babel/core": "7.1.0",
+    "ajv": "6.5.4",
     "baobab": "2.5.2",
     "bcrypt": "3.0.1",
     "body-parser": "1.18.3",
@@ -41,8 +42,7 @@
     "mongodb": "3.1.6",
     "preact": "8.3.1",
     "preact-render-to-string": "4.1.0",
-    "serve-static": "1.13.2",
-    "simpl-schema": "1.5.3"
+    "serve-static": "1.13.2"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "7.1.0",

@@ -1,17 +1,19 @@
 // @flow
 
-import {endpoint} from '../../util/endpoint';
 import * as notes from './lib';
+import * as schemas from '../../schemas';
+import {endpoint} from '../../util';
 
 import type {PatchType} from '../../../../imports/types.flow';
 
-endpoint('GET /api/notes', {
+endpoint('GET', '/notes', {
   schema: {
-    refresh: {
-      type: Number,
-      optional: true,
-      min: 0
-    }
+    type: 'object',
+    properties: {
+      refresh: {type: 'integer', minimum: 0}
+    },
+    required: ['refresh'],
+    additionalProperties: false
   },
 
   handle({refresh}: {|refresh: number|}): Promise<PatchType<*, *, *>> {
@@ -20,23 +22,35 @@ endpoint('GET /api/notes', {
 });
 
 // $FlowFixMe
-endpoint('POST /api/notes', {
+endpoint('POST', '/notes', {
   schema: {
-    patch: Object,
-    'patch.created': Array,
-    'patch.created.$': String,
-    'patch.removed': Array,
-    'patch.removed.$': String,
-    'patch.updated': Array,
-    'patch.updated.$': {type: Object, blackbox: true},
-    'patch.updated.$._id': String,
-    'patch.updated.$._outline': {type: Object, optional: true, blackbox: true},
-    'patch.updated.$._outname': {type: String, optional: true},
-    refresh: {
-      type: Number,
-      optional: true,
-      min: 0
-    }
+    type: 'object',
+    properties: {
+      created: {type: 'array', items: {type: 'string'}},
+      refresh: {type: 'integer', minimum: 0},
+      removed: {type: 'array', items: {type: 'string'}},
+      updated: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            _id: {type: 'string'},
+            _outline: schemas.outline,
+            _outname: {type: 'string'}
+          },
+          patternProperties: {
+            '^[^$_][^.]*$': {
+              type: ['array', 'string'],
+              items: {type: 'string'}
+            }
+          },
+          required: ['_id', '_outline', '_outname'],
+          additionalProperties: false
+        }
+      }
+    },
+    required: ['created', 'refresh', 'removed', 'updated'],
+    additionalProperties: false
   },
 
   async handle({

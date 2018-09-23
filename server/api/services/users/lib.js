@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import {ObjectId} from 'mongodb';
 
 import * as notes from '../notes/lib';
-import {APIError} from '../../util/APIError';
+import {APIError} from '../../util';
 import {db} from '../../mongo';
 
 import type {PassType} from '../../../../imports/types.flow';

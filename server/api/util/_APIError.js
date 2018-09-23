@@ -1,5 +1,7 @@
 // @flow
 
+import clone from 'lodash/clone';
+
 // We store them here for 3 reasons:
 //     - language-independence
 //     - sureness of presence
@@ -7,26 +9,26 @@
 // prettier-ignore
 export const APIErrors = {
   // API logic.
-  'api-already-exists':       {http: 409, text: 'Already Exists'},
-  'api-failed-token':         {http: 400, text: 'Failed JWT Verification'},
-  'api-forbidden':            {http: 403, text: 'Resource Forbidden'},
-  'api-internal':             {http: 500, text: 'Internal Server Error'},
-  'api-invalid-token':        {http: 400, text: 'Invalid JWT'},
-  'api-json':                 {http: 400, text: 'Invalid JSON'},
-  'api-json-body':            {http: 400, text: 'Invalid JSON - Body Should Be A JSON Object'},
-  'api-log-in':               {http: 409, text: 'Logged In Access Only'},
-  'api-log-out':              {http: 409, text: 'Logged Out Access Only'},
-  'api-not-found':            {http: 404, text: 'Resource Not Found'},
-  'api-unavailable':          {http: 503, text: 'External Service Unavailable'},
-  'api-unknown-token':        {http: 400, text: 'Unknown JWT'},
-  'api-url':                  {http: 422, text: 'Failed URL Parsing'},
-  'api-validation':           {http: 422, text: 'Validation Failed'},
+  'api-already-exists':       'Already Exists',
+  'api-failed-token':         'Failed JWT Verification',
+  'api-forbidden':            'Resource Forbidden',
+  'api-internal':             'Internal Server Error',
+  'api-invalid-token':        'Invalid JWT',
+  'api-json':                 'Invalid JSON',
+  'api-json-body':            'Invalid JSON - Body Should Be A JSON Object',
+  'api-log-in':               'Logged In Access Only',
+  'api-log-out':              'Logged Out Access Only',
+  'api-not-found':            'Resource Not Found',
+  'api-unavailable':          'External Service Unavailable',
+  'api-unknown-token':        'Unknown JWT',
+  'api-url':                  'Failed URL Parsing',
+  'api-validation':           'Validation Failed',
 
   // Business logic.
-  'user-already-exists':      {http: 409, text: 'User already exists.'},
-  'user-invalid-credentials': {http: 400, text: "Sounds good, doesn't work."},
-  'user-password-incorrect':  {http: 422, text: 'Incorrect old password.'},
-  'user-password-mismatch':   {http: 422, text: 'Passwords mismatch.'},
+  'user-already-exists':      'User already exists.',
+  'user-invalid-credentials': "Sounds good, doesn't work.",
+  'user-password-incorrect':  'Incorrect old password.',
+  'user-password-mismatch':   'Passwords mismatch.',
 };
 
 export class APIError extends Error {
@@ -38,13 +40,10 @@ export class APIError extends Error {
 
   /**
    * APIError
-   *     General class for errors. It can be used instead of Meteor.Error, and
-   *     it will be treated in the same way (i.e. it will be passed to the
-   *     client as a normal error, not "500 Internal Server Error"). It's the
-   *     only accepted by the API, so if any other error will be thrown, then
-   *     standard HTTP 500 error will be used instead to make sure, that every
-   *     error is being thrown on a purpose, not by mistake. Also, every code
-   *     have to be translated and present in APIErrors.
+   *     General class for errors. It's the only accepted by the API, so if any
+   *     other error will be thrown, then standard HTTP 500 error will be used
+   *     instead to make sure, that every error is being thrown on a purpose.
+   *     Also, every code have to be translated and present in APIErrors.
    *
    * @param  {String}   options.code  Distinctive code.
    * @param  {Object?}  options.info  Additional info.
@@ -76,7 +75,7 @@ export class APIError extends Error {
 
     this.code = code;
     this.http = APIHTTP(code);
-    this.info = info;
+    this.info = clone(info);
     this.text = APIText(text, code, info);
   }
 
@@ -88,19 +87,6 @@ export class APIError extends Error {
 
   static fromError(error: mixed) {
     if (error instanceof APIError) return error;
-    if (error && error.error === 'validation-error')
-      return new APIError({
-        code: 'api-validation',
-        info: {
-          // $FlowFixMe
-          errors: error.details
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map(({name, type}) => ({
-              name,
-              type: type === 'expectedConstructor' ? 'badDate' : type
-            }))
-        }
-      });
 
     if (process.env.NODE_ENV !== 'production' && error instanceof Error) {
       console.info('[API] An invalid error was thrown:', error, error.stack);
@@ -141,11 +127,11 @@ function APICheckError(text) {
 }
 
 function APIHTTP(code) {
-  return APIErrors[code].http;
+  return code === 'api-internal' ? 500 : 200;
 }
 
 function APIText(text, code, info) {
-  let fallback = APIErrors[code].text;
+  let fallback = APIErrors[code];
 
   if (info)
     for (const key of Object.keys(info))
@@ -161,3 +147,5 @@ function APIText(text, code, info) {
 
   return fallback;
 }
+
+export default APIError;

@@ -35,7 +35,7 @@ export function onChangePassword(
 ): Promise<void> {
   toast('info', 'Changing password...');
 
-  return call('POST /api/users/password', {
+  return call('POST', '/api/users/password', {
     new1: hash(new1),
     new2: hash(new2),
     old: hash(old)
@@ -187,7 +187,7 @@ export function onImport() {
 export function onLogin(email: string, password: string): Promise<void> {
   toast('info', 'Logging in...');
 
-  return call('POST /api/users/login', {
+  return call('POST', '/api/users/login', {
     email,
     password: hash(password)
   }).then(result => {
@@ -230,7 +230,7 @@ export function onRefresh(firstRun: ?boolean): Promise<void> {
   toast('info', firstRun === true ? 'Loading...' : 'Refreshing...');
 
   const last = new Date();
-  refreshing = call('GET /api/notes', {refresh: +tree.get(['last'])})
+  refreshing = call('GET', '/api/notes', {refresh: +tree.get(['last'])})
     // $FlowFixMe
     .then((patch: PatchType<*, *, *>) => {
       tree.set(['last'], last);
@@ -285,7 +285,7 @@ export function onSave(): Promise<void> {
 
   const last = new Date();
 
-  return call('POST /api/notes', {
+  return call('POST', '/api/notes', {
     patch,
     refresh: +tree.get(['last'])
   }).then(
@@ -404,7 +404,7 @@ export function onSettingsSave() {
   if (tree.get(['userDiff'])) {
     toast('info', 'Saving...');
 
-    call('POST /api/users/settings', tree.get(['userDiff'])).then(() => {
+    call('POST', '/api/users/settings', tree.get(['userDiff'])).then(() => {
       toast('success', 'Saved.');
       onSettingsReset();
     });
@@ -414,7 +414,7 @@ export function onSettingsSave() {
 export function onSignup(email: string, password: string): Promise<void> {
   toast('info', 'Signing up...');
 
-  return call('POST /api/users/register', {
+  return call('POST', '/api/users/register', {
     email,
     password: hash(password)
   }).then(result => {
@@ -488,8 +488,7 @@ function merge(diff) {
   );
 }
 
-function call(name, data) {
-  const [method, path] = name.split(' ', 2);
+function call(method: 'GET' | 'POST', path, data) {
   const headers = new Headers({'Content-Type': 'application/json'});
   const url = new URL(path, location.origin);
 
@@ -508,12 +507,14 @@ function call(name, data) {
     const id = setTimeout(done, 5000, new Error('Sorry, try again later.'));
 
     fetch(url, {body, headers, method})
-      .then(response =>
-        response.json().then(data => {
-          if (response.ok) return data;
-          throw Object.assign(new Error(), data);
-        })
-      )
+      .then(response => {
+        if (!response.ok) throw new Error();
+        return response.json();
+      })
+      .then(response => {
+        if (response.error) throw Object.assign(new Error(), response.error);
+        return response.result;
+      })
       .then(response => done(null, response), done);
 
     function done(error, response) {

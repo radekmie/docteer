@@ -1,31 +1,33 @@
 // @flow
 
-import SimpleSchema from 'simpl-schema';
+import Ajv from 'ajv';
 import jwt from 'jsonwebtoken';
 import url from 'url';
 import {ObjectId} from 'mongodb';
 
 import * as users from '../services/users/lib';
-import {APIError} from './APIError';
+import APIError from './_APIError';
 import {server} from '../entry';
 
-export function endpoint<Schema: {}>(
-  name: string,
+const ajv = new Ajv({allErrors: true});
+
+export function endpoint<Params: {}, Result: {}, Schema: {}>(
+  method: string,
+  path: string,
   {
     authorize = true,
     handle,
     schema
   }: {|
     authorize?: boolean,
-    handle: Schema => *,
-    schema: $ObjMap<Schema, () => mixed>
+    handle: Params => Promise<Result>,
+    schema: Schema
   |}
 ) {
-  const [method, path] = name.split(' ', 2);
-  const validator = new SimpleSchema(schema);
+  const validator = ajv.compile(schema);
 
   // eslint-disable-next-line complexity
-  server.use(path.slice(4), async (request, response, next) => {
+  server.use(path, async (request, response, next) => {
     if (request.method !== method) {
       next();
       return;
@@ -35,6 +37,10 @@ export function endpoint<Schema: {}>(
       if (request.method === 'GET') {
         try {
           request.body = url.parse(request.url, true).query;
+
+          for (const [key, value] of Object.entries(request.body))
+            if (isFinite(value) && '' + parseInt(value) === value)
+              request.body[key] = parseInt(value);
         } catch (error) {
           throw new APIError({code: 'api-url'});
         }
@@ -49,8 +55,8 @@ export function endpoint<Schema: {}>(
           throw new APIError({code: 'api-json-body'});
       }
 
-      validator.clean(request.body, {mutate: true});
-      validator.validate(request.body);
+      if (!validator(request.body))
+        throw new APIError({code: 'api-validation', info: validator.errors});
 
       const context = {
         jwt: null,
@@ -81,16 +87,14 @@ export function endpoint<Schema: {}>(
       if (authorize && !context.user) throw new APIError({code: 'api-log-out'});
 
       const result = await handle.call(context, request.body);
-      if (!result || result.constructor !== Object)
-        throw new APIError({code: 'api-internal'});
 
       response.writeHead(200, {'Content-Type': 'application/json'});
-      response.end(JSON.stringify(result));
+      response.end(JSON.stringify({error: null, result}));
     } catch (_error) {
       const error = APIError.fromError(_error);
 
       response.writeHead(error.http, {'Content-Type': 'application/json'});
-      response.end(JSON.stringify(error.toJSON()));
+      response.end(JSON.stringify({error: error.toJSON(), response: null}));
     }
   });
 }

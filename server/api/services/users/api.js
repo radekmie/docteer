@@ -1,65 +1,71 @@
 // @flow
 
-import SimpleSchema from 'simpl-schema';
-
-import {endpoint} from '../../util/endpoint';
+import * as schemas from '../../schemas';
 import * as users from './lib';
+import {endpoint} from '../../util';
 
-const PassSchema = new SimpleSchema({
-  algorithm: {type: String, regEx: /^sha-256$/},
-  digest: String
-});
-
-endpoint('POST /api/users/login', {
+endpoint('POST', '/users/login', {
   authorize: false,
   handle: users.login,
   schema: {
-    email: String,
-    password: PassSchema
+    type: 'object',
+    properties: {
+      email: schemas.email,
+      password: schemas.password
+    },
+    required: ['email', 'password'],
+    additionalProperties: false
   }
 });
 
-endpoint('POST /api/users/password', {
+endpoint('POST', '/users/password', {
   handle: users.password,
   schema: {
-    new1: PassSchema,
-    new2: PassSchema,
-    old: PassSchema
+    type: 'object',
+    properties: {
+      new1: schemas.password,
+      new2: schemas.password,
+      old: schemas.password
+    },
+    required: ['new1', 'new2', 'old'],
+    additionalProperties: false
   }
 });
 
-endpoint('POST /api/users/register', {
+endpoint('POST', '/users/register', {
   authorize: false,
   handle: users.register,
   schema: {
-    email: String,
-    password: PassSchema
+    type: 'object',
+    properties: {
+      email: schemas.email,
+      password: schemas.password
+    },
+    required: ['email', 'password'],
+    additionalProperties: false
   }
 });
 
 // $FlowFixMe
-endpoint('POST /api/users/settings', {
+endpoint('POST', '/users/settings', {
   handle: users.settings,
   schema: {
-    schemas: Array,
-    'schemas.$': Object,
-    'schemas.$.name': String,
-    'schemas.$.fields': {
-      type: Object,
-      blackbox: true,
-      custom() {
-        const entries = Object.entries(this.value);
-
-        const pattern = /^[^$_][^.]*$/;
-        const invalid = entries.find(entry => !pattern.test(entry[0]));
-        if (invalid) return 'regEx';
-
-        const allowed = ['div', 'ol', 'ul', 'textarea'];
-        const unknown = entries.find(entry => !allowed.includes(entry[1]));
-        if (unknown) return 'notAllowed';
-
-        return undefined;
+    type: 'object',
+    properties: {
+      schemas: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            fields: schemas.outline,
+            name: {type: 'string'}
+          },
+          required: ['fields', 'name'],
+          additionalProperties: false
+        }
       }
-    }
+    },
+    required: ['schemas'],
+    additionalProperties: false
   }
 });
