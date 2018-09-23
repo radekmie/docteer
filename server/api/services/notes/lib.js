@@ -4,7 +4,7 @@ import {ObjectId} from 'mongodb';
 
 import {db} from '../../mongo';
 
-import type {PatchType} from '../../../../imports/types.flow';
+import type {PatchType} from '../../../../types.flow';
 
 // prettier-ignore
 const notes        = () => db().then(db => db.collection('notes'));

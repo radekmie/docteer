@@ -7,8 +7,8 @@ import {Labels} from './Labels';
 import {iconSearch} from './Icon';
 import {onSearch} from '../actions';
 
-import type {LabelType} from '../types.flow';
-import type {NoteType} from '../types.flow';
+import type {LabelType} from '../../types.flow';
+import type {NoteType} from '../../types.flow';
 
 type Note$Props = {|
   note: NoteType<*>

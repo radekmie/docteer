@@ -4,7 +4,7 @@
 import {h} from 'preact';
 import {render} from 'preact';
 
-import {Popup} from '../../imports/components/Popup';
+import {Popup} from '../components/Popup';
 
 function create(node) {
   if (!node.popup) {

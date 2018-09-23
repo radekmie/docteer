@@ -17,7 +17,7 @@ import {onSchemaOrder} from '../actions';
 import {onSchemaRemove} from '../actions';
 import {onSchemaType} from '../actions';
 
-import type {UserType} from '../types.flow';
+import type {UserType} from '../../types.flow';
 
 type Credentials$Props = {|
   user: UserType

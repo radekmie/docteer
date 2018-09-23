@@ -5,17 +5,17 @@ import {Component} from 'preact';
 import {h} from 'preact';
 
 import {Editable} from './Editable';
-import {cache} from '../lib';
-import {compareDocs} from '../lib';
+import {cache} from '../../lib';
+import {compareDocs} from '../../lib';
 import {onChangeSchema} from '../actions';
 import {onChange} from '../actions';
 import {onTypeAhead} from '../actions';
-import {schemaIsArray} from '../lib';
-import {schemaKey} from '../lib';
+import {schemaIsArray} from '../../lib';
+import {schemaKey} from '../../lib';
 
-import type {EventType} from '../types.flow';
-import type {NoteType} from '../types.flow';
-import type {UserType} from '../types.flow';
+import type {EventType} from '../../types.flow';
+import type {NoteType} from '../../types.flow';
+import type {UserType} from '../../types.flow';
 
 type Note$Props = {|
   edit: boolean,

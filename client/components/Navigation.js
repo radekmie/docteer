@@ -10,7 +10,7 @@ import {iconLogOut} from './Icon';
 import {iconNote} from './Icon';
 import {onLogout} from '../actions';
 
-import type {UserType} from '../types.flow';
+import type {UserType} from '../../types.flow';
 
 type Navigation$Props = {|
   full: boolean,

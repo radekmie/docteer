@@ -16,10 +16,10 @@ import {Settings} from './Settings';
 import {Toasts} from './Toasts';
 import {tree} from '../state';
 
-import type {LabelType} from '../types.flow';
-import type {NoteType} from '../types.flow';
-import type {ToastType} from '../types.flow';
-import type {UserType} from '../types.flow';
+import type {LabelType} from '../../types.flow';
+import type {NoteType} from '../../types.flow';
+import type {ToastType} from '../../types.flow';
+import type {UserType} from '../../types.flow';
 
 const watcher = tree.watch({
   edit: ['edit'],

@@ -8,9 +8,9 @@ import * as notes from '../notes/lib';
 import {APIError} from '../../util';
 import {db} from '../../mongo';
 
-import type {PassType} from '../../../../imports/types.flow';
-import type {PatchType} from '../../../../imports/types.flow';
-import type {SchemaType} from '../../../../imports/types.flow';
+import type {PassType} from '../../../../types.flow';
+import type {PatchType} from '../../../../types.flow';
+import type {SchemaType} from '../../../../types.flow';
 
 const users = () => db().then(db => db.collection('users'));
 

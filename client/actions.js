@@ -2,14 +2,14 @@
 
 import fuzzysort from 'fuzzysort';
 
-import {hash} from './lib';
-import {schemaEmpty} from './lib';
+import {hash} from '../lib';
+import {schemaEmpty} from '../lib';
 import {tree} from './state';
 
-import type {EventType} from './types.flow';
-import type {InputEventType} from './types.flow';
-import type {PatchType} from './types.flow';
-import type {SchemaType} from './types.flow';
+import type {EventType} from '../types.flow';
+import type {InputEventType} from '../types.flow';
+import type {PatchType} from '../types.flow';
+import type {SchemaType} from '../types.flow';
 
 export function onAdd() {
   const _id = Math.random()

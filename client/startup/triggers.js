@@ -4,10 +4,10 @@ import createHistory from 'history/createBrowserHistory';
 import {createLocation} from 'history/LocationUtils';
 import {createPath} from 'history/PathUtils';
 
-import {compare} from '../../imports/lib';
-import {onRefresh} from '../../imports/actions';
-import {titleForView} from '../../imports/lib';
-import {tree} from '../../imports/state';
+import {compare} from '../../lib';
+import {onRefresh} from '../actions';
+import {titleForView} from '../../lib';
+import {tree} from '../state';
 
 const history = createHistory();
 

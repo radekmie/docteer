@@ -17,7 +17,7 @@ import {onSave} from '../actions';
 import {onSettingsReset} from '../actions';
 import {onSettingsSave} from '../actions';
 
-import type {UserType} from '../types.flow';
+import type {UserType} from '../../types.flow';
 
 type Actions$Props = {|
   note: boolean,

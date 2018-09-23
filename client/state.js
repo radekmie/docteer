@@ -3,8 +3,8 @@
 import Baobab from 'baobab';
 import fuzzysort from 'fuzzysort';
 
-import {compare} from './lib';
-import {compareDocs} from './lib';
+import {compare} from '../lib';
+import {compareDocs} from '../lib';
 
 export const tree = new Baobab(
   {

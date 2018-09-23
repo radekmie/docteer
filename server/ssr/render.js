@@ -8,10 +8,10 @@ import fs from 'fs';
 import {h} from 'preact';
 import {render as preact} from 'preact-render-to-string';
 
-import {Application} from '../../imports/components/Application';
-import {Logo} from '../../imports/components/Logo';
-import {cache} from '../../imports/lib';
-import {titleForView} from '../../imports/lib';
+import {Application} from '../../client/components/Application';
+import {Logo} from '../../client/components/Logo';
+import {cache} from '../../lib';
+import {titleForView} from '../../lib';
 
 export const params = (url: string) => {
   const view = url.split('/', 3)[1];

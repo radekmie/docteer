@@ -4,7 +4,7 @@ import * as notes from './lib';
 import * as schemas from '../../schemas';
 import {endpoint} from '../../util';
 
-import type {PatchType} from '../../../../imports/types.flow';
+import type {PatchType} from '../../../../types.flow';
 
 endpoint('GET', '/notes', {
   schema: {
