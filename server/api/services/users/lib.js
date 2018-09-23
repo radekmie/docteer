@@ -2,20 +2,17 @@
 
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import {ObjectId} from 'mongodb';
 
-import {Random} from 'meteor/random';
-import {Mongo} from 'meteor/mongo';
-
-import {APIError} from '../../lib/APIError';
 import * as notes from '../notes/lib';
+import {APIError} from '../../util/APIError';
+import {db} from '../../mongo';
 
-import type {PassType} from '../../../imports/types.flow';
-import type {PatchType} from '../../../imports/types.flow';
-import type {SchemaType} from '../../../imports/types.flow';
+import type {PassType} from '../../../../imports/types.flow';
+import type {PatchType} from '../../../../imports/types.flow';
+import type {SchemaType} from '../../../../imports/types.flow';
 
-type UsersType = Meteor$Mongo$Collection<Meteor$User>;
-
-export const Users: UsersType = new Mongo.Collection('users');
+const users = () => db().then(db => db.collection('users'));
 
 const defaultPatch: PatchType<*, *, *> = {
   created: ['introduction'],
@@ -64,12 +61,14 @@ const defaultSchemas: SchemaType<*>[] = [
 ];
 
 export async function byId({_id}: {|_id: string|}) {
+  const Users = await users();
   return Users.findOne({_id});
 }
 
 // prettier-ignore
 export async function login({email, password}: {|email: string, password: PassType|}) {
-  const user = Users.findOne({'emails.address': email});
+  const Users = await users();
+  const user = await Users.findOne({'emails.address': email});
 
   if (
     !user ||
@@ -107,7 +106,8 @@ export async function password({new1, new2, old}: {|new1: PassType, new2: PassTy
     return {};
   }
 
-  Users.update(
+  const Users = await users();
+  Users.updateOne(
     {_id: this.userId},
     {$set: {'services.password.bcrypt': await bcrypt.hash(new1.digest, 10)}}
   );
@@ -117,29 +117,31 @@ export async function password({new1, new2, old}: {|new1: PassType, new2: PassTy
 
 // prettier-ignore
 export async function register({email, password}: {|email: string, password: PassType|}) {
-  const user = Users.findOne({'emails.address': email});
+  const Users = await users();
+  const user = await Users.findOne({'emails.address': email});
   if (user) throw new APIError({code: 'user-already-exists'});
 
-  const userId = Users.insert({
-    _id: Random.id(),
+  const {insertedId} = await Users.insertOne({
     createdAt: new Date(),
     services: {password: {bcrypt: await bcrypt.hash(password.digest, 10)}},
     emails: [{address: email}],
     schemas: defaultSchemas
   });
 
+  this.userId = new ObjectId(insertedId);
   notes.patch(defaultPatch, this.userId);
 
   return {
     emails: [{address: email}],
     schemas: defaultSchemas,
     token: jwt.sign(
-      {exp: Math.floor(Date.now() / 1000) + 60 * 60, sub: userId},
+      {exp: Math.floor(Date.now() / 1000) + 60 * 60, sub: this.userId},
       'SECRET'
     )
   };
 }
 
 export async function settings(settings: {|schemas: SchemaType<*>[]|}) {
-  Users.update({_id: this.userId}, {$set: settings});
+  const Users = await users();
+  return Users.updateOne({_id: this.userId}, {$set: settings});
 }

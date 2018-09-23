@@ -2,7 +2,7 @@
 
 import SimpleSchema from 'simpl-schema';
 
-import {endpoint} from '../../lib/api';
+import {endpoint} from '../../util/endpoint';
 import * as users from './lib';
 
 const PassSchema = new SimpleSchema({
@@ -37,6 +37,7 @@ endpoint('POST /api/users/register', {
   }
 });
 
+// $FlowFixMe
 endpoint('POST /api/users/settings', {
   handle: users.settings,
   schema: {

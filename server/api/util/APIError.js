@@ -29,47 +29,6 @@ export const APIErrors = {
   'user-password-mismatch':   {http: 422, text: 'Passwords mismatch.'},
 };
 
-function APICheck({code, info, text}) {
-  if (typeof code !== 'string')
-    throw APICheckError('APIError.code have to be a string.');
-  if (!APIErrors[code])
-    throw APICheckError('APIError.code have to be defined.');
-
-  // Optional.
-  if (info !== undefined && typeof info !== 'object')
-    throw APICheckError('APIError.info have to be an object.');
-
-  // Optional.
-  if (text !== undefined && typeof text !== 'string')
-    throw APICheckError('APIError.text have to be a string.');
-}
-
-function APICheckError(text) {
-  return new APIError({code: 'api-internal', text});
-}
-
-function APIHTTP(code) {
-  return APIErrors[code].http;
-}
-
-function APIText(text, code, info) {
-  let fallback = APIErrors[code].text;
-
-  if (info)
-    for (const key of Object.keys(info))
-      fallback = fallback.split(`{{${key}}}`).join(info[key]);
-
-  // Some fields left
-  if (fallback.indexOf('{{') < fallback.indexOf('}}'))
-    console.info('[API] Insufficient info for code:', code);
-
-  // We are doing it here, because we need to be sure, that "Insufficient ..."
-  // warning will be displayed anyway.
-  if (text) return text;
-
-  return fallback;
-}
-
 export class APIError extends Error {
   // eslint-disable-next-line
   code: $Keys<typeof APIErrors>;
@@ -127,12 +86,13 @@ export class APIError extends Error {
       : {code: this.code, text: this.text, info: this.info};
   }
 
-  static fromError(error) {
+  static fromError(error: mixed) {
     if (error instanceof APIError) return error;
-    if (error.error === 'validation-error')
+    if (error && error.error === 'validation-error')
       return new APIError({
         code: 'api-validation',
         info: {
+          // $FlowFixMe
           errors: error.details
             .sort((a, b) => a.name.localeCompare(b.name))
             .map(({name, type}) => ({
@@ -159,4 +119,45 @@ export class APIError extends Error {
 
     return new APIError({code: 'api-internal', info});
   }
+}
+
+function APICheck({code, info, text}) {
+  if (typeof code !== 'string')
+    throw APICheckError('APIError.code have to be a string.');
+  if (!APIErrors[code])
+    throw APICheckError('APIError.code have to be defined.');
+
+  // Optional.
+  if (info !== undefined && typeof info !== 'object')
+    throw APICheckError('APIError.info have to be an object.');
+
+  // Optional.
+  if (text !== undefined && typeof text !== 'string')
+    throw APICheckError('APIError.text have to be a string.');
+}
+
+function APICheckError(text) {
+  return new APIError({code: 'api-internal', text});
+}
+
+function APIHTTP(code) {
+  return APIErrors[code].http;
+}
+
+function APIText(text, code, info) {
+  let fallback = APIErrors[code].text;
+
+  if (info)
+    for (const key of Object.keys(info))
+      fallback = fallback.split(`{{${key}}}`).join(String(info[key]));
+
+  // Some fields left
+  if (fallback.indexOf('{{') < fallback.indexOf('}}'))
+    console.info('[API] Insufficient info for code:', code);
+
+  // We are doing it here, because we need to be sure, that "Insufficient ..."
+  // warning will be displayed anyway.
+  if (text) return text;
+
+  return fallback;
 }

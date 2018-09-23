@@ -11,7 +11,7 @@ export function cache<A, B>(fn: A => B): A => B {
   return (x: A): B => cached[x] || (cached[x] = fn(x));
 }
 
-export function hash(text) {
+export function hash(text: string) {
   return {algorithm: 'sha-256', digest: sha.sha256(text)};
 }
 

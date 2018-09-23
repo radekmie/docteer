@@ -1,9 +1,9 @@
 // @flow
 
-import {endpoint} from '../../lib/api';
+import {endpoint} from '../../util/endpoint';
 import * as notes from './lib';
 
-import type {PatchType} from '../../../imports/types.flow';
+import type {PatchType} from '../../../../imports/types.flow';
 
 endpoint('GET /api/notes', {
   schema: {
@@ -14,11 +14,12 @@ endpoint('GET /api/notes', {
     }
   },
 
-  async handle({refresh}: {|refresh: number|}): PatchType<*, *, *> {
+  handle({refresh}: {|refresh: number|}): Promise<PatchType<*, *, *>> {
     return notes.byUser(this.userId, refresh);
   }
 });
 
+// $FlowFixMe
 endpoint('POST /api/notes', {
   schema: {
     patch: Object,
@@ -46,7 +47,7 @@ endpoint('POST /api/notes', {
     refresh: number
   |}): Promise<PatchType<*, *, *>> {
     await notes.patch(patch, this.userId);
-    const result = notes.byUser(this.userId, refresh);
+    const result = await notes.byUser(this.userId, refresh);
 
     if (patch.removed.length) await notes.archive();
 

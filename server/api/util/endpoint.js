@@ -1,18 +1,13 @@
 // @flow
 
 import SimpleSchema from 'simpl-schema';
-import compression from 'compression';
 import jwt from 'jsonwebtoken';
-import text from 'body-parser/lib/types/text';
 import url from 'url';
+import {ObjectId} from 'mongodb';
 
-import {WebApp} from 'meteor/webapp';
-
-import {APIError} from './APIError';
 import * as users from '../services/users/lib';
-
-WebApp.rawConnectHandlers.use('/api', compression());
-WebApp.rawConnectHandlers.use('/api', text({type: 'application/json'}));
+import {APIError} from './APIError';
+import {server} from '../entry';
 
 export function endpoint<Schema: {}>(
   name: string,
@@ -29,9 +24,8 @@ export function endpoint<Schema: {}>(
   const [method, path] = name.split(' ', 2);
   const validator = new SimpleSchema(schema);
 
-  // prettier-ignore
   // eslint-disable-next-line complexity
-  WebApp.rawConnectHandlers.use(path, (request, response, next) => {
+  server.use(path.slice(4), async (request, response, next) => {
     if (request.method !== method) {
       next();
       return;
@@ -78,17 +72,15 @@ export function endpoint<Schema: {}>(
           throw new APIError({code: 'api-failed-token'});
         }
 
-        context.user = users.byId({_id: context.jwtDecoded.sub}).await();
+        context.userId = new ObjectId(context.jwtDecoded.sub);
+        context.user = await users.byId({_id: context.userId});
         if (!context.user) throw new APIError({code: 'api-unknown-token'});
-        context.userId = context.user._id;
       }
 
-      if (!authorize && context.user)
-        throw new APIError({code: 'log-in'});
-      if (authorize && !context.user)
-        throw new APIError({code: 'log-out'});
+      if (!authorize && context.user) throw new APIError({code: 'api-log-in'});
+      if (authorize && !context.user) throw new APIError({code: 'api-log-out'});
 
-      const result = handle.call(context, request.body).await();
+      const result = await handle.call(context, request.body);
       if (!result || result.constructor !== Object)
         throw new APIError({code: 'api-internal'});
 

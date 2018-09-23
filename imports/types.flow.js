@@ -1,5 +1,7 @@
 // @flow
 
+import type {ObjectId} from 'mongodb';
+
 export type EventType = {|
   target: {
     dataset: {[string]: string},
@@ -20,7 +22,7 @@ export type LabelType = {|
 |};
 
 export type NoteDocType<T> = {|
-  _id: Meteor$Mongo$ObjectId,
+  _id: ObjectId,
   _id_slug: string,
   _id_user: string,
   _outline: SchemaOutlineType<T>,

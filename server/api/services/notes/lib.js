@@ -1,26 +1,25 @@
 // @flow
 
-import {Meteor} from 'meteor/meteor';
-import {MongoInternals} from 'meteor/mongo';
-import {Mongo} from 'meteor/mongo';
+import {ObjectId} from 'mongodb';
 
-import type {NoteDocType} from '../../../imports/types.flow';
+import {db} from '../../mongo';
 
-type NotesType = Meteor$Mongo$Collection<NoteDocType<{||}>>;
-
-const ObjectId = MongoInternals.NpmModules.mongodb.module.ObjectId;
+import type {PatchType} from '../../../../imports/types.flow';
 
 // prettier-ignore
-export const Notes:        NotesType = new Mongo.Collection('notes');
-export const NotesArchive: NotesType = new Mongo.Collection('notes-archive');
+const notes        = () => db().then(db => db.collection('notes'));
+const notesArchive = () => db().then(db => db.collection('notes-archive'));
 
-Meteor.startup(() => {
-  Notes._ensureIndex({_id_user: 1, _id_slug: 1}, {unique: true});
-  Notes._ensureIndex({_id_user: 1, _updated: 1});
-  Notes._ensureIndex({_removed: 1});
+notes().then(async Notes => {
+  await Notes.createIndex({_id_user: 1, _id_slug: 1}, {unique: true});
+  await Notes.createIndex({_id_user: 1, _updated: 1});
+  await Notes.createIndex({_removed: 1});
 });
 
-export function archive() {
+export async function archive() {
+  const Notes = await notes();
+  const NotesArchive = await notesArchive();
+
   const archive = Notes.find({_removed: {$ne: null}}).map(note =>
     Object.assign(note, {_id: new ObjectId(note._id._str)})
   );
@@ -35,9 +34,12 @@ export function archive() {
   ]);
 }
 
-export function byUser(userId: string, after: number): PatchType<*, *, *> {
+// prettier-ignore
+export async function byUser(userId: string, after: number): Promise<PatchType<*, *, *>> {
+  const Notes = await notes();
+
   const refresh = new Date(after || 0);
-  const fields = {
+  const projection = {
     _id: 0,
     _id_user: 0,
     _updated: 0,
@@ -46,9 +48,9 @@ export function byUser(userId: string, after: number): PatchType<*, *, *> {
 
   const diff: PatchType<*, *, *> = {created: [], removed: [], updated: []};
 
-  Notes.find(
-    {_id_user: userId, ...(after ? {_updated: {$gt: refresh}} : {})},
-    {fields}
+  await Notes.find(
+    {_id_user: new ObjectId(userId), ...(after ? {_updated: {$gt: refresh}} : {})},
+    {projection}
   ).forEach(({_id_slug, _created, _removed, ...note}) => {
     if (_removed && _removed > refresh) diff.removed.push(_id_slug);
     else {
@@ -61,9 +63,9 @@ export function byUser(userId: string, after: number): PatchType<*, *, *> {
   return diff;
 }
 
-export function patch(patch: PatchType<*, *, *>, userId: string) {
+export async function patch(patch: PatchType<*, *, *>, userId: string) {
   if (!patch.created.length && !patch.removed.length && !patch.updated.length)
-    return Promise.resolve();
+    return;
 
   const now = new Date();
   const bulk = [];
@@ -71,7 +73,7 @@ export function patch(patch: PatchType<*, *, *>, userId: string) {
   patch.removed.forEach(_id => {
     bulk.push({
       updateOne: {
-        filter: {_id_slug: _id, _id_user: userId},
+        filter: {_id_slug: _id, _id_user: new ObjectId(userId)},
         update: {$set: {_removed: now, _updated: now}}
       }
     });
@@ -96,7 +98,7 @@ export function patch(patch: PatchType<*, *, *>, userId: string) {
           document: {
             // ID
             _id_slug: _id,
-            _id_user: userId,
+            _id_user: new ObjectId(userId),
 
             // Type
             _outline,
@@ -118,7 +120,7 @@ export function patch(patch: PatchType<*, *, *>, userId: string) {
     } else {
       bulk.push({
         updateOne: {
-          filter: {_id_slug: _id, _id_user: userId},
+          filter: {_id_slug: _id, _id_user: new ObjectId(userId)},
           update: {
             $set: {
               _updated: now,
@@ -140,5 +142,6 @@ export function patch(patch: PatchType<*, *, *>, userId: string) {
     }
   });
 
-  return Notes.rawCollection().bulkWrite(bulk);
+  const Notes = await notes();
+  await Notes.bulkWrite(bulk);
 }

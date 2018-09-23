@@ -193,6 +193,7 @@ export function onLogin(email: string, password: string): Promise<void> {
   }).then(result => {
     tree.set(['last'], new Date(0));
     tree.set(['userData'], result);
+    // $FlowFixMe
     tree.set(['userDiff'], {schemas: result.schemas});
     tree.set(['view'], 'notes');
     toast('success', 'Logged in.');
@@ -230,6 +231,7 @@ export function onRefresh(firstRun: ?boolean): Promise<void> {
 
   const last = new Date();
   refreshing = call('GET /api/notes', {refresh: +tree.get(['last'])})
+    // $FlowFixMe
     .then((patch: PatchType<*, *, *>) => {
       tree.set(['last'], last);
       toast('success', firstRun === true ? 'Loaded.' : 'Refreshed.');
@@ -287,6 +289,7 @@ export function onSave(): Promise<void> {
     patch,
     refresh: +tree.get(['last'])
   }).then(
+    // $FlowFixMe
     (patch: PatchType<*, *, *>) => {
       tree.set(['last'], last);
       toast('success', 'Saved.');
@@ -418,6 +421,7 @@ export function onSignup(email: string, password: string): Promise<void> {
     tree.set(['last'], new Date(0));
     tree.set(['noteId'], 'introduction');
     tree.set(['userData'], result);
+    // $FlowFixMe
     tree.set(['userDiff'], {schemas: result.schemas});
     tree.set(['view'], 'notes');
     toast('success', 'Signed in.');
@@ -492,7 +496,7 @@ function call(name, data) {
   let body;
   if (method === 'GET') {
     for (const [key, value] of Object.entries(data))
-      url.searchParams.append(key, value);
+      url.searchParams.append(key, String(value));
   } else {
     body = JSON.stringify(data);
   }
@@ -528,8 +532,8 @@ function call(name, data) {
 function toast(type, message) {
   const _id = Math.random().toString(36);
   const text =
-    message instanceof Error
-      ? message.code
+    message instanceof Error // $FlowFixMe
+      ? message.code // $FlowFixMe
         ? message.text
         : message.message
       : message;
