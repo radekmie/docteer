@@ -46,7 +46,7 @@ endpoint('POST', '/notes', {
                   items: {type: 'string'}
                 }
               },
-              required: ['_id', '_outline', '_outname'],
+              required: ['_id'],
               additionalProperties: false
             }
           }
