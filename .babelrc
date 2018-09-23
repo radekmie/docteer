@@ -1,12 +1,5 @@
 {
   "plugins": [
     "@babel/plugin-proposal-class-properties"
-  ],
-  "env": {
-    "production": {
-      "plugins": [
-        "./scripts/babel/imports.js"
-      ]
-    }
-  }
+  ]
 }
