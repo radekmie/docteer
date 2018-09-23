@@ -5,10 +5,10 @@ import {h} from 'preact';
 
 import {Labels} from './Labels';
 import {iconSearch} from './Icon';
-import {onSearch} from '../actions';
+import {onSearch} from '@client/actions';
 
-import type {LabelType} from '../../types.flow';
-import type {NoteType} from '../../types.flow';
+import type {LabelType} from '@types';
+import type {NoteType} from '@types';
 
 type Note$Props = {|
   note: NoteType<*>

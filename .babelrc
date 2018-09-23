@@ -1,5 +1,17 @@
 {
   "plugins": [
-    "@babel/plugin-proposal-class-properties"
+    "@babel/plugin-proposal-class-properties",
+    [
+      "module-resolver",
+      {
+        "alias": {
+          "@client": "./client",
+          "@lib": "./lib",
+          "@server": "./server",
+          "@types": "./types"
+        },
+        "cwd": "babelrc"
+      }
+    ]
   ]
 }

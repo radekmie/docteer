@@ -2,8 +2,8 @@
 
 import MongoClient from 'mongodb';
 
-import config from '../config';
-import {cache} from '../../lib';
+import config from '@server/config';
+import {cache} from '@lib';
 
 export const db = cache(async () => {
   for (let retries = config.mongo.retry.count; retries >= 0; --retries) {

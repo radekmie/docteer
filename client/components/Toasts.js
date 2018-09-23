@@ -3,7 +3,7 @@
 
 import {h} from 'preact';
 
-import type {ToastType} from '../../types.flow';
+import type {ToastType} from '@types';
 
 const COLOR = {
   error: 'red',

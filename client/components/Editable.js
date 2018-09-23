@@ -4,7 +4,7 @@
 import {Component} from 'preact';
 import {h} from 'preact';
 
-import type {InputEventType} from '../../types.flow';
+import type {InputEventType} from '@types';
 
 type Editable$Props = {|
   class?: string,

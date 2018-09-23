@@ -1,8 +1,8 @@
 // @flow
 
-import * as schemas from '../../schemas';
-import * as users from './lib';
-import {endpoint} from '../../util';
+import * as schemas from '@server/api/schemas';
+import * as users from '@server/api/services/users/lib';
+import {endpoint} from '@server/api/util';
 
 endpoint('POST', '/users/login', {
   authorize: false,

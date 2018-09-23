@@ -2,9 +2,9 @@
 
 import {ObjectId} from 'mongodb';
 
-import {db} from '../../mongo';
+import {db} from '@server/api/mongo';
 
-import type {PatchType} from '../../../../types.flow';
+import type {PatchType} from '@types';
 
 // prettier-ignore
 const notes        = () => db().then(db => db.collection('notes'));

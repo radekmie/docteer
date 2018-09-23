@@ -8,9 +8,9 @@ import {iconCog} from './Icon';
 import {iconLogIn} from './Icon';
 import {iconLogOut} from './Icon';
 import {iconNote} from './Icon';
-import {onLogout} from '../actions';
+import {onLogout} from '@client/actions';
 
-import type {UserType} from '../../types.flow';
+import type {UserType} from '@types';
 
 type Navigation$Props = {|
   full: boolean,

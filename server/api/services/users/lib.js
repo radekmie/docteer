@@ -4,13 +4,13 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import {ObjectId} from 'mongodb';
 
-import * as notes from '../notes/lib';
-import {APIError} from '../../util';
-import {db} from '../../mongo';
+import * as notes from '@server/api/services/notes/lib';
+import {APIError} from '@server/api/util';
+import {db} from '@server/api/mongo';
 
-import type {PassType} from '../../../../types.flow';
-import type {PatchType} from '../../../../types.flow';
-import type {SchemaType} from '../../../../types.flow';
+import type {PassType} from '@types';
+import type {PatchType} from '@types';
+import type {SchemaType} from '@types';
 
 const users = () => db().then(db => db.collection('users'));
 

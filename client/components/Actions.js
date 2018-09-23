@@ -9,15 +9,15 @@ import {iconNo} from './Icon';
 import {iconOk} from './Icon';
 import {iconPen} from './Icon';
 import {iconRefresh} from './Icon';
-import {onAdd} from '../actions';
-import {onEdit} from '../actions';
-import {onRefresh} from '../actions';
-import {onRemove} from '../actions';
-import {onSave} from '../actions';
-import {onSettingsReset} from '../actions';
-import {onSettingsSave} from '../actions';
+import {onAdd} from '@client/actions';
+import {onEdit} from '@client/actions';
+import {onRefresh} from '@client/actions';
+import {onRemove} from '@client/actions';
+import {onSave} from '@client/actions';
+import {onSettingsReset} from '@client/actions';
+import {onSettingsSave} from '@client/actions';
 
-import type {UserType} from '../../types.flow';
+import type {UserType} from '@types';
 
 type Actions$Props = {|
   note: boolean,

@@ -3,7 +3,7 @@
 
 import {h} from 'preact';
 
-import type {LabelType} from '../../types.flow';
+import type {LabelType} from '@types';
 
 type Label$Props = {|
   label: {|active: boolean, ...LabelType|}

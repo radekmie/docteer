@@ -14,12 +14,12 @@ import {Note} from './Note';
 import {Resizer} from './Resizer';
 import {Settings} from './Settings';
 import {Toasts} from './Toasts';
-import {tree} from '../state';
+import {tree} from '@client/state';
 
-import type {LabelType} from '../../types.flow';
-import type {NoteType} from '../../types.flow';
-import type {ToastType} from '../../types.flow';
-import type {UserType} from '../../types.flow';
+import type {LabelType} from '@types';
+import type {NoteType} from '@types';
+import type {ToastType} from '@types';
+import type {UserType} from '@types';
 
 const watcher = tree.watch({
   edit: ['edit'],

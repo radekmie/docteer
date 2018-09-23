@@ -5,9 +5,9 @@ import jwt from 'jsonwebtoken';
 import url from 'url';
 import {ObjectId} from 'mongodb';
 
-import * as users from '../services/users/lib';
-import APIError from './_APIError';
-import {server} from '../entry';
+import * as users from '@server/api/services/users/lib';
+import {APIError} from '@server/api/util';
+import {server} from '@server/api/entry';
 
 const ajv = new Ajv({allErrors: true});
 

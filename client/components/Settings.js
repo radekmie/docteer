@@ -5,19 +5,19 @@ import {Component} from 'preact';
 import {h} from 'preact';
 
 import {Button} from './Button';
-import {onChangePassword} from '../actions';
-import {onExport} from '../actions';
-import {onImport} from '../actions';
-import {onSchemaAdd} from '../actions';
-import {onSchemaDelete} from '../actions';
-import {onSchemaField} from '../actions';
-import {onSchemaKey} from '../actions';
-import {onSchemaName} from '../actions';
-import {onSchemaOrder} from '../actions';
-import {onSchemaRemove} from '../actions';
-import {onSchemaType} from '../actions';
+import {onChangePassword} from '@client/actions';
+import {onExport} from '@client/actions';
+import {onImport} from '@client/actions';
+import {onSchemaAdd} from '@client/actions';
+import {onSchemaDelete} from '@client/actions';
+import {onSchemaField} from '@client/actions';
+import {onSchemaKey} from '@client/actions';
+import {onSchemaName} from '@client/actions';
+import {onSchemaOrder} from '@client/actions';
+import {onSchemaRemove} from '@client/actions';
+import {onSchemaType} from '@client/actions';
 
-import type {UserType} from '../../types.flow';
+import type {UserType} from '@types';
 
 type Credentials$Props = {|
   user: UserType

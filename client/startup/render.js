@@ -3,7 +3,7 @@
 import {h} from 'preact';
 import {render} from 'preact';
 
-import {Application} from '../components/Application';
+import {Application} from '@client/components/Application';
 
 render(
   h(Application),

@@ -1,10 +1,10 @@
 // @flow
 
-import * as notes from './lib';
-import * as schemas from '../../schemas';
-import {endpoint} from '../../util';
+import * as notes from '@server/api/services/notes/lib';
+import * as schemas from '@server/api/schemas';
+import {endpoint} from '@server/api/util';
 
-import type {PatchType} from '../../../../types.flow';
+import type {PatchType} from '@types';
 
 endpoint('GET', '/notes', {
   schema: {

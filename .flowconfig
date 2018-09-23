@@ -6,3 +6,9 @@ all=error
 deprecated-type=off
 sketchy-null=off
 untyped-import=off
+
+[options]
+module.name_mapper='^@client' -> '<PROJECT_ROOT>/client'
+module.name_mapper='^@lib' -> '<PROJECT_ROOT>/lib'
+module.name_mapper='^@server' -> '<PROJECT_ROOT>/server'
+module.name_mapper='^@types' -> '<PROJECT_ROOT>/types'
