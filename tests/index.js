@@ -2,9 +2,6 @@
 
 import faker from 'faker';
 
-import {before} from 'meteor/universe:e2e';
-
-import {coverage} from './actions';
 import {load} from './actions';
 import {navigate} from './actions';
 import {noteAction} from './actions';
@@ -25,10 +22,6 @@ import {DAG} from './helpers';
 
 //
 
-before(() => {
-  resize(1024, 768);
-});
-
 const base = DAG.create()
   .with(() => ({
     user: {
@@ -36,7 +29,7 @@ const base = DAG.create()
       password: (faker.internet.password(): string)
     }
   }))
-  .next(coverage, [])
+  .next(resize, [1024, 768])
   .next(statsCSS, [])
   .next(load, ['/']);
 

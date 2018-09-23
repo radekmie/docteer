@@ -1,7 +1,5 @@
 // @flow
 
-import {describe} from 'meteor/universe:e2e';
-
 type DAGStep<Context, Args: Array<*>> = {
   args: (Context => Args) | Args,
   fn: (...Args) => ?Context

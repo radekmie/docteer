@@ -1,7 +1,5 @@
 // @flow
 
-import {it} from 'meteor/universe:e2e';
-
 import {page} from '../helpers';
 
 export function navigate(title: string) {

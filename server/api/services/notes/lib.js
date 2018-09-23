@@ -20,18 +20,16 @@ export async function archive() {
   const Notes = await notes();
   const NotesArchive = await notesArchive();
 
-  const archive = Notes.find({_removed: {$ne: null}}).map(note =>
-    Object.assign(note, {_id: new ObjectId(note._id._str)})
-  );
+  const archive = await Notes.find({_removed: {$ne: null}})
+    .map(note => Object.assign(note, {_id: new ObjectId(note._id._str)}))
+    .toArray();
 
-  if (archive.length === 0) return Promise.resolve();
+  if (archive.length === 0) return;
 
   const $in = archive.map(note => note._id);
 
-  return Promise.all([
-    Notes.rawCollection().deleteMany({_id: {$in}}),
-    NotesArchive.rawCollection().insertMany(archive)
-  ]);
+  await NotesArchive.insertMany(archive);
+  await Notes.deleteMany({_id: {$in}});
 }
 
 // prettier-ignore

@@ -1,14 +1,12 @@
 // @flow
 
-import {it} from 'meteor/universe:e2e';
-
 import {expand} from '../helpers';
 import {page} from '../helpers';
 import {type} from '../helpers';
 
 import {navigate} from './navigate';
 
-import type {SchemaType} from '../../types.flow';
+import type {SchemaType} from '@types';
 
 export function userAddSchema(schema: SchemaType<*>) {
   navigate('settings');
@@ -80,8 +78,11 @@ export function userSignUp(user: {email: string, password: string}) {
 
   it(`should sign in as ${user.email}:${user.password}`, async () => {
     const selector = '[href="/signup"]';
+    await page.waitFor(100);
     await page.waitForSelector(selector);
+    await page.waitFor(100);
     await page.click(selector);
+    await page.waitFor(100);
     await page.waitForSelector(selector, {hidden: true});
 
     await type('#email', user.email);

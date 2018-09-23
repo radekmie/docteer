@@ -1,13 +1,10 @@
 // @flow
 
-import {after} from 'meteor/universe:e2e';
-import {before} from 'meteor/universe:e2e';
-
 import {page} from '../helpers';
 
 const id = x => x.styleSheetId.split('.', 2)[0];
 
-before(() => {
+beforeAll(() => {
   page._rulesUsages = new Map();
   page._stylesheets = new Map();
 
@@ -24,7 +21,7 @@ before(() => {
   });
 });
 
-after(() => {
+afterAll(() => {
   page._stylesheets.forEach((stylesheet, key) => {
     const ranged = Array.from({length: stylesheet.length}, (_, index) => index);
     const unused = new Set(ranged);
@@ -59,14 +56,14 @@ after(() => {
 });
 
 export function statsCSS() {
-  before(async () => {
+  beforeAll(async () => {
     await page._client.send('Page.enable');
     await page._client.send('DOM.enable');
     await page._client.send('CSS.enable');
     await page._client.send('CSS.startRuleUsageTracking');
   });
 
-  after(async () => {
+  afterAll(async () => {
     const {ruleUsage} = await page._client.send('CSS.stopRuleUsageTracking');
 
     ruleUsage.forEach(rule => {

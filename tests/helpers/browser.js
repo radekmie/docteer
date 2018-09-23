@@ -1,21 +1,25 @@
 // @flow
 
-import {before} from 'meteor/universe:e2e';
-import {createBrowser} from 'meteor/universe:e2e';
+import puppeteer from 'puppeteer';
 
-// $FlowFixMe: Late initialization.
 export let browser: $npm$puppeteer$Browser = null;
-// $FlowFixMe: Late initialization.
 export let page: $npm$puppeteer$Page = null;
 
-before(async () => {
-  ({browser, page} = await createBrowser({
-    args: ['--disable-gpu', '--disable-infobars', '--no-sandbox'],
-    slowMo: 0
-  }));
+afterAll(async () => {
+  if (browser) await browser.close();
+});
 
+beforeAll(async () => {
+  browser = await puppeteer.launch({
+    args: ['--disable-gpu', '--disable-infobars', '--no-sandbox'],
+    headless: false,
+    slowMo: 1
+  });
+
+  page = await browser.newPage();
   page.on('console', event => {
     // eslint-disable-next-line no-console
-    console[event.type()]('[page]', ...event.args().map(arg => arg.toString()));
+    const handle = console[event.type()];
+    if (handle) handle('[page]', ...event.args().map(arg => arg.toString()));
   });
 });

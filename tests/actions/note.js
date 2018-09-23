@@ -2,8 +2,6 @@
 
 import assert from 'assert';
 
-import {it} from 'meteor/universe:e2e';
-
 import {page} from '../helpers';
 import {type} from '../helpers';
 
