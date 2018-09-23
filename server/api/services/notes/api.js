@@ -26,30 +26,37 @@ endpoint('POST', '/notes', {
   schema: {
     type: 'object',
     properties: {
-      created: {type: 'array', items: {type: 'string'}},
-      refresh: {type: 'integer', minimum: 0},
-      removed: {type: 'array', items: {type: 'string'}},
-      updated: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            _id: {type: 'string'},
-            _outline: schemas.outline,
-            _outname: {type: 'string'}
-          },
-          patternProperties: {
-            '^[^$_][^.]*$': {
-              type: ['array', 'string'],
-              items: {type: 'string'}
+      patch: {
+        type: 'object',
+        properties: {
+          created: {type: 'array', items: {type: 'string'}},
+          removed: {type: 'array', items: {type: 'string'}},
+          updated: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                _id: {type: 'string'},
+                _outline: schemas.outline,
+                _outname: {type: 'string'}
+              },
+              patternProperties: {
+                '^[^$_][^.]*$': {
+                  type: ['array', 'string'],
+                  items: {type: 'string'}
+                }
+              },
+              required: ['_id', '_outline', '_outname'],
+              additionalProperties: false
             }
-          },
-          required: ['_id', '_outline', '_outname'],
-          additionalProperties: false
-        }
-      }
+          }
+        },
+        required: ['created', 'removed', 'updated'],
+        additionalProperties: false
+      },
+      refresh: {type: 'integer', minimum: 0}
     },
-    required: ['created', 'refresh', 'removed', 'updated'],
+    required: ['patch', 'refresh'],
     additionalProperties: false
   },
 
