@@ -10,7 +10,6 @@
     "build:static": "mkdir -p dist/public && cp -R client/public dist",
     "coverage": "jest --all --ci --coverage",
     "prebuild": "npm run reset:build",
-    "precommit": "npm test",
     "reset": "run-s -ln reset:*",
     "reset:build": "rm -rf dist",
     "reset:db": "docker kill docteer-db || true",
@@ -24,6 +23,11 @@
     "test": "run-s -ln test:*",
     "test:flow": "flow",
     "test:lint": "eslint ."
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm test"
+    }
   },
   "jest": {
     "collectCoverageFrom": [
@@ -73,7 +77,7 @@
     "@babel/preset-flow": "7.0.0",
     "@babel/preset-react": "7.0.0",
     "babel-core": "7.0.0-bridge.0",
-    "babel-eslint": "9.0.0",
+    "babel-eslint": "10.0.0",
     "babel-plugin-module-resolver": "3.1.1",
     "eslint": "5.6.0",
     "eslint-config-prettier": "3.1.0",
@@ -86,7 +90,7 @@
     "faker": "4.1.0",
     "flow-bin": "0.81.0",
     "flow-typed": "2.5.1",
-    "husky": "0.14.3",
+    "husky": "1.0.0-rc.15",
     "jest": "23.6.0",
     "nodemon": "1.18.4",
     "npm-run-all": "4.1.3",
