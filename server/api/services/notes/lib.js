@@ -1,7 +1,5 @@
 // @flow
 
-import {ObjectId} from 'mongodb';
-
 import {db} from '@server/api/mongo';
 
 import type {PatchType} from '@types';
@@ -20,9 +18,7 @@ export async function archive() {
   const Notes = await notes();
   const NotesArchive = await notesArchive();
 
-  const archive = await Notes.find({_removed: {$ne: null}})
-    .map(note => Object.assign(note, {_id: new ObjectId(note._id._str)}))
-    .toArray();
+  const archive = await Notes.find({_removed: {$ne: null}}).toArray();
 
   if (archive.length === 0) return;
 
@@ -47,7 +43,7 @@ export async function byUser(userId: string, after: number): Promise<PatchType<*
   const diff: PatchType<*, *, *> = {created: [], removed: [], updated: []};
 
   await Notes.find(
-    {_id_user: new ObjectId(userId), ...(after ? {_updated: {$gt: refresh}} : {})},
+    {_id_user: userId, ...(after ? {_updated: {$gt: refresh}} : {})},
     {projection}
   ).forEach(({_id_slug, _created, _removed, ...note}) => {
     if (_removed && _removed > refresh) diff.removed.push(_id_slug);
@@ -71,7 +67,7 @@ export async function patch(patch: PatchType<*, *, *>, userId: string) {
   patch.removed.forEach(_id => {
     bulk.push({
       updateOne: {
-        filter: {_id_slug: _id, _id_user: new ObjectId(userId)},
+        filter: {_id_slug: _id, _id_user: userId},
         update: {$set: {_removed: now, _updated: now}}
       }
     });
@@ -96,7 +92,7 @@ export async function patch(patch: PatchType<*, *, *>, userId: string) {
           document: {
             // ID
             _id_slug: _id,
-            _id_user: new ObjectId(userId),
+            _id_user: userId,
 
             // Type
             _outline,
@@ -118,7 +114,7 @@ export async function patch(patch: PatchType<*, *, *>, userId: string) {
     } else {
       bulk.push({
         updateOne: {
-          filter: {_id_slug: _id, _id_user: new ObjectId(userId)},
+          filter: {_id_slug: _id, _id_user: userId},
           update: {
             $set: {
               _updated: now,

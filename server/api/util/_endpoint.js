@@ -78,7 +78,13 @@ export function endpoint<Params: {}, Result: {}, Schema: {}>(
           throw new APIError({code: 'api-failed-token'});
         }
 
-        context.userId = new ObjectId(context.jwtDecoded.sub);
+        try {
+          context.userId = new ObjectId(context.jwtDecoded.sub);
+        } catch (error) {
+          // NOTE: It might be an old user, with Meteor string id.
+          context.userId = context.jwtDecoded.sub;
+        }
+
         context.user = await users.byId({_id: context.userId});
         if (!context.user) throw new APIError({code: 'api-unknown-token'});
       }
