@@ -12,7 +12,7 @@ const config = {
   'mongo.client.options.useNewUrlParser': true,
   'mongo.client.options.w': 'majority',
   'mongo.client.url': 'mongodb://localhost:27017/docteer',
-  'mongo.retry.count': 3,
+  'mongo.retry.count': 10,
   'mongo.retry.delay': 1000,
   'node.env': 'development',
   'server.port': 3000,
