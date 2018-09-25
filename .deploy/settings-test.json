@@ -1,8 +1,0 @@
-{
-  "universe:e2e": {
-    "mocha": {
-      "bail": true,
-      "timeout": 10000
-    }
-  }
-}
