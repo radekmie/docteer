@@ -1,0 +1,8 @@
+{
+  "plugins": {
+    "autoprefixer": true,
+    "postcss-custom-properties": {
+      "preserve": false
+    }
+  }
+}
