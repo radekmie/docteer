@@ -145,3 +145,16 @@ export async function settings(settings: {|schemas: SchemaType<*>[]|}) {
   const Users = await users();
   return Users.updateOne({_id: this.userId}, {$set: settings});
 }
+
+export async function token() {
+  const user = this.user;
+
+  return {
+    emails: user.emails,
+    schemas: user.schemas,
+    token: jwt.sign(
+      {exp: Math.floor(Date.now() / 1000) + 60 * 60, sub: user._id},
+      'SECRET'
+    )
+  };
+}

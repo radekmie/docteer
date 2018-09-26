@@ -201,6 +201,21 @@ export function onLogin(email: string, password: string): Promise<void> {
   });
 }
 
+export function onLoginWithToken(token: string): Promise<void> {
+  if (!token) return Promise.reject();
+
+  return call('GET', '/api/users/token', {}, {silent: true, token}).then(
+    result => {
+      tree.set(['last'], new Date(0));
+      tree.set(['userData'], result);
+      // $FlowFixMe
+      tree.set(['userDiff'], {schemas: result.schemas});
+
+      return onRefresh(true);
+    }
+  );
+}
+
 export function onLogout() {
   toast('info', 'Logging out...');
 
@@ -488,7 +503,7 @@ function merge(diff) {
   );
 }
 
-function call(method: 'GET' | 'POST', path, data) {
+function call(method: 'GET' | 'POST', path, data, {silent, token} = {}) {
   const headers = new Headers({'Content-Type': 'application/json'});
   const url = new URL(path, location.origin);
 
@@ -500,8 +515,8 @@ function call(method: 'GET' | 'POST', path, data) {
     body = JSON.stringify(data);
   }
 
-  const token = tree.get(['userToken']);
-  if (token) headers.append('Authorization', `Bearer ${token}`);
+  const auth = token || tree.get(['userToken']);
+  if (auth) headers.append('Authorization', `Bearer ${auth}`);
 
   return new Promise((resolve, reject) => {
     const id = setTimeout(done, 5000, new Error('Sorry, try again later.'));
@@ -521,7 +536,7 @@ function call(method: 'GET' | 'POST', path, data) {
       clearTimeout(id);
 
       if (error) {
-        toast('error', error);
+        if (!silent) toast('error', error);
         reject(error);
       } else {
         resolve(response);

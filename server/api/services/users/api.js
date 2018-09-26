@@ -69,3 +69,13 @@ endpoint('POST', '/users/settings', {
     additionalProperties: false
   }
 });
+
+endpoint('GET', '/users/token', {
+  handle: users.token,
+  schema: {
+    type: 'object',
+    properties: {},
+    required: [],
+    additionalProperties: false
+  }
+});

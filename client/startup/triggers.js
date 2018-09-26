@@ -5,19 +5,24 @@ import {createLocation} from 'history/LocationUtils';
 import {createPath} from 'history/PathUtils';
 
 import {compare} from '@lib';
-import {onRefresh} from '@client/actions';
+import {onLoginWithToken} from '@client/actions';
 import {titleForView} from '@lib';
 import {tree} from '@client/state';
 
 const history = createHistory();
+const storage = window.localStorage || {};
 
-(window.requestIdleCallback || window.setTimeout)(() => {
+new Promise(window.requestIdleCallback || window.setTimeout)
+  .then(() => onLoginWithToken(storage.token))
+  .then(loaded, loaded);
+
+function loaded() {
   setTimeout(() => {
     tree.set(['load'], tree.get(['load']) - 1);
     tree.set(['pend'], tree.get(['pend']) - 1);
     syncHistory();
   }, 50 + 50 * Math.random());
-});
+}
 
 // Errors
 if (process.env.NODE_ENV === 'production') {
@@ -126,14 +131,10 @@ tree.select(['labels']).on('update', event => {
     tree.set(['filter'], filterAvailable);
 });
 
-tree.select(['userToken']).on('update', ({data}) => {
-  if (data.previousData !== data.currentData) {
-    if (data.currentData) {
-      onRefresh(true).then(syncHistory);
-    } else {
-      syncHistory();
-    }
-  }
+tree.select(['userToken']).on('update', event => {
+  const token = event.data.currentData;
+  if (token) storage.token = token;
+  else delete storage.token;
 });
 
 // Helpers

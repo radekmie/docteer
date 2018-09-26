@@ -25,7 +25,7 @@ export const render = cache(view => {
     .prepend(preact(<Application view={view} />));
   $html('head')
     .append(preact(<title>{titleForView(view)} | DocTeer</title>))
-    .append(preact(<link rel="manifest" href="manifest.webmanifest" />));
+    .append(preact(<link rel="manifest" href="/manifest.webmanifest" />));
 
   const body = $html.html();
 
