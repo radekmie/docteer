@@ -7,7 +7,6 @@ import {browserClose} from '@tests/actions';
 import {browserOpen} from '@tests/actions';
 import {load} from '@tests/actions';
 import {resize} from '@tests/actions';
-// import {statsCSS} from '@tests/actions';
 
 export default DAG.create()
   .with(() => ({
@@ -19,5 +18,4 @@ export default DAG.create()
   .with(browserOpen)
   .dead(browserClose)
   .next(resize, [1024, 768])
-  // .next(statsCSS, [])
   .next(load, ['/']);
