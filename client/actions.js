@@ -187,33 +187,21 @@ export function onImport() {
 export function onLogin(email: string, password: string): Promise<void> {
   toast('info', 'Logging in...');
 
-  return call('POST', '/api/users/login', {
-    email,
-    password: hash(password)
-  }).then(result => {
-    tree.set(['last'], new Date(0));
-    tree.set(['userData'], result);
-    // $FlowFixMe
-    tree.set(['userDiff'], {schemas: result.schemas});
-    tree.set(['view'], 'notes');
-    toast('success', 'Logged in.');
-    onRefresh(true);
-  });
+  return call('POST', '/api/users/login', {email, password: hash(password)})
+    .then(login)
+    .then(() => {
+      toast('success', 'Logged in.');
+      tree.set(['view'], 'notes');
+    })
+    .then(() => onRefresh(true));
 }
 
 export function onLoginWithToken(token: string): Promise<void> {
   if (!token) return Promise.reject();
 
-  return call('GET', '/api/users/token', {}, {silent: true, token}).then(
-    result => {
-      tree.set(['last'], new Date(0));
-      tree.set(['userData'], result);
-      // $FlowFixMe
-      tree.set(['userDiff'], {schemas: result.schemas});
-
-      return onRefresh(true);
-    }
-  );
+  return call('GET', '/api/users/token', {}, {silent: true, token})
+    .then(login)
+    .then(() => onRefresh(true));
 }
 
 export function onLogout() {
@@ -429,18 +417,13 @@ export function onSettingsSave() {
 export function onSignup(email: string, password: string): Promise<void> {
   toast('info', 'Signing up...');
 
-  return call('POST', '/api/users/register', {
-    email,
-    password: hash(password)
-  }).then(result => {
-    tree.set(['last'], new Date(0));
-    tree.set(['noteId'], 'introduction');
-    tree.set(['userData'], result);
-    // $FlowFixMe
-    tree.set(['userDiff'], {schemas: result.schemas});
-    tree.set(['view'], 'notes');
-    toast('success', 'Signed in.');
-  });
+  return call('POST', '/api/users/register', {email, password: hash(password)})
+    .then(login)
+    .then(() => {
+      toast('success', 'Signed in.');
+      tree.set(['noteId'], 'introduction');
+    })
+    .then(() => onRefresh(true));
 }
 
 export function onTypeAhead(event: InputEventType) {
@@ -543,6 +526,13 @@ function call(method: 'GET' | 'POST', path, data, {silent, token} = {}) {
       }
     }
   });
+}
+
+function login(userData) {
+  tree.set(['last'], new Date(0));
+  tree.set(['userData'], userData);
+  // $FlowFixMe
+  tree.set(['userDiff'], {schemas: userData.schemas});
 }
 
 function toast(type, message) {
