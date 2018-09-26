@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import {ObjectId} from 'mongodb';
 
 import * as notes from '@server/api/services/notes/lib';
+import config from '@server/config';
 import {APIError} from '@server/api/util';
 import {db} from '@server/api/mongo';
 
@@ -79,14 +80,7 @@ export async function login({email, password}: {|email: string, password: PassTy
   )
     throw new APIError({code: 'user-invalid-credentials'});
 
-  return {
-    emails: user.emails,
-    schemas: user.schemas,
-    token: jwt.sign(
-      {exp: Math.floor(Date.now() / 1000) + 60 * 60, sub: user._id},
-      'SECRET'
-    )
-  };
+  return _userData(user);
 }
 
 // prettier-ignore
@@ -118,8 +112,8 @@ export async function password({new1, new2, old}: {|new1: PassType, new2: PassTy
 // prettier-ignore
 export async function register({email, password}: {|email: string, password: PassType|}) {
   const Users = await users();
-  const user = await Users.findOne({'emails.address': email});
-  if (user) throw new APIError({code: 'user-already-exists'});
+  const duplicate = await Users.findOne({'emails.address': email});
+  if (duplicate) throw new APIError({code: 'user-already-exists'});
 
   const {insertedId} = await Users.insertOne({
     createdAt: new Date(),
@@ -128,17 +122,11 @@ export async function register({email, password}: {|email: string, password: Pas
     schemas: defaultSchemas
   });
 
-  this.userId = new ObjectId(insertedId);
-  notes.patch(defaultPatch, this.userId);
+  const user = await Users.findOne({_id: new ObjectId(insertedId)});
 
-  return {
-    emails: [{address: email}],
-    schemas: defaultSchemas,
-    token: jwt.sign(
-      {exp: Math.floor(Date.now() / 1000) + 60 * 60, sub: this.userId},
-      'SECRET'
-    )
-  };
+  notes.patch(defaultPatch, user._id);
+
+  return _userData(user);
 }
 
 export async function settings(settings: {|schemas: SchemaType<*>[]|}) {
@@ -147,14 +135,16 @@ export async function settings(settings: {|schemas: SchemaType<*>[]|}) {
 }
 
 export async function token() {
-  const user = this.user;
+  return _userData(this.user);
+}
 
+function _userData(user) {
   return {
     emails: user.emails,
     schemas: user.schemas,
     token: jwt.sign(
-      {exp: Math.floor(Date.now() / 1000) + 60 * 60, sub: user._id},
-      'SECRET'
+      {exp: Math.floor(Date.now() / 1000) + config.jwt.exp, sub: user._id},
+      config.jwt.secret
     )
   };
 }

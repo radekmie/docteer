@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import set from 'lodash/set';
 
 const config = {
+  'jwt.exp': 24 * 60 * 60,
   'jwt.secret': crypto.randomBytes(256),
   'mongo.client.options.ignoreUndefined': true,
   'mongo.client.options.j': true,

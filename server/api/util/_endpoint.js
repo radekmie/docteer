@@ -6,6 +6,7 @@ import url from 'url';
 import {ObjectId} from 'mongodb';
 
 import * as users from '@server/api/services/users/lib';
+import config from '@server/config';
 import {APIError} from '@server/api/util';
 import {server} from '@server/api/entry';
 
@@ -73,7 +74,7 @@ export function endpoint<Params: {}, Result: {}, Schema: {}>(
         context.jwt = token.replace(/^Bearer (.*?)$/, '$1');
 
         try {
-          context.jwtDecoded = jwt.verify(context.jwt, 'SECRET');
+          context.jwtDecoded = jwt.verify(context.jwt, config.jwt.secret);
         } catch (error) {
           throw new APIError({code: 'api-failed-token'});
         }

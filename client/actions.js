@@ -196,12 +196,18 @@ export function onLogin(email: string, password: string): Promise<void> {
     .then(() => onRefresh(true));
 }
 
-export function onLoginWithToken(token: string): Promise<void> {
+export function onLoginWithToken({
+  skipRefresh,
+  token
+}: {|
+  skipRefresh?: boolean,
+  token: string
+|}): Promise<void> {
   if (!token) return Promise.reject();
 
   return call('GET', '/api/users/token', {}, {silent: true, token})
-    .then(login)
-    .then(() => onRefresh(true));
+    .then(userData => login(userData, skipRefresh))
+    .then(() => (skipRefresh ? undefined : onRefresh(true)));
 }
 
 export function onLogout() {
@@ -528,11 +534,12 @@ function call(method: 'GET' | 'POST', path, data, {silent, token} = {}) {
   });
 }
 
-function login(userData) {
+function login(userData, skipRefresh) {
   tree.set(['last'], new Date(0));
   tree.set(['userData'], userData);
+
   // $FlowFixMe
-  tree.set(['userDiff'], {schemas: userData.schemas});
+  if (!skipRefresh) tree.set(['userDiff'], {schemas: userData.schemas});
 }
 
 function toast(type, message) {
