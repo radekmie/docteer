@@ -41,14 +41,11 @@
     ],
     "projects": [
       {
-        "displayName": "e2e",
-        "testMatch": [
-          "<rootDir>/tests/index.js"
-        ]
+        "displayName": "e2e"
       }
     ],
     "testMatch": [
-      "<rootDir>/tests/index.js"
+      "<rootDir>/**/*.test.js"
     ]
   },
   "dependencies": {

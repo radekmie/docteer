@@ -9,6 +9,7 @@
           "@client": "./client",
           "@lib": "./lib",
           "@server": "./server",
+          "@tests": "./tests",
           "@types": "./types"
         },
         "cwd": "babelrc"
