@@ -3,7 +3,7 @@
 import {expand} from '../helpers';
 import {type} from '../helpers';
 
-import {navigate} from './navigate';
+import {navigate} from './_navigate';
 
 import type {SchemaType} from '@types';
 
