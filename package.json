@@ -9,6 +9,7 @@
     "build:server": "parcel build --detailed-report --no-cache --no-source-maps --out-dir dist/server server/index.js --bundle-node-modules --no-minify --target=node",
     "build:static": "mkdir -p dist/public && cp -R client/public dist",
     "coverage": "jest --all --ci --coverage",
+    "postbuild": "for file in dist/client/*.js ; do npx terser -cem -o $file -- $file ; done",
     "prebuild": "npm run reset:build",
     "reset": "run-s -ln reset:*",
     "reset:build": "rm -rf dist",
@@ -97,6 +98,7 @@
     "parcel": "1.10.0",
     "postcss-custom-properties": "8.0.5",
     "prettier": "1.14.3",
-    "puppeteer-core": "1.8.0"
+    "puppeteer-core": "1.8.0",
+    "terser": "3.8.2"
   }
 }
