@@ -9,7 +9,6 @@ const pool = createPool(
       puppeteer.launch({
         args: ['--disable-gpu', '--disable-infobars', '--no-sandbox'],
         executablePath: 'google-chrome',
-        headless: false,
         slowMo: 1
       }),
     destroy: browser => browser.close()
