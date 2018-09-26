@@ -2,6 +2,8 @@
 
 import faker from 'faker';
 
+import {browserClose} from './actions';
+import {browserOpen} from './actions';
 import {load} from './actions';
 import {navigate} from './actions';
 import {noteAction} from './actions';
@@ -10,7 +12,7 @@ import {noteField} from './actions';
 import {noteSchema} from './actions';
 import {noteSelect} from './actions';
 import {resize} from './actions';
-import {statsCSS} from './actions';
+// import {statsCSS} from './actions';
 import {toastCheck} from './actions';
 import {userAddSchema} from './actions';
 import {userChangePassword} from './actions';
@@ -29,8 +31,10 @@ const base = DAG.create()
       password: (faker.internet.password(): string)
     }
   }))
+  .with(browserOpen)
+  .dead(browserClose)
   .next(resize, [1024, 768])
-  .next(statsCSS, [])
+  // .next(statsCSS, [])
   .next(load, ['/']);
 
 base

@@ -54,10 +54,21 @@ export class Editable extends Component<Editable$Props> {
     return false;
   }
 
+  componentDidMount() {
+    this.componentDidUpdate();
+  }
+
   componentDidUpdate() {
-    if (this.element && this.element.innerHTML !== this.props.html)
-      // $FlowFixMe: Weird.
-      this.element.innerHTML = content(this.props.disabled, this.props.html);
+    const element = this.element;
+    if (element) {
+      if (element.innerHTML !== this.props.html)
+        // $FlowFixMe: Weird.
+        element.innerHTML = content(this.props.disabled, this.props.html);
+
+      element.style.height = '';
+      if (this.props.tag === 'textarea')
+        element.style.height = element.scrollHeight + 'px';
+    }
   }
 
   // $FlowFixMe
@@ -83,7 +94,7 @@ export class Editable extends Component<Editable$Props> {
         onChange: this.onChange,
         onInput: tag === 'textarea' ? this.onChange : props.onInput,
         ref: this.onElement,
-        rows: tag === 'textarea' ? (__html.match(/\n/g) || []).length + 1 : null
+        rows: tag === 'textarea' ? 1 : null
       })
     );
   }

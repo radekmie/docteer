@@ -6,13 +6,16 @@ type DAGStep<Context, Args: Array<*>> = {
 };
 
 export class DAG<Context> {
+  _dead: DAGStep<Context, *>[];
   _last: DAGStep<Context, *>[];
   _next: DAGStep<Context, *>[];
 
   constructor(
-    next: DAGStep<Context, *>[] = [],
-    last: DAGStep<Context, *>[] = []
+    dead: DAGStep<Context, *>[] = [],
+    last: DAGStep<Context, *>[] = [],
+    next: DAGStep<Context, *>[] = []
   ) {
+    this._dead = dead;
     this._last = last;
     this._next = next;
   }
@@ -24,24 +27,32 @@ export class DAG<Context> {
   bind(): () => void {
     return (): void => {
       const step = (context: $Shape<Context>, {args, fn}): $Shape<Context> =>
-        fn(...(Array.isArray(args) ? args : args(context))) || context;
+        fn.apply(context, Array.isArray(args) ? args : args(context)) ||
+        context;
 
-      this._last.reduce(step, this._next.reduce(step, {}));
+      [].concat(this._next, this._last, this._dead).reduce(step, {});
     };
+  }
+
+  dead<Args: Array<*>>(
+    fn: (...Args) => ?Context,
+    args: (Context => Args) | Args = []
+  ): DAG<Context> {
+    return new DAG(this._dead.concat({args, fn}), this._last, this._next);
   }
 
   last<Args: Array<*>>(
     fn: (...Args) => ?Context,
-    args: (Context => Args) | Args
+    args: (Context => Args) | Args = []
   ): DAG<Context> {
-    return new DAG(this._next, this._last.concat({args, fn}));
+    return new DAG(this._dead, this._last.concat({args, fn}), this._next);
   }
 
   next<Args: Array<*>>(
     fn: (...Args) => ?Context,
-    args: (Context => Args) | Args
+    args: (Context => Args) | Args = []
   ): DAG<Context> {
-    return new DAG(this._next.concat({args, fn}), this._last);
+    return new DAG(this._dead, this._last, this._next.concat({args, fn}));
   }
 
   only(title: string): void {
@@ -55,13 +66,15 @@ export class DAG<Context> {
   with<ContextNext>(map: Context => ContextNext): DAG<Context & ContextNext> {
     return new DAG(
       // $FlowFixMe
+      (this._dead: DAGStep<Context & ContextNext>[]),
+      // $FlowFixMe
+      (this._last: DAGStep<Context & ContextNext>[]),
+      // $FlowFixMe
       (this._next: DAGStep<Context & ContextNext>[]).concat({
         args: context => [context],
         fn: context =>
           Object.assign(({}: $Shape<Context>), context, map(context))
-      }),
-      // $FlowFixMe
-      (this._last: DAGStep<Context & ContextNext>[])
+      })
     );
   }
 }

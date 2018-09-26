@@ -1,9 +1,6 @@
 // @flow
 
-import {getPage} from './browser';
-
-export async function expand(title: string) {
-  const page = await getPage();
+export async function expand(page, title: string) {
   await page.waitForFunction(
     `Array.from(document.querySelectorAll('summary')).some(x => x.textContent === '${title.replace(
       "'",

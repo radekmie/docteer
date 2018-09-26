@@ -1,9 +1,6 @@
 // @flow
 
-import {getPage} from './browser';
-
-export async function type(selector: string, value: string) {
-  const page = await getPage();
+export async function type(page, selector: string, value: string) {
   await page.click(selector);
   await page.keyboard.down('Control');
   await page.keyboard.press('A');

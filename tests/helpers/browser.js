@@ -1,25 +1,34 @@
 // @flow
 
 import puppeteer from 'puppeteer-core';
+import {createPool} from 'generic-pool';
 
-const browser = puppeteer.launch({
-  args: ['--disable-gpu', '--disable-infobars', '--no-sandbox'],
-  executablePath: 'google-chrome',
-  headless: false,
-  slowMo: 1
+const pool = createPool(
+  {
+    create: () =>
+      puppeteer.launch({
+        args: ['--disable-gpu', '--disable-infobars', '--no-sandbox'],
+        executablePath: 'google-chrome',
+        headless: false,
+        slowMo: 1
+      }),
+    destroy: browser => browser.close()
+  },
+  {max: 1}
+);
+
+export const getBrowserContext = async () => {
+  const browser = await pool.acquire();
+  const page = await browser.newPage();
+  const release = async () => {
+    await page.close();
+    await pool.release(browser);
+  };
+
+  return {browser, page, release};
+};
+
+afterAll(async () => {
+  await pool.drain();
+  await pool.clear();
 });
-
-const page = browser.then(browser => browser.newPage()).then(page => {
-  page.on('console', event => {
-    // eslint-disable-next-line no-console
-    const handle = console[event.type()];
-    if (handle) handle('[page]', ...event.args().map(arg => arg.toString()));
-  });
-
-  return page;
-});
-
-export const getBrowser: () => Promise<$npm$puppeteer$Browser> = () => browser;
-export const getPage: () => Promise<$npm$puppeteer$Page> = () => page;
-
-afterAll(() => getBrowser().then(browser => browser.close()));

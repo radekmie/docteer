@@ -2,13 +2,12 @@
 
 import assert from 'assert';
 
-import {getPage} from '../helpers';
 import {type} from '../helpers';
 
 export function noteAction(title: string) {
   it(`should perform '${title}' notes action`, async () => {
     const selector = `[data-test-notes-action="${title}"]`;
-    const page = await getPage();
+    const page = await this.page;
     await page.waitForSelector(selector);
     await page.click(selector);
   });
@@ -19,7 +18,7 @@ export function noteCheck(title: string, color: string = 'normal') {
 
   if (color === '-') {
     it(`should check if note called '${title}' is not visible`, async () => {
-      const page = await getPage();
+      const page = await this.page;
       await page.waitForSelector(selector, {hidden: true});
       await page.waitForSelector(selector, {hidden: true});
     });
@@ -28,14 +27,14 @@ export function noteCheck(title: string, color: string = 'normal') {
   }
 
   it(`should check if note called '${title}' is visible`, async () => {
-    const page = await getPage();
+    const page = await this.page;
     await page.waitForSelector(selector);
     await page.hover(selector);
   });
 
   it(`should check if note called '${title}' is ${color}`, async () => {
     const type = color === 'normal' ? 'dark-gray' : `hover-${color}`;
-    const page = await getPage();
+    const page = await this.page;
     await page.waitForSelector(`.${type}${selector}`);
   });
 }
@@ -51,7 +50,7 @@ export function noteField(
 
   it(`should check field ${position + 1} to be called '${name}'`, async () => {
     const part = `:nth-of-type(${position + 1})[data-test-note-`;
-    const page = await getPage();
+    const page = await this.page;
     await page.waitForSelector(`dt${part}label="${name}"]`);
     await page.waitForSelector(`dd${part}field="${name}"]`);
   });
@@ -61,12 +60,12 @@ export function noteField(
   }`, async () => {
     const selector = `[data-test-note-field="${name}"] > :first-child`;
 
-    await type(selector, '');
+    const page = await this.page;
+    await type(page, selector, '');
 
     value = [].concat(value);
 
     const input = value.slice();
-    const page = await getPage();
 
     if (useAutocomplete) {
       await page.keyboard.type(input.shift()[0]);
@@ -114,7 +113,7 @@ export function noteField(
 
 export function noteSchema(name: string) {
   it(`should select schema '${name}'`, async () => {
-    const page = await getPage();
+    const page = await this.page;
     await page.waitForSelector('[data-test-note-schema]');
     await page.select('[data-test-note-schema]', name);
   });
@@ -122,7 +121,7 @@ export function noteSchema(name: string) {
 
 export function noteSelect(title: string) {
   it(`should select note called '${title}'`, async () => {
-    const page = await getPage();
+    const page = await this.page;
     await page.click(`[data-test-note="${title}"]`);
   });
 }
