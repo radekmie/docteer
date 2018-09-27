@@ -49,20 +49,22 @@ window.document.addEventListener('click', event => {
 
   let node = event.target;
   do {
-    const href = node.getAttribute('href');
-    if (href && node instanceof HTMLAnchorElement && node.__preactattr_) {
-      event.stopImmediatePropagation();
-      event.stopPropagation();
-      event.preventDefault();
+    if (node instanceof HTMLAnchorElement && node.__preactattr_) {
+      const href = node.getAttribute('href');
+      if (href) {
+        event.stopImmediatePropagation();
+        event.stopPropagation();
+        event.preventDefault();
 
-      const prev = createPath(history.location);
-      const next = createPath(
-        createLocation(href, undefined, undefined, history.location)
-      );
+        const prev = createPath(history.location);
+        const next = createPath(
+          createLocation(href, undefined, undefined, history.location)
+        );
 
-      if (prev !== next) history.push(href);
+        if (prev !== next) history.push(href);
 
-      return;
+        return;
+      }
     }
   } while ((node = node.parentNode));
 });
