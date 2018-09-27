@@ -15,15 +15,13 @@ const storage = window.localStorage || {};
 
 new Promise(window.requestIdleCallback || window.setTimeout)
   .then(() => onLoginWithToken({token: storage.token}))
-  .then(loaded, loaded)
-  .then(() => setInterval(refreshToken, 1 * 60 * 60 * 1000));
+  .then(loaded, loaded);
 
 function loaded() {
-  setTimeout(() => {
-    tree.set(['load'], tree.get(['load']) - 1);
-    tree.set(['pend'], tree.get(['pend']) - 1);
-    syncHistory();
-  }, 50 + 50 * Math.random());
+  tree.set(['load'], tree.get(['load']) - 1);
+  tree.set(['pend'], tree.get(['pend']) - 1);
+  syncHistory();
+  setInterval(refreshToken, 1 * 60 * 60 * 1000);
 }
 
 function refreshToken() {
