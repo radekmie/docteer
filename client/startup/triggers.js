@@ -73,18 +73,14 @@ const keyHelp = ['Escape', '?'];
 const keyNext = ['ArrowDown', 'ArrowRight'];
 
 window.document.addEventListener('keydown', event => {
-  const target = event.target;
-
-  if (
-    target.contentEditable === 'true' ||
-    target.tagName.toLowerCase() === 'input'
-  )
+  const {key, target} = event;
+  if (target.contentEditable === 'true' || target instanceof HTMLInputElement)
     return;
 
-  if (keyBoth.includes(event.key)) {
+  if (keyBoth.includes(key)) {
     const list = window.document.querySelector(
       `[data-application] > :nth-child(2) > :nth-child(2) > :nth-child(${1 +
-        keyNote.includes(event.key)}
+        keyNote.includes(key)}
       )`
     );
 
@@ -97,18 +93,16 @@ window.document.addEventListener('keydown', event => {
         : list.querySelector('[data-item]');
     const item =
       (active &&
-        active[
-          `${keyNext.includes(event.key) ? 'next' : 'previous'}Sibling`
-        ]) ||
-      (keyNext.includes(event.key) ? list.lastChild : list.children[0]);
+        active[`${keyNext.includes(key) ? 'next' : 'previous'}Sibling`]) ||
+      (keyNext.includes(key) ? list.lastChild : list.children[0]);
     if (item && item.pathname && item !== active) {
       item.focus();
-      if (item.pathname !== '/d' && keyNote.includes(event.key)) item.click();
+      if (item.pathname !== '/d' && keyNote.includes(key)) item.click();
       event.preventDefault();
     }
-  } else if (keyHelp.includes(event.key)) {
-    tree.set(['help'], event.key === '?');
-  } else if (event.key === 'Enter') {
+  } else if (keyHelp.includes(key)) {
+    tree.set(['help'], key === '?');
+  } else if (key === 'Enter') {
     if (target.__preactattr_ && target.__preactattr_.onClick) target.click();
   }
 });
