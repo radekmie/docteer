@@ -26,121 +26,35 @@ type Actions$Props = {|
   view: ?string
 |};
 
-export function Actions(props: Actions$Props) {
-  if (props.view !== 'notes' && props.view !== 'settings') return null;
+export function Actions({note, edit, user, view}: Actions$Props) {
+  if (view !== 'notes' && view !== 'settings') return null;
+
+  // prettier-ignore
+  const buttons = [
+    [view === 'notes',                 'dark-pink', false,                  'Create',  onAdd,           iconAdd],
+    [view === 'notes' && edit && note, 'red',       false,                  'Remove',  onRemove,        iconMinus],
+    [view === 'notes' && edit,         'green',     false,                  'Save',    onSave,          iconOk],
+    [view === 'notes' && !edit,        'dark-blue', false,                  'Edit',    onEdit,          iconPen],
+    [view === 'notes' && edit,         'blue',      false,                  'Cancel',  onEdit,          iconNo],
+    [view === 'notes',                 'orange',    false,                  'Refresh', onRefresh,       iconRefresh],
+    [view === 'settings' && user,      'green',     user && !user._changed, 'Save',    onSettingsSave,  iconOk],
+    [view === 'settings' && user,      'red',       user && !user._changed, 'Cancel',  onSettingsReset, iconNo]
+  ];
 
   return (
     <div class="bottom-1 fixed right-1 w2">
-      {props.view === 'notes' && (
+      {buttons.filter(props => props[0]).map(props => (
         <div
-          class={button('dark-pink')}
-          data-test-notes-action="create"
-          key="Create"
-          onClick={onAdd}
+          class={button(props[1], props[2])}
+          data-test-notes-action={props[3].toLowerCase()}
+          key={props[3]}
+          onClick={props[4]}
           tabIndex="0"
-          title="Create"
+          title={props[3]}
         >
-          {iconAdd}
+          {props[5]}
         </div>
-      )}
-
-      {props.view === 'notes' &&
-        props.edit &&
-        props.note && (
-          <div
-            class={button('red')}
-            data-test-notes-action="remove"
-            key="Remove"
-            onClick={onRemove}
-            tabIndex="0"
-            title="Remove"
-          >
-            {iconMinus}
-          </div>
-        )}
-
-      {props.view === 'notes' &&
-        props.edit && (
-          <div
-            class={button('green')}
-            data-test-notes-action="save"
-            key="Save"
-            onClick={onSave}
-            tabIndex="0"
-            title="Save"
-          >
-            {iconOk}
-          </div>
-        )}
-
-      {props.view === 'notes' &&
-        !props.edit && (
-          <div
-            class={button('dark-blue')}
-            data-test-notes-action="edit"
-            key="Edit"
-            onClick={onEdit}
-            tabIndex="0"
-            title="Edit"
-          >
-            {iconPen}
-          </div>
-        )}
-
-      {props.view === 'notes' &&
-        props.edit && (
-          <div
-            class={button('blue')}
-            data-test-notes-action="cancel"
-            key="Cancel"
-            onClick={onEdit}
-            tabIndex="0"
-            title="Cancel"
-          >
-            {iconNo}
-          </div>
-        )}
-
-      {props.view === 'notes' && (
-        <div
-          class={button('orange')}
-          data-test-notes-action="refresh"
-          key="Refresh"
-          onClick={onRefresh}
-          tabIndex="0"
-          title="Refresh"
-        >
-          {iconRefresh}
-        </div>
-      )}
-
-      {props.view === 'settings' &&
-        props.user && (
-          <div
-            class={button('green', !props.user._changed)}
-            data-test-settings-action="save"
-            key="Save"
-            onClick={onSettingsSave}
-            tabIndex="0"
-            title="Save"
-          >
-            {iconOk}
-          </div>
-        )}
-
-      {props.view === 'settings' &&
-        props.user && (
-          <div
-            class={button('red', !props.user._changed)}
-            data-test-settings-action="cancel"
-            key="Cancel"
-            onClick={onSettingsReset}
-            tabIndex="0"
-            title="Cancel"
-          >
-            {iconNo}
-          </div>
-        )}
+      ))}
     </div>
   );
 }
