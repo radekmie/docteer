@@ -45,12 +45,12 @@ export async function byUser(userId: string, after: number): Promise<PatchType<*
   await Notes.find(
     {_id_user: userId, ...(after ? {_updated: {$gt: refresh}} : {})},
     {projection}
-  ).forEach(({_id_slug, _created, _removed, ...note}) => {
-    if (_removed && _removed > refresh) diff.removed.push(_id_slug);
+  ).forEach(({_id_slug: _id, _created, _removed, ...note}) => {
+    if (_removed && _removed > refresh) diff.removed.push(_id);
     else {
-      diff.updated.push({_id: _id_slug, ...note});
+      diff.updated.push({_id, ...note});
 
-      if (_created > refresh) diff.created.push(_id_slug);
+      if (_created > refresh) diff.created.push(_id);
     }
   });
 
