@@ -49,16 +49,12 @@ window.document.addEventListener('click', event => {
 
   let node = event.target;
   do {
-    if (
-      String(node.nodeName).toLowerCase() === 'a' &&
-      node.getAttribute('href') &&
-      (node.__preactattr_ || node[Symbol.for('preactattr')])
-    ) {
-      event.stopImmediatePropagation && event.stopImmediatePropagation();
-      event.stopPropagation && event.stopPropagation();
+    const href = node.getAttribute('href');
+    if (href && node instanceof HTMLAnchorElement && node.__preactattr_) {
+      event.stopImmediatePropagation();
+      event.stopPropagation();
       event.preventDefault();
 
-      const href = node.getAttribute('href');
       const prev = createPath(history.location);
       const next = createPath(
         createLocation(href, undefined, undefined, history.location)
