@@ -9,6 +9,5 @@ render(
   h(Application),
   // $FlowFixMe
   document.body,
-  // $FlowFixMe
-  document.querySelector('[data-application]')
+  document.querySelector('[data-application]') || undefined
 );

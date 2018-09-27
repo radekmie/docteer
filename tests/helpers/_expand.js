@@ -1,6 +1,7 @@
 // @flow
 
-export async function expand(page, title: string) {
+// $FlowFixMe: Puppeteer typings.
+export async function expand(page: any, title: string) {
   await page.waitForFunction(
     `Array.from(document.querySelectorAll('summary')).some(x => x.textContent === '${title.replace(
       "'",

@@ -46,7 +46,6 @@ endpoint('POST', '/users/register', {
   }
 });
 
-// $FlowFixMe
 endpoint('POST', '/users/settings', {
   handle: users.settings,
   schema: {

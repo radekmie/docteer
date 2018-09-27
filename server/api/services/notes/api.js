@@ -21,7 +21,6 @@ endpoint('GET', '/notes', {
   }
 });
 
-// $FlowFixMe
 endpoint('POST', '/notes', {
   schema: {
     type: 'object',

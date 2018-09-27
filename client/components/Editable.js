@@ -62,7 +62,6 @@ export class Editable extends Component<Editable$Props> {
     const element = this.element;
     if (element) {
       if (element.innerHTML !== this.props.html)
-        // $FlowFixMe: Weird.
         element.innerHTML = content(this.props.disabled, this.props.html);
 
       element.style.height = '';
