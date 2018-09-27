@@ -36,72 +36,94 @@ export function endpoint<Params: {}, Result: {}, Schema: {}>(
 
     try {
       if (request.method === 'GET') {
-        try {
-          request.body = url.parse(request.url, true).query;
-
-          for (const [key, value] of Object.entries(request.body))
-            if (isFinite(value) && '' + parseInt(value) === value)
-              request.body[key] = parseInt(value);
-        } catch (error) {
-          throw new APIError({code: 'api-url'});
-        }
+        request.body = _parseQuery(request.url);
       } else {
-        try {
-          request.body = JSON.parse(request.body);
-        } catch (error) {
-          throw new APIError({code: 'api-json'});
-        }
-
-        if (!request.body || request.body.constructor !== Object)
-          throw new APIError({code: 'api-json-body'});
+        request.body = _parseJSON(request.body);
       }
 
       if (!validator(request.body))
         throw new APIError({code: 'api-validation', info: validator.errors});
 
-      const context = {
-        jwt: null,
-        jwtDecoded: null,
-        user: null,
-        userId: null
-      };
-
-      const token = request.headers.authorization;
-      if (token) {
-        if (!token.startsWith('Bearer '))
-          throw new APIError({code: 'api-invalid-token'});
-
-        context.jwt = token.replace(/^Bearer (.*?)$/, '$1');
-
-        try {
-          context.jwtDecoded = jwt.verify(context.jwt, config.jwt.secret);
-        } catch (error) {
-          throw new APIError({code: 'api-failed-token'});
-        }
-
-        try {
-          context.userId = new ObjectId(context.jwtDecoded.sub);
-        } catch (error) {
-          // NOTE: It might be an old user, with Meteor string id.
-          context.userId = context.jwtDecoded.sub;
-        }
-
-        context.user = await users.byId({_id: context.userId});
-        if (!context.user) throw new APIError({code: 'api-unknown-token'});
-      }
+      const context = await _authorize(request.headers.authorization);
 
       if (!authorize && context.user) throw new APIError({code: 'api-log-in'});
       if (authorize && !context.user) throw new APIError({code: 'api-log-out'});
 
       const result = await handle.call(context, request.body);
 
-      response.writeHead(200, {'Content-Type': 'application/json'});
-      response.end(JSON.stringify({error: null, result}));
-    } catch (_error) {
-      const error = APIError.fromError(_error);
-
-      response.writeHead(error.http, {'Content-Type': 'application/json'});
-      response.end(JSON.stringify({error: error.toJSON(), response: null}));
+      _response(response, null, result);
+    } catch (error) {
+      _response(response, APIError.fromError(error), null);
     }
   });
+}
+
+async function _authorize(token) {
+  const context = {
+    jwt: null,
+    jwtDecoded: null,
+    user: null,
+    userId: null
+  };
+
+  if (token) {
+    if (!token.startsWith('Bearer '))
+      throw new APIError({code: 'api-invalid-token'});
+
+    context.jwt = token.replace(/^Bearer (.*?)$/, '$1');
+
+    try {
+      context.jwtDecoded = jwt.verify(context.jwt, config.jwt.secret);
+    } catch (error) {
+      throw new APIError({code: 'api-failed-token'});
+    }
+
+    try {
+      context.userId = new ObjectId(context.jwtDecoded.sub);
+    } catch (error) {
+      // NOTE: It might be an old user, with Meteor string id.
+      context.userId = context.jwtDecoded.sub;
+    }
+
+    context.user = await users.byId({_id: context.userId});
+    if (!context.user) throw new APIError({code: 'api-unknown-token'});
+  }
+
+  return context;
+}
+
+function _parseJSON(text) {
+  let result;
+  try {
+    result = JSON.parse(text);
+  } catch (error) {
+    throw new APIError({code: 'api-json'});
+  }
+
+  if (!result || result.constructor !== Object)
+    throw new APIError({code: 'api-json-body'});
+
+  return result;
+}
+
+function _parseQuery(path) {
+  try {
+    const result = url.parse(path, true).query || {};
+
+    for (const [key, value] of Object.entries(result))
+      if (isFinite(value) && '' + parseInt(value) === value)
+        result[key] = parseInt(value);
+
+    return result;
+  } catch (error) {
+    throw new APIError({code: 'api-url'});
+  }
+}
+
+function _response(response, error, result) {
+  const code = error ? error.http : 200;
+  const body = {error: error ? error.toJSON() : null, result};
+
+  response.writeHead(code, {'Content-Type': 'application/json'});
+  response.end(JSON.stringify(body));
 }
