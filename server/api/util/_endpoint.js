@@ -61,9 +61,9 @@ export function endpoint<Params: {}, Result: {}, Schema: {}>(
         await _authorize(context, request.headers.authorization);
 
         if (!authorize && context.user)
-          throw new APIError({code: 'api-log-in'});
-        if (authorize && !context.user)
           throw new APIError({code: 'api-log-out'});
+        if (authorize && !context.user)
+          throw new APIError({code: 'api-log-in'});
 
         return await handle(request.body, context);
       });
