@@ -1,6 +1,15 @@
 // @flow
 
+import type {Db} from 'mongodb';
 import type {ObjectId} from 'mongodb';
+
+export type APIContextType = {|
+  db: Db,
+  jwt: string,
+  jwtDecoded: {|exp: number, sub: string|},
+  user: {|...UserType, services: {|password: {|bcrypt: string|}|}|},
+  userId: ObjectId | string
+|};
 
 export type EventType = {|
   target: {
@@ -79,6 +88,7 @@ export type ToastType = {|
 |};
 
 export type UserType = {|
+  _id: ObjectId | string,
   _changed: boolean,
   emails: {address: string, verified: boolean}[],
   schemas: SchemaType<*>[]

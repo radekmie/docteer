@@ -1,38 +1,29 @@
 // @flow
 
-import {db} from '@server/api/mongo';
-
+import type {APIContextType} from '@types';
 import type {PatchType} from '@types';
 
-// prettier-ignore
-const notes        = () => db().then(db => db.collection('notes'));
-const notesArchive = () => db().then(db => db.collection('notes-archive'));
-
-notes().then(async Notes => {
-  await Notes.createIndex({_id_user: 1, _id_slug: 1}, {unique: true});
-  await Notes.createIndex({_id_user: 1, _updated: 1});
-  await Notes.createIndex({_removed: 1});
-});
-
-export async function archive() {
-  const Notes = await notes();
-  const NotesArchive = await notesArchive();
-
+export async function archive(input: {}, context: APIContextType) {
+  const Notes = context.db.collection('notes');
   const archive = await Notes.find({_removed: {$ne: null}}).toArray();
 
   if (archive.length === 0) return;
 
   const $in = archive.map(note => note._id);
 
+  const NotesArchive = context.db.collection('notes-archive');
   await NotesArchive.insertMany(archive);
   await Notes.deleteMany({_id: {$in}});
 }
 
-// prettier-ignore
-export async function byUser(userId: string, after: number): Promise<PatchType<*, *, *>> {
-  const Notes = await notes();
+export async function getMine(
+  {refresh}: {|refresh: number|},
+  context: APIContextType
+) {
+  const diff: PatchType<*, *, *> = {created: [], removed: [], updated: []};
+  if (refresh === Infinity) return diff;
 
-  const refresh = new Date(after || 0);
+  const after = new Date(refresh);
   const projection = {
     _id: 0,
     _id_user: 0,
@@ -40,34 +31,33 @@ export async function byUser(userId: string, after: number): Promise<PatchType<*
     _version: 0
   };
 
-  const diff: PatchType<*, *, *> = {created: [], removed: [], updated: []};
-
+  const Notes = context.db.collection('notes');
   await Notes.find(
-    {_id_user: userId, ...(after ? {_updated: {$gt: refresh}} : {})},
+    {_id_user: context.userId, ...(after ? {_updated: {$gt: after}} : {})},
     {projection}
   ).forEach(({_id_slug: _id, _created, _removed, ...note}) => {
-    if (_removed && _removed > refresh) diff.removed.push(_id);
+    if (_removed && _removed > after) diff.removed.push(_id);
     else {
       diff.updated.push({_id, ...note});
 
-      if (_created > refresh) diff.created.push(_id);
+      if (_created > after) diff.created.push(_id);
     }
   });
 
   return diff;
 }
 
-export async function patch(patch: PatchType<*, *, *>, userId: string) {
-  if (!patch.created.length && !patch.removed.length && !patch.updated.length)
-    return;
-
+export async function patchMine(
+  {patch, refresh}: {|patch: PatchType<*, *, *>, refresh: number|},
+  context: APIContextType
+) {
   const now = new Date();
   const bulk = [];
 
   patch.removed.forEach(_id => {
     bulk.push({
       updateOne: {
-        filter: {_id_slug: _id, _id_user: userId},
+        filter: {_id_slug: _id, _id_user: context.userId},
         update: {$set: {_removed: now, _updated: now}}
       }
     });
@@ -92,7 +82,7 @@ export async function patch(patch: PatchType<*, *, *>, userId: string) {
           document: {
             // ID
             _id_slug: _id,
-            _id_user: userId,
+            _id_user: context.userId,
 
             // Type
             _outline,
@@ -114,7 +104,7 @@ export async function patch(patch: PatchType<*, *, *>, userId: string) {
     } else {
       bulk.push({
         updateOne: {
-          filter: {_id_slug: _id, _id_user: userId},
+          filter: {_id_slug: _id, _id_user: context.userId},
           update: {
             $set: {
               _updated: now,
@@ -136,6 +126,14 @@ export async function patch(patch: PatchType<*, *, *>, userId: string) {
     }
   });
 
-  const Notes = await notes();
-  await Notes.bulkWrite(bulk);
+  if (bulk.length !== 0) {
+    const Notes = context.db.collection('notes');
+    await Notes.bulkWrite(bulk);
+  }
+
+  const result = await getMine({refresh}, context);
+
+  if (patch.removed.length) await archive({}, context);
+
+  return result;
 }

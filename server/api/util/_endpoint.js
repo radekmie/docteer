@@ -8,7 +8,10 @@ import {ObjectId} from 'mongodb';
 import * as users from '@server/api/services/users/lib';
 import config from '@server/config';
 import {APIError} from '@server/api/util';
+import {db} from '@server/api/mongo';
 import {server} from '@server/api/entry';
+
+import type {APIContextType} from '@types';
 
 const ajv = new Ajv({allErrors: true});
 
@@ -21,7 +24,7 @@ export function endpoint<Params: {}, Result: {}, Schema: {}>(
     schema
   }: {|
     authorize?: boolean,
-    handle: Params => Promise<Result>,
+    handle: (Params, APIContextType) => Promise<Result>,
     schema: Schema
   |}
 ) {
@@ -44,12 +47,14 @@ export function endpoint<Params: {}, Result: {}, Schema: {}>(
       if (!validator(request.body))
         throw new APIError({code: 'api-validation', info: validator.errors});
 
-      const context = await _authorize(request.headers.authorization);
+      // $FlowFixMe
+      const context: APIContextType = {db: await db()};
+      await _authorize(context, request.headers.authorization);
 
       if (!authorize && context.user) throw new APIError({code: 'api-log-in'});
       if (authorize && !context.user) throw new APIError({code: 'api-log-out'});
 
-      const result = await handle.call(context, request.body);
+      const result = await handle(request.body, context);
 
       _response(response, null, result);
     } catch (error) {
@@ -58,13 +63,17 @@ export function endpoint<Params: {}, Result: {}, Schema: {}>(
   });
 }
 
-async function _authorize(token) {
-  const context = {
+async function _authorize(context, token?: string) {
+  Object.assign(context, {
+    // $FlowFixMe
     jwt: null,
+    // $FlowFixMe
     jwtDecoded: null,
+    // $FlowFixMe
     user: null,
+    // $FlowFixMe
     userId: null
-  };
+  });
 
   if (token) {
     if (!token.startsWith('Bearer '))
@@ -85,11 +94,9 @@ async function _authorize(token) {
       context.userId = context.jwtDecoded.sub;
     }
 
-    context.user = await users.byId({_id: context.userId});
+    context.user = await users.byId({_id: context.userId}, context);
     if (!context.user) throw new APIError({code: 'api-unknown-token'});
   }
-
-  return context;
 }
 
 function _parseJSON(text) {

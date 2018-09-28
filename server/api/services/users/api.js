@@ -6,7 +6,9 @@ import {endpoint} from '@server/api/util';
 
 endpoint('POST', '/users/login', {
   authorize: false,
-  handle: users.login,
+  async handle(input, context) {
+    return await users.login(input, context);
+  },
   schema: {
     type: 'object',
     properties: {
@@ -19,7 +21,9 @@ endpoint('POST', '/users/login', {
 });
 
 endpoint('POST', '/users/password', {
-  handle: users.password,
+  async handle(input, context) {
+    return await users.changePassword(input, context);
+  },
   schema: {
     type: 'object',
     properties: {
@@ -34,7 +38,9 @@ endpoint('POST', '/users/password', {
 
 endpoint('POST', '/users/register', {
   authorize: false,
-  handle: users.register,
+  async handle(input, context) {
+    return await users.register(input, context);
+  },
   schema: {
     type: 'object',
     properties: {
@@ -47,7 +53,9 @@ endpoint('POST', '/users/register', {
 });
 
 endpoint('POST', '/users/settings', {
-  handle: users.settings,
+  async handle(input, context) {
+    return await users.changeSettings(input, context);
+  },
   schema: {
     type: 'object',
     properties: {
@@ -70,7 +78,9 @@ endpoint('POST', '/users/settings', {
 });
 
 endpoint('GET', '/users/token', {
-  handle: users.token,
+  async handle(input, context) {
+    return await users.refreshToken(input, context);
+  },
   schema: {
     type: 'object',
     properties: {},

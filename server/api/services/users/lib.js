@@ -7,13 +7,11 @@ import {ObjectId} from 'mongodb';
 import * as notes from '@server/api/services/notes/lib';
 import config from '@server/config';
 import {APIError} from '@server/api/util';
-import {db} from '@server/api/mongo';
 
+import type {APIContextType} from '@types';
 import type {PassType} from '@types';
 import type {PatchType} from '@types';
 import type {SchemaType} from '@types';
-
-const users = () => db().then(db => db.collection('users'));
 
 const defaultPatch: PatchType<*, *, *> = {
   created: ['introduction'],
@@ -61,14 +59,53 @@ const defaultSchemas: SchemaType<*>[] = [
   {name: 'Default', fields: {name: 'textarea', labels: 'ul', text: 'div'}}
 ];
 
-export async function byId({_id}: {|_id: string|}) {
-  const Users = await users();
+export async function byId({_id}: {|_id: string|}, context: APIContextType) {
+  const Users = context.db.collection('users');
   return Users.findOne({_id});
 }
 
-// prettier-ignore
-export async function login({email, password}: {|email: string, password: PassType|}) {
-  const Users = await users();
+export async function changePassword(
+  {new1, new2, old}: {|new1: PassType, new2: PassType, old: PassType|},
+  context: APIContextType
+) {
+  if (new1.digest !== new2.digest)
+    throw new APIError({code: 'user-password-mismatch'});
+
+  const digest = context.user.services.password.bcrypt;
+  if (!(await bcrypt.compare(old.digest, digest)))
+    throw new APIError({code: 'user-password-incorrect'});
+
+  if (
+    context.user.emails &&
+    context.user.emails.length > 0 &&
+    context.user.emails[0].address === 'demo@docteer.com'
+  ) {
+    // NOTE: Should we throw an error here?
+    return {};
+  }
+
+  const Users = context.db.collection('users');
+  Users.updateOne(
+    {_id: context.userId},
+    {$set: {'services.password.bcrypt': await bcrypt.hash(new1.digest, 10)}}
+  );
+
+  return {};
+}
+
+export async function changeSettings(
+  input: {|schemas: SchemaType<*>[]|},
+  context: APIContextType
+) {
+  const Users = context.db.collection('users');
+  return Users.updateOne({_id: context.userId}, {$set: input});
+}
+
+export async function login(
+  {email, password}: {|email: string, password: PassType|},
+  context: APIContextType
+) {
+  const Users = context.db.collection('users');
   const user = await Users.findOne({'emails.address': email});
 
   if (
@@ -80,38 +117,31 @@ export async function login({email, password}: {|email: string, password: PassTy
   )
     throw new APIError({code: 'user-invalid-credentials'});
 
-  return _userData(user);
+  context.user = user;
+  context.userId = user._id;
+
+  return refreshToken({}, context);
 }
 
-// prettier-ignore
-export async function password({new1, new2, old}: {|new1: PassType, new2: PassType, old: PassType|}) {
-  if (new1.digest !== new2.digest)
-    throw new APIError({code: 'user-password-mismatch'});
-
-  if (!(await bcrypt.compare(old.digest, this.user.services.password.bcrypt)))
-    throw new APIError({code: 'user-password-incorrect'});
-
-  if (
-    this.user.emails &&
-    this.user.emails.length &&
-    this.user.emails[0].address === 'demo@docteer.com'
-  ) {
-    // NOTE: Should we throw an error here?
-    return {};
-  }
-
-  const Users = await users();
-  Users.updateOne(
-    {_id: this.userId},
-    {$set: {'services.password.bcrypt': await bcrypt.hash(new1.digest, 10)}}
-  );
-
-  return {};
+export async function refreshToken(input: {}, context: APIContextType) {
+  return {
+    emails: context.user.emails,
+    schemas: context.user.schemas,
+    token: jwt.sign(
+      {
+        exp: Math.floor(Date.now() / 1000) + config.jwt.exp,
+        sub: context.user._id
+      },
+      config.jwt.secret
+    )
+  };
 }
 
-// prettier-ignore
-export async function register({email, password}: {|email: string, password: PassType|}) {
-  const Users = await users();
+export async function register(
+  {email, password}: {|email: string, password: PassType|},
+  context: APIContextType
+) {
+  const Users = context.db.collection('users');
   const duplicate = await Users.findOne({'emails.address': email});
   if (duplicate) throw new APIError({code: 'user-already-exists'});
 
@@ -124,27 +154,10 @@ export async function register({email, password}: {|email: string, password: Pas
 
   const user = await Users.findOne({_id: new ObjectId(insertedId)});
 
-  notes.patch(defaultPatch, user._id);
+  context.user = user;
+  context.userId = user._id;
 
-  return _userData(user);
-}
+  await notes.patchMine({patch: defaultPatch, refresh: Infinity}, context);
 
-export async function settings(settings: {|schemas: SchemaType<*>[]|}) {
-  const Users = await users();
-  return Users.updateOne({_id: this.userId}, {$set: settings});
-}
-
-export async function token() {
-  return _userData(this.user);
-}
-
-function _userData(user) {
-  return {
-    emails: user.emails,
-    schemas: user.schemas,
-    token: jwt.sign(
-      {exp: Math.floor(Date.now() / 1000) + config.jwt.exp, sub: user._id},
-      config.jwt.secret
-    )
-  };
+  return refreshToken({}, context);
 }

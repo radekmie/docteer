@@ -4,9 +4,10 @@ import * as notes from '@server/api/services/notes/lib';
 import * as schemas from '@server/api/schemas';
 import {endpoint} from '@server/api/util';
 
-import type {PatchType} from '@types';
-
 endpoint('GET', '/notes', {
+  async handle(input, context) {
+    return await notes.getMine(input, context);
+  },
   schema: {
     type: 'object',
     properties: {
@@ -14,14 +15,13 @@ endpoint('GET', '/notes', {
     },
     required: ['refresh'],
     additionalProperties: false
-  },
-
-  handle({refresh}: {|refresh: number|}): Promise<PatchType<*, *, *>> {
-    return notes.byUser(this.userId, refresh);
   }
 });
 
 endpoint('POST', '/notes', {
+  async handle(input, context) {
+    return await notes.patchMine(input, context);
+  },
   schema: {
     type: 'object',
     properties: {
@@ -57,20 +57,5 @@ endpoint('POST', '/notes', {
     },
     required: ['patch', 'refresh'],
     additionalProperties: false
-  },
-
-  async handle({
-    patch,
-    refresh
-  }: {|
-    patch: PatchType<*, *, *>,
-    refresh: number
-  |}): Promise<PatchType<*, *, *>> {
-    await notes.patch(patch, this.userId);
-    const result = await notes.byUser(this.userId, refresh);
-
-    if (patch.removed.length) await notes.archive();
-
-    return result;
   }
 });
