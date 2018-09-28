@@ -1,14 +1,28 @@
 // @flow
 
+import type {ClientSession} from 'mongodb';
+import type {Collection} from 'mongodb';
 import type {Db} from 'mongodb';
+import type {MongoClient} from 'mongodb';
 import type {ObjectId} from 'mongodb';
 
 export type APIContextType = {|
-  db: Db,
   jwt: string,
   jwtDecoded: {|exp: number, sub: string|},
   user: {|...UserType, services: {|password: {|bcrypt: string|}|}|},
-  userId: ObjectId | string
+  userId: ObjectId | string,
+  ...APITransactionType
+|};
+
+export type APITransactionType = {|
+  collections: {|
+    Notes: Collection,
+    NotesArchive: Collection,
+    Users: Collection
+  |},
+  db: Db,
+  mongo: MongoClient,
+  session: ClientSession
 |};
 
 export type EventType = {|

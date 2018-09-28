@@ -60,8 +60,8 @@ const defaultSchemas: SchemaType<*>[] = [
 ];
 
 export async function byId({_id}: {|_id: string|}, context: APIContextType) {
-  const Users = context.db.collection('users');
-  return Users.findOne({_id});
+  const {Users} = context.collections;
+  return await Users.findOne({_id}, {session: context.session});
 }
 
 export async function changePassword(
@@ -84,10 +84,11 @@ export async function changePassword(
     return {};
   }
 
-  const Users = context.db.collection('users');
-  Users.updateOne(
+  const {Users} = context.collections;
+  await Users.updateOne(
     {_id: context.userId},
-    {$set: {'services.password.bcrypt': await bcrypt.hash(new1.digest, 10)}}
+    {$set: {'services.password.bcrypt': await bcrypt.hash(new1.digest, 10)}},
+    {session: context.session}
   );
 
   return {};
@@ -97,16 +98,23 @@ export async function changeSettings(
   input: {|schemas: SchemaType<*>[]|},
   context: APIContextType
 ) {
-  const Users = context.db.collection('users');
-  return Users.updateOne({_id: context.userId}, {$set: input});
+  const {Users} = context.collections;
+  return await Users.updateOne(
+    {_id: context.userId},
+    {$set: input},
+    {session: context.session}
+  );
 }
 
 export async function login(
   {email, password}: {|email: string, password: PassType|},
   context: APIContextType
 ) {
-  const Users = context.db.collection('users');
-  const user = await Users.findOne({'emails.address': email});
+  const {Users} = context.collections;
+  const user = await Users.findOne(
+    {'emails.address': email},
+    {session: context.session}
+  );
 
   if (
     !user ||
@@ -141,18 +149,28 @@ export async function register(
   {email, password}: {|email: string, password: PassType|},
   context: APIContextType
 ) {
-  const Users = context.db.collection('users');
-  const duplicate = await Users.findOne({'emails.address': email});
+  const {Users} = context.collections;
+  const duplicate = await Users.findOne(
+    {'emails.address': email},
+    {session: context.session}
+  );
+
   if (duplicate) throw new APIError({code: 'user-already-exists'});
 
-  const {insertedId} = await Users.insertOne({
-    createdAt: new Date(),
-    services: {password: {bcrypt: await bcrypt.hash(password.digest, 10)}},
-    emails: [{address: email}],
-    schemas: defaultSchemas
-  });
+  const {insertedId} = await Users.insertOne(
+    {
+      createdAt: new Date(),
+      services: {password: {bcrypt: await bcrypt.hash(password.digest, 10)}},
+      emails: [{address: email}],
+      schemas: defaultSchemas
+    },
+    {session: context.session}
+  );
 
-  const user = await Users.findOne({_id: new ObjectId(insertedId)});
+  const user = await Users.findOne(
+    {_id: new ObjectId(insertedId)},
+    {session: context.session}
+  );
 
   context.user = user;
   context.userId = user._id;

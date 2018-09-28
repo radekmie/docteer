@@ -4,16 +4,20 @@ import type {APIContextType} from '@types';
 import type {PatchType} from '@types';
 
 export async function archive(input: {}, context: APIContextType) {
-  const Notes = context.db.collection('notes');
-  const archive = await Notes.find({_removed: {$ne: null}}).toArray();
+  const {Notes, NotesArchive} = context.collections;
+  const archive = await Notes.find(
+    {_removed: {$ne: null}},
+    {session: context.session}
+  ).toArray();
 
   if (archive.length === 0) return;
 
   const $in = archive.map(note => note._id);
 
-  const NotesArchive = context.db.collection('notes-archive');
-  await NotesArchive.insertMany(archive);
-  await Notes.deleteMany({_id: {$in}});
+  await Promise.all([
+    Notes.deleteMany({_id: {$in}}, {session: context.session}),
+    NotesArchive.insertMany(archive, {session: context.session})
+  ]);
 }
 
 export async function getMine(
@@ -31,10 +35,10 @@ export async function getMine(
     _version: 0
   };
 
-  const Notes = context.db.collection('notes');
+  const {Notes} = context.collections;
   await Notes.find(
     {_id_user: context.userId, ...(after ? {_updated: {$gt: after}} : {})},
-    {projection}
+    {projection, session: context.session}
   ).forEach(({_id_slug: _id, _created, _removed, ...note}) => {
     if (_removed && _removed > after) diff.removed.push(_id);
     else {
@@ -127,8 +131,8 @@ export async function patchMine(
   });
 
   if (bulk.length !== 0) {
-    const Notes = context.db.collection('notes');
-    await Notes.bulkWrite(bulk);
+    const {Notes} = context.collections;
+    await Notes.bulkWrite(bulk, {session: context.session});
   }
 
   const result = await getMine({refresh}, context);

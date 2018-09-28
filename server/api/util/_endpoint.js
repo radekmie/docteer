@@ -8,8 +8,8 @@ import {ObjectId} from 'mongodb';
 import * as users from '@server/api/services/users/lib';
 import config from '@server/config';
 import {APIError} from '@server/api/util';
-import {db} from '@server/api/mongo';
 import {server} from '@server/api/entry';
+import {withTransaction} from '@server/api/mongo';
 
 import type {APIContextType} from '@types';
 
@@ -48,13 +48,25 @@ export function endpoint<Params: {}, Result: {}, Schema: {}>(
         throw new APIError({code: 'api-validation', info: validator.errors});
 
       // $FlowFixMe
-      const context: APIContextType = {db: await db()};
-      await _authorize(context, request.headers.authorization);
+      const result = await withTransaction(async transaction => {
+        // $FlowFixMe
+        const context: APIContextType = {
+          ...transaction,
+          jwt: null,
+          jwtDecoded: null,
+          user: null,
+          userId: null
+        };
 
-      if (!authorize && context.user) throw new APIError({code: 'api-log-in'});
-      if (authorize && !context.user) throw new APIError({code: 'api-log-out'});
+        await _authorize(context, request.headers.authorization);
 
-      const result = await handle(request.body, context);
+        if (!authorize && context.user)
+          throw new APIError({code: 'api-log-in'});
+        if (authorize && !context.user)
+          throw new APIError({code: 'api-log-out'});
+
+        return await handle(request.body, context);
+      });
 
       _response(response, null, result);
     } catch (error) {
@@ -64,17 +76,6 @@ export function endpoint<Params: {}, Result: {}, Schema: {}>(
 }
 
 async function _authorize(context, token?: string) {
-  Object.assign(context, {
-    // $FlowFixMe
-    jwt: null,
-    // $FlowFixMe
-    jwtDecoded: null,
-    // $FlowFixMe
-    user: null,
-    // $FlowFixMe
-    userId: null
-  });
-
   if (token) {
     if (!token.startsWith('Bearer '))
       throw new APIError({code: 'api-invalid-token'});
