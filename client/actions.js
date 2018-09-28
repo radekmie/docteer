@@ -213,6 +213,7 @@ export function onLoginWithToken({
 export function onLogout() {
   toast('info', 'Logging out...');
 
+  tree.set(['notesOrigins'], []);
   tree.set(['userData'], null);
   tree.set(['userDiff'], null);
 
@@ -228,12 +229,6 @@ function refreshed() {
 }
 
 export function onRefresh(firstRun: ?boolean): Promise<void> {
-  if (tree.get(['user']) === undefined) {
-    tree.set(['notesOrigins'], []);
-
-    return Promise.resolve();
-  }
-
   if (refreshing) return refreshing;
 
   toast('info', firstRun === true ? 'Loading...' : 'Refreshing...');
