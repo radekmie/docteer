@@ -4,7 +4,6 @@
 [lints]
 all=error
 sketchy-null=off
-untyped-import=off
 
 [options]
 module.name_mapper='^@client' -> '<PROJECT_ROOT>/client'

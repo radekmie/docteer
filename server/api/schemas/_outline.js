@@ -1,3 +1,5 @@
+// @flow
+
 export const outline = {
   type: 'object',
   patternProperties: {

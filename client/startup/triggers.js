@@ -1,7 +1,9 @@
 // @flow
 
 import createHistory from 'history/createBrowserHistory';
+// $FlowFixMe: Untyped import.
 import {createLocation} from 'history/LocationUtils';
+// $FlowFixMe: Untyped import.
 import {createPath} from 'history/PathUtils';
 
 import {compare} from '@lib';

@@ -1,3 +1,5 @@
+// @flow
+
 export const password = {
   type: 'object',
   properties: {
