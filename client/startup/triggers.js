@@ -14,7 +14,7 @@ const history = createHistory();
 const storage = window.localStorage || {};
 
 new Promise(window.requestIdleCallback || window.setTimeout)
-  .then(() => onLoginWithToken({token: storage.token}))
+  .then(() => onLoginWithToken(storage.token))
   .then(loaded, loaded);
 
 function loaded() {
@@ -25,8 +25,7 @@ function loaded() {
 }
 
 function refreshToken() {
-  if (storage.token)
-    onLoginWithToken({skipRefresh: true, token: storage.token});
+  if (storage.token) onLoginWithToken(storage.token, true);
 }
 
 // Errors

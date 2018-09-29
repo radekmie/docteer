@@ -28,11 +28,7 @@ export function onChange(_id: string, key: string, value: string | string[]) {
   else tree.set(['notesUpdated', _id], {[key]: value});
 }
 
-export function onChangePassword(
-  old: string,
-  new1: string,
-  new2: string
-): Promise<void> {
+export function onChangePassword(old: string, new1: string, new2: string) {
   toast('info', 'Changing password...');
 
   return call('POST', '/api/users/password', {
@@ -184,7 +180,7 @@ export function onImport() {
   }
 }
 
-export function onLogin(email: string, password: string): Promise<void> {
+export function onLogin(email: string, password: string) {
   toast('info', 'Logging in...');
 
   return call('POST', '/api/users/login', {email, password: hash(password)})
@@ -196,13 +192,7 @@ export function onLogin(email: string, password: string): Promise<void> {
     .then(() => onRefresh(true));
 }
 
-export function onLoginWithToken({
-  skipRefresh,
-  token
-}: {|
-  skipRefresh?: boolean,
-  token: string
-|}): Promise<void> {
+export function onLoginWithToken(token: string, skipRefresh?: boolean) {
   if (!token) return Promise.reject();
 
   return call('GET', '/api/users/token', {}, {silent: true, token})
@@ -222,28 +212,18 @@ export function onLogout() {
   tree.set(['view'], 'login');
 }
 
-let refreshing: null | Promise<void> = null;
-
-function refreshed() {
-  refreshing = null;
-}
-
-export function onRefresh(firstRun: ?boolean): Promise<void> {
-  if (refreshing) return refreshing;
-
+export function onRefresh(firstRun: ?boolean) {
   toast('info', firstRun === true ? 'Loading...' : 'Refreshing...');
 
   const last = new Date();
-  refreshing = call('GET', '/api/notes', {refresh: +tree.get(['last'])})
+  return call('GET', '/api/notes', {refresh: +tree.get(['last'])}).then(
     // $FlowFixMe
-    .then((patch: PatchType<*, *, *>) => {
+    (patch: PatchType<*, *, *>) => {
       tree.set(['last'], last);
       toast('success', firstRun === true ? 'Loaded.' : 'Refreshed.');
       merge(patch);
-    })
-    .then(refreshed, refreshed);
-
-  return refreshing;
+    }
+  );
 }
 
 export function onRemove() {
@@ -260,7 +240,7 @@ export function onReset() {
   tree.set(['notesUpdated'], Object.create(null));
 }
 
-export function onSave(): Promise<void> {
+export function onSave() {
   tree.set(['edit'], false);
 
   const created = tree.get(['notesCreated']);
@@ -405,20 +385,25 @@ export function onSettingsReset() {
 }
 
 export function onSettingsSave() {
-  if (tree.get(['userDiff'])) {
-    toast('info', 'Saving...');
+  if (tree.get(['userDiff'])) return Promise.resolve();
 
-    call('POST', '/api/users/settings', tree.get(['userDiff'])).then(() => {
+  toast('info', 'Saving...');
+
+  return call('POST', '/api/users/settings', tree.get(['userDiff'])).then(
+    () => {
       toast('success', 'Saved.');
       onSettingsReset();
-    });
-  }
+    }
+  );
 }
 
-export function onSignup(email: string, password: string): Promise<void> {
+export function onSignup(email: string, password: string) {
   toast('info', 'Signing up...');
 
-  return call('POST', '/api/users/register', {email, password: hash(password)})
+  return call('POST', '/api/users/register', {
+    email,
+    password: hash(password)
+  })
     .then(login)
     .then(() => {
       toast('success', 'Signed in.');
@@ -469,24 +454,6 @@ onTypeAhead.post = event => {
   event.target.__skip = true;
 };
 
-function merge(diff) {
-  tree.set(
-    ['notesOrigins'],
-    tree
-      .get(['notesOrigins'])
-      .filter(note => !diff.removed.includes(note._id))
-      .concat(diff.created.map(_id => ({_id})))
-      .filter(
-        (note, index, notes) =>
-          notes.findIndex(other => other._id === note._id) === index
-      )
-      .map(note => {
-        const patch = diff.updated.find(updated => updated._id === note._id);
-        return patch ? Object.assign({}, note, patch) : note;
-      })
-  );
-}
-
 function call(method: 'GET' | 'POST', path, data, {silent, token} = {}) {
   const headers = new Headers({'Content-Type': 'application/json'});
   const url = new URL(path, location.origin);
@@ -535,6 +502,24 @@ function login(userData, skipRefresh) {
 
   // $FlowFixMe
   if (!skipRefresh) tree.set(['userDiff'], {schemas: userData.schemas});
+}
+
+function merge(diff) {
+  tree.set(
+    ['notesOrigins'],
+    tree
+      .get(['notesOrigins'])
+      .filter(note => !diff.removed.includes(note._id))
+      .concat(diff.created.map(_id => ({_id})))
+      .filter(
+        (note, index, notes) =>
+          notes.findIndex(other => other._id === note._id) === index
+      )
+      .map(note => {
+        const patch = diff.updated.find(updated => updated._id === note._id);
+        return patch ? Object.assign({}, note, patch) : note;
+      })
+  );
 }
 
 function toast(type, message) {

@@ -47,8 +47,8 @@ if (typeof window !== 'undefined') {
     window.addEventListener(
       '',
       null,
+      // $FlowFixMe
       Object.defineProperty({}, 'passive', {
-        value: undefined,
         get() {
           modifier = {passive: true};
           return undefined;
