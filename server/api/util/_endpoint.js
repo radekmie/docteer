@@ -75,7 +75,7 @@ export function endpoint<Params: {}, Result: {}, Schema: {}>(
   });
 }
 
-async function _authorize(context, token?: string) {
+async function _authorize(context, token: string) {
   if (token) {
     if (!token.startsWith('Bearer '))
       throw new APIError({code: 'api-invalid-token'});
