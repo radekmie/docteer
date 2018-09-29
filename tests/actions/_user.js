@@ -7,7 +7,7 @@ import {navigate} from './_navigate';
 
 import type {SchemaType} from '@types';
 
-export function userAddSchema(schema: SchemaType<*>) {
+export function userAddSchema(schema: SchemaType<>) {
   navigate.call(this, 'settings');
 
   it(`should create schema '${schema.name}'`, async () => {

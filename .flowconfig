@@ -3,7 +3,6 @@
 
 [lints]
 all=error
-deprecated-type=off
 sketchy-null=off
 untyped-import=off
 

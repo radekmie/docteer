@@ -24,7 +24,7 @@ export async function getMine(
   {refresh}: {|refresh: number|},
   context: APIContextType
 ) {
-  const diff: PatchType<*, *, *> = {created: [], removed: [], updated: []};
+  const diff: PatchType<> = {created: [], removed: [], updated: []};
   if (refresh === Infinity) return diff;
 
   const after = new Date(refresh);
@@ -52,7 +52,7 @@ export async function getMine(
 }
 
 export async function patchMine(
-  {patch, refresh}: {|patch: PatchType<*, *, *>, refresh: number|},
+  {patch, refresh}: {|patch: PatchType<>, refresh: number|},
   context: APIContextType
 ) {
   const now = new Date();
@@ -112,15 +112,15 @@ export async function patchMine(
           update: {
             $set: {
               _updated: now,
-              ...(_outline && {_outline}),
-              ...(_outname && {_outname}),
+              ...(_outline ? {_outline} : {}),
+              ...(_outname ? {_outname} : {}),
               ...doc
             },
             $push: {
               _version: {
                 _created: now,
-                ...(_outline && {_outline}),
-                ...(_outname && {_outname}),
+                ...(_outline ? {_outline} : {}),
+                ...(_outname ? {_outname} : {}),
                 ...doc
               }
             }

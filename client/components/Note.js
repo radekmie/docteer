@@ -19,7 +19,7 @@ import type {UserType} from '@types';
 
 type Note$Props = {|
   edit: boolean,
-  note: NoteType<*>,
+  note: NoteType<>,
   user: UserType
 |};
 
@@ -84,6 +84,7 @@ export class Note extends Component<Note$Props> {
           >
             {props.user.schemas
               .slice()
+              // $FlowFixMe: Schemas don't have to have an _id, because their names are unique.
               .sort(compareDocs)
               .map((schema, index) => (
                 <option key={index} value={schema.name}>

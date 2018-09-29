@@ -13,7 +13,7 @@ import type {PassType} from '@types';
 import type {PatchType} from '@types';
 import type {SchemaType} from '@types';
 
-const defaultPatch: PatchType<*, *, *> = {
+const defaultPatch: PatchType<> = {
   created: ['introduction'],
   removed: [],
   updated: [
@@ -55,7 +55,7 @@ const defaultPatch: PatchType<*, *, *> = {
   ]
 };
 
-const defaultSchemas: SchemaType<*>[] = [
+const defaultSchemas: SchemaType<>[] = [
   {name: 'Default', fields: {name: 'textarea', labels: 'ul', text: 'div'}}
 ];
 
@@ -95,7 +95,7 @@ export async function changePassword(
 }
 
 export async function changeSettings(
-  input: {|schemas: SchemaType<*>[]|},
+  input: {|schemas: SchemaType<>[]|},
   context: APIContextType
 ) {
   const {Users} = context.collections;

@@ -62,15 +62,21 @@ export type NoteDocType<T> = {|
   ...T
 |};
 
-export type NotePatchType<T> = {|
+// $FlowFixMe: * is deprecated
+export type NotePatchType<T = *> = {|
   _id: string,
   _outline: SchemaOutlineType<T>,
   _outname: string,
   ...T
 |};
 
-export type NoteType<T> = {|
+// $FlowFixMe: * is deprecated
+export type NoteType<T = *> = {|
+  _active: boolean,
+  _created: boolean,
   _href: string,
+  _removed: boolean,
+  _updated: boolean,
   ...NotePatchType<T>
 |};
 
@@ -79,17 +85,22 @@ export type PassType = {|
   digest: string
 |};
 
-export type PatchType<Created: string, Removed: string, Updated: string> = {|
+export type PatchType<
+  Created: string = string,
+  Removed: string = string,
+  Updated: string = string
+> = {|
   created: Created[],
   removed: Removed[],
-  updated: {|_id: Created | Removed | Updated, ...NotePatchType<*>|}[]
+  updated: {|_id: Created | Removed | Updated, ...NotePatchType<>|}[]
 |};
 
 export type SchemaOutlineFieldType = 'div' | 'ol' | 'ul' | 'textarea';
 
 export type SchemaOutlineType<T> = $ObjMap<T, () => SchemaOutlineFieldType>;
 
-export type SchemaType<T> = {|
+// $FlowFixMe: * is deprecated
+export type SchemaType<T = *> = {|
   fields: SchemaOutlineType<T>,
   name: string
 |};
@@ -105,5 +116,5 @@ export type UserType = {|
   _id: ObjectId | string,
   _changed: boolean,
   emails: {address: string, verified: boolean}[],
-  schemas: SchemaType<*>[]
+  schemas: SchemaType<>[]
 |};

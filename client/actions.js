@@ -40,7 +40,7 @@ export function onChangePassword(old: string, new1: string, new2: string) {
   });
 }
 
-export function onChangeSchema(_id: string, schema: SchemaType<*>) {
+export function onChangeSchema(_id: string, schema: SchemaType<>) {
   const doc = tree.get(['notes', {_id}]);
 
   if (doc) {
@@ -218,7 +218,7 @@ export function onRefresh(firstRun: ?boolean) {
   const last = new Date();
   return call('GET', '/api/notes', {refresh: +tree.get(['last'])}).then(
     // $FlowFixMe
-    (patch: PatchType<*, *, *>) => {
+    (patch: PatchType<>) => {
       tree.set(['last'], last);
       toast('success', firstRun === true ? 'Loaded.' : 'Refreshed.');
       merge(patch);
@@ -274,7 +274,7 @@ export function onSave() {
     refresh: +tree.get(['last'])
   }).then(
     // $FlowFixMe
-    (patch: PatchType<*, *, *>) => {
+    (patch: PatchType<>) => {
       tree.set(['last'], last);
       toast('success', 'Saved.');
       merge(patch);

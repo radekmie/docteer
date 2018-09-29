@@ -11,7 +11,7 @@ import type {LabelType} from '@types';
 import type {NoteType} from '@types';
 
 type Note$Props = {|
-  note: NoteType<*>
+  note: NoteType<{|name?: string|}>
 |};
 
 function Note({note}: Note$Props) {
@@ -42,7 +42,7 @@ function Note({note}: Note$Props) {
 
 type Notes$Props = {|
   labels: LabelType[],
-  notes: NoteType<*>[],
+  notes: NoteType<>[],
   search: string,
   standalone?: boolean
 |};
