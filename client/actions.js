@@ -522,8 +522,9 @@ function merge(diff) {
   );
 }
 
+let toastId = 0;
 function toast(type, message) {
-  const _id = Math.random().toString(36);
+  const _id = toastId++;
   const text =
     message instanceof Error // $FlowFixMe
       ? message.code // $FlowFixMe
@@ -539,8 +540,9 @@ function toast(type, message) {
     type
   });
 
-  if (type === 'info') tree.set(['pend'], tree.get(['pend']) + 1);
-  else {
+  if (type === 'info') {
+    tree.set(['pend'], tree.get(['pend']) + 1);
+  } else {
     const info = tree.get(['toasts']).find(toast => toast.marked)._id;
 
     tree.set(['toasts', {_id: info}, 'marked'], false);
