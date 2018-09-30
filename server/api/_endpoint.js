@@ -7,9 +7,9 @@ import {ObjectId} from 'mongodb';
 
 import * as users from '@server/api/services/users/lib';
 import config from '@server/config';
-import {APIError} from '@server/api/util';
-import {server} from '@server/api/entry';
-import {withTransaction} from '@server/api/mongo';
+import {APIError} from '@server/api';
+import {server} from '@server/api';
+import {withTransaction} from '@server/mongo';
 
 import type {APIContextType} from '@types';
 

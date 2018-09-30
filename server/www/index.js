@@ -4,11 +4,6 @@ import connect from 'connect';
 
 export const server = connect();
 
-// server.use('/', (request, response, next) => {
-//   response.setHeader('x-content-type-options', 'nosniff');
-//   next();
-// });
-
 server.use('/', (request, response, next) => {
   const host = request.headers.host || '';
 

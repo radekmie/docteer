@@ -2,7 +2,7 @@
 
 import * as notes from '@server/api/services/notes/lib';
 import * as schemas from '@server/api/schemas';
-import {endpoint} from '@server/api/util';
+import {endpoint} from '@server/api';
 
 endpoint('GET', '/notes', {
   async handle(input, context) {

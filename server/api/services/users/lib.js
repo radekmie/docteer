@@ -6,7 +6,7 @@ import {ObjectId} from 'mongodb';
 
 import * as notes from '@server/api/services/notes/lib';
 import config from '@server/config';
-import {APIError} from '@server/api/util';
+import {APIError} from '@server/api';
 
 import type {APIContextType} from '@types';
 import type {PassType} from '@types';

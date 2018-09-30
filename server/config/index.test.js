@@ -1,6 +1,6 @@
 // @flow
 
-import config from './config';
+import config from '@server/config';
 
 describe('Config', () => {
   it('is an object', () => {

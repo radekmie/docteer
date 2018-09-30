@@ -5,13 +5,10 @@ import connect from 'connect';
 import {join} from 'path';
 import serve from 'serve-static';
 
-import config from './config';
-import {server as api} from './api/entry';
-import {server as ssr} from './ssr/entry';
-import {server as www} from './www/entry';
-
-import './api/services/notes/api';
-import './api/services/users/api';
+import config from '@server/config';
+import {server as api} from '@server/api';
+import {server as ssr} from '@server/ssr';
+import {server as www} from '@server/www';
 
 export const server = connect();
 export const root = join(__dirname, '..');

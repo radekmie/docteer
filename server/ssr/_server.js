@@ -3,8 +3,8 @@
 import connect from 'connect';
 import {extname} from 'path';
 
-import {params} from './render';
-import {render} from './render';
+import {params} from '@server/ssr';
+import {render} from '@server/ssr';
 
 export const server = connect();
 
