@@ -4,16 +4,16 @@
 import {Component} from 'preact';
 import {h} from 'preact';
 
-import {Account} from './Account';
-import {Actions} from './Actions';
-import {Help} from './Help';
-import {Landing} from './Landing';
-import {Navigation} from './Navigation';
-import {Notes} from './Notes';
-import {Note} from './Note';
-import {Resizer} from './Resizer';
-import {Settings} from './Settings';
-import {Toasts} from './Toasts';
+import {Account} from '@client/components/Account';
+import {Actions} from '@client/components/Actions';
+import {Help} from '@client/components/Help';
+import {Landing} from '@client/components/Landing';
+import {Navigation} from '@client/components/Navigation';
+import {Notes} from '@client/components/Notes';
+import {Note} from '@client/components/Note';
+import {Resizer} from '@client/components/Resizer';
+import {Settings} from '@client/components/Settings';
+import {Toasts} from '@client/components/Toasts';
 import {tree} from '@client/state';
 
 import type {LabelType} from '@types';

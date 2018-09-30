@@ -3,12 +3,12 @@
 
 import {h} from 'preact';
 
-import {iconAdd} from './Icon';
-import {iconMinus} from './Icon';
-import {iconNo} from './Icon';
-import {iconOk} from './Icon';
-import {iconPen} from './Icon';
-import {iconRefresh} from './Icon';
+import {iconAdd} from '@client/components/Icon';
+import {iconMinus} from '@client/components/Icon';
+import {iconNo} from '@client/components/Icon';
+import {iconOk} from '@client/components/Icon';
+import {iconPen} from '@client/components/Icon';
+import {iconRefresh} from '@client/components/Icon';
 import {onAdd} from '@client/actions';
 import {onEdit} from '@client/actions';
 import {onRefresh} from '@client/actions';

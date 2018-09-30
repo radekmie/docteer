@@ -4,7 +4,7 @@
 import {Component} from 'preact';
 import {h} from 'preact';
 
-import {Editable} from './Editable';
+import {Editable} from '@client/components/Editable';
 import {cache} from '@lib';
 import {compareDocs} from '@lib';
 import {onChangeSchema} from '@client/actions';

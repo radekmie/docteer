@@ -3,11 +3,11 @@
 
 import {h} from 'preact';
 
-import {Logo} from './Logo';
-import {iconCog} from './Icon';
-import {iconLogIn} from './Icon';
-import {iconLogOut} from './Icon';
-import {iconNote} from './Icon';
+import {Logo} from '@client/components/Logo';
+import {iconCog} from '@client/components/Icon';
+import {iconLogIn} from '@client/components/Icon';
+import {iconLogOut} from '@client/components/Icon';
+import {iconNote} from '@client/components/Icon';
 import {onLogout} from '@client/actions';
 
 import type {UserType} from '@types';

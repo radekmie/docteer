@@ -4,11 +4,11 @@
 import {Component} from 'preact';
 import {h} from 'preact';
 
-import {Button} from './Button';
-import {iconLock} from './Icon';
-import {iconUser} from './Icon';
-import {onLogin} from '../actions';
-import {onSignup} from '../actions';
+import {Button} from '@client/components/Button';
+import {iconLock} from '@client/components/Icon';
+import {iconUser} from '@client/components/Icon';
+import {onLogin} from '@client/actions';
+import {onSignup} from '@client/actions';
 
 type Account$Props = {|
   signup?: boolean

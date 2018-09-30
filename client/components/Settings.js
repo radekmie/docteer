@@ -4,7 +4,7 @@
 import {Component} from 'preact';
 import {h} from 'preact';
 
-import {Button} from './Button';
+import {Button} from '@client/components/Button';
 import {onChangePassword} from '@client/actions';
 import {onExport} from '@client/actions';
 import {onImport} from '@client/actions';

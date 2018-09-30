@@ -3,8 +3,8 @@
 
 import {h} from 'preact';
 
-import {Labels} from './Labels';
-import {iconSearch} from './Icon';
+import {Labels} from '@client/components/Labels';
+import {iconSearch} from '@client/components/Icon';
 import {onSearch} from '@client/actions';
 
 import type {LabelType} from '@types';
