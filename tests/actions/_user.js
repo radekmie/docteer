@@ -1,9 +1,8 @@
 // @flow
 
-import {expand} from '../helpers';
-import {type} from '../helpers';
-
-import {navigate} from './_navigate';
+import {expand} from '@tests/helpers';
+import {navigate} from '@tests/actions';
+import {type} from '@tests/helpers';
 
 import type {SchemaType} from '@types';
 

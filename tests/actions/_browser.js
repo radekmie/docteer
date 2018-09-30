@@ -1,6 +1,6 @@
 // @flow
 
-import {getBrowserContext} from '../helpers';
+import {getBrowserContext} from '@tests/helpers';
 
 export function browserClose() {
   it('should close the browser', () => this.release.then(release => release()));

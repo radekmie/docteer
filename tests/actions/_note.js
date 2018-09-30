@@ -2,7 +2,7 @@
 
 import assert from 'assert';
 
-import {type} from '../helpers';
+import {type} from '@tests/helpers';
 
 export function noteAction(title: string) {
   it(`should perform '${title}' notes action`, async () => {
