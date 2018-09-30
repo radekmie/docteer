@@ -10,8 +10,8 @@ import {render as preact} from 'preact-render-to-string';
 
 import {Application} from '@client/components/Application';
 import {Logo} from '@client/components/Logo';
-import {cache} from '@lib';
-import {titleForView} from '@lib';
+import {cache} from '@shared';
+import {titleForView} from '@shared';
 
 export const params = (url: string) => {
   const view = url.split('/', 3)[1];

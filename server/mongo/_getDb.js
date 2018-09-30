@@ -1,6 +1,6 @@
 // @flow
 
-import {cache} from '@lib';
+import {cache} from '@shared';
 
 import {getMongo} from '@server/mongo';
 

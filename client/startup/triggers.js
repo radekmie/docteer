@@ -6,9 +6,9 @@ import {createLocation} from 'history/LocationUtils';
 // $FlowFixMe: Untyped import.
 import {createPath} from 'history/PathUtils';
 
-import {compare} from '@lib';
+import {compare} from '@shared';
 import {onLoginWithToken} from '@client/actions';
-import {titleForView} from '@lib';
+import {titleForView} from '@shared';
 import {tree} from '@client/state';
 
 // Startup

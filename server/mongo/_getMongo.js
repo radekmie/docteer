@@ -3,7 +3,7 @@
 import MongoClient from 'mongodb';
 
 import config from '@server/config';
-import {cache} from '@lib';
+import {cache} from '@shared';
 
 export const getMongo = cache(async () => {
   for (let retries = config.mongo.retry.count; retries >= 0; --retries) {

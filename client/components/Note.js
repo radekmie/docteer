@@ -5,13 +5,13 @@ import {Component} from 'preact';
 import {h} from 'preact';
 
 import {Editable} from '@client/components/Editable';
-import {cache} from '@lib';
-import {compareDocs} from '@lib';
+import {cache} from '@shared';
+import {compareDocs} from '@shared';
 import {onChangeSchema} from '@client/actions';
 import {onChange} from '@client/actions';
 import {onTypeAhead} from '@client/actions';
-import {schemaIsArray} from '@lib';
-import {schemaKey} from '@lib';
+import {schemaIsArray} from '@shared';
+import {schemaKey} from '@shared';
 
 import type {EventType} from '@types';
 import type {NoteType} from '@types';

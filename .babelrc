@@ -14,8 +14,8 @@
       {
         "alias": {
           "@client": "./client",
-          "@lib": "./lib",
           "@server": "./server",
+          "@shared": "./shared",
           "@tests": "./tests",
           "@types": "./types"
         },
