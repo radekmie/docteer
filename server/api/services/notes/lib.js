@@ -39,12 +39,18 @@ export async function getMine(
   await Notes.find(
     {_id_user: context.userId, ...(after ? {_updated: {$gt: after}} : {})},
     {projection, session: context.session}
-  ).forEach(({_id_slug: _id, _created, _removed, ...note}) => {
-    if (_removed && _removed > after) diff.removed.push(_id);
-    else {
-      diff.updated.push({_id, ...note});
+  ).forEach(note => {
+    if (note._removed && note._removed > after) {
+      diff.removed.push(note._id_slug);
+    } else {
+      diff.updated.push({
+        _id: note._id_slug,
+        _outname: note._outname,
+        _outline: note._outline,
+        ...note._objects
+      });
 
-      if (_created > after) diff.created.push(_id);
+      if (note._created > after) diff.created.push(note._id_slug);
     }
   });
 
@@ -88,20 +94,20 @@ export async function patchMine(
             _id_slug: _id,
             _id_user: context.userId,
 
-            // Type
-            _outline,
-            _outname,
-
             // Dates
             _created: now,
             _removed: null,
             _updated: now,
 
-            // History
-            _version: [{_created: now, _outline, _outname, ...doc}],
-
             // Data
-            ...doc
+            _objects: doc,
+
+            // Type
+            _outname,
+            _outline,
+
+            // History
+            _version: [{_updated: now, _objects: doc, _outname, _outline}]
           }
         }
       });
@@ -112,16 +118,20 @@ export async function patchMine(
           update: {
             $set: {
               _updated: now,
-              ...(_outline ? {_outline} : {}),
               ...(_outname ? {_outname} : {}),
-              ...doc
+              ...(_outline ? {_outline} : {}),
+              ...Object.entries(doc).reduce(
+                (doc, [key, value]) =>
+                  Object.assign(doc, {[`_objects.${key}`]: value}),
+                {}
+              )
             },
             $push: {
               _version: {
-                _created: now,
-                ...(_outline ? {_outline} : {}),
+                _updated: now,
+                _objects: doc,
                 ...(_outname ? {_outname} : {}),
-                ...doc
+                ...(_outline ? {_outline} : {})
               }
             }
           }
