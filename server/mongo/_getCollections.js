@@ -1,27 +1,43 @@
 // @flow
 
-import {cache} from '@shared';
+import get from 'lodash/get';
+import isEqual from 'lodash/isEqual';
 
+import * as definitions from '@server/mongo/definitions';
+import {cache} from '@shared';
 import {getDb} from '@server/mongo';
 
 export const getCollections = cache(async () => {
   const db = await getDb();
 
-  // prettier-ignore
-  const collections = {
-    Notes:        db.createCollection('notes'),
-    NotesArchive: db.createCollection('notes-archive'),
-    Users:        db.createCollection('users')
-  };
-
-  for (const [name, collection] of Object.entries(collections))
-    collections[name] = await collection;
-
-  await Promise.all([
-    collections.Notes.createIndex({_id_user: 1, _id_slug: 1}, {unique: true}),
-    collections.Notes.createIndex({_id_user: 1, _updated: 1}),
-    collections.Notes.createIndex({_removed: 1})
-  ]);
+  const collections = {};
+  for (const name of Object.keys(definitions))
+    collections[name] = await createCollection(db, definitions[name]);
 
   return collections;
 });
+
+async function createCollection(db, {indexes, name, schema}) {
+  const collection = await db.createCollection(name);
+
+  // Update indexes.
+  for (const index of indexes) {
+    await collection.createIndex(...index);
+  }
+
+  // Update schema.
+  const definition = await db.command({listCollections: 1, filter: {name}});
+  const prevSchema = get(
+    definition,
+    'cursor.firstBatch.0.options.validator.$jsonSchema'
+  );
+
+  if (isEqual(schema, prevSchema)) return;
+
+  await db.command({
+    collMod: name,
+    validationAction: 'error',
+    validationLevel: 'strict',
+    validator: {$jsonSchema: schema}
+  });
+}
