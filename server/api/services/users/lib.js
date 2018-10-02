@@ -150,25 +150,27 @@ export async function register(
   context: APIContextType
 ) {
   const {Users} = context.collections;
-  const duplicate = await Users.findOne(
-    {'emails.address': email},
-    {session: context.session}
-  );
 
-  if (duplicate) throw new APIError({code: 'user-already-exists'});
+  let _id;
+  try {
+    const result = await Users.insertOne(
+      {
+        createdAt: new Date(),
+        services: {password: {bcrypt: await bcrypt.hash(password.digest, 10)}},
+        emails: [{address: email}],
+        schemas: defaultSchemas
+      },
+      {session: context.session}
+    );
 
-  const {insertedId} = await Users.insertOne(
-    {
-      createdAt: new Date(),
-      services: {password: {bcrypt: await bcrypt.hash(password.digest, 10)}},
-      emails: [{address: email}],
-      schemas: defaultSchemas
-    },
-    {session: context.session}
-  );
+    _id = result.insertedId;
+  } catch (error) {
+    if (error.codeName) throw new APIError({code: 'user-already-exists'});
+    throw error;
+  }
 
   const user = await Users.findOne(
-    {_id: new ObjectId(insertedId)},
+    {_id: new ObjectId(_id)},
     {session: context.session}
   );
 
