@@ -24,7 +24,7 @@ export const Notes = {
         bsonType: 'date'
       },
       _removed: {
-        bsonType: 'null'
+        bsonType: ['date', 'null']
       },
       _updated: {
         bsonType: 'date'
@@ -89,7 +89,7 @@ export const Notes = {
               }
             }
           },
-          required: ['_updated', '_outname']
+          required: ['_updated', '_objects']
         }
       }
     },

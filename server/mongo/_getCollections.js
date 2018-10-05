@@ -32,12 +32,14 @@ async function createCollection(db, {indexes, name, schema}) {
     'cursor.firstBatch.0.options.validator.$jsonSchema'
   );
 
-  if (isEqual(schema, prevSchema)) return;
+  if (!isEqual(schema, prevSchema)) {
+    await db.command({
+      collMod: name,
+      validationAction: 'error',
+      validationLevel: 'strict',
+      validator: {$jsonSchema: schema}
+    });
+  }
 
-  await db.command({
-    collMod: name,
-    validationAction: 'error',
-    validationLevel: 'strict',
-    validator: {$jsonSchema: schema}
-  });
+  return collection;
 }

@@ -85,7 +85,7 @@ export const NotesArchive = {
               }
             }
           },
-          required: ['_updated', '_outname']
+          required: ['_updated', '_objects']
         }
       }
     },
