@@ -3,8 +3,8 @@
 
 import {h} from 'preact';
 
-let mover = null;
-let sizer = null;
+let mover: ?HTMLElement = null;
+let sizer: ?HTMLElement = null;
 
 function blurs() {
   window.getSelection().removeAllRanges();
@@ -30,7 +30,8 @@ function onStart(event) {
     return;
 
   blurs();
-  sizer = mover.previousSibling;
+  if (mover.previousSibling instanceof HTMLElement)
+    sizer = mover.previousSibling;
   onSized(event);
 }
 

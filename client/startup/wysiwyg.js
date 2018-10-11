@@ -62,7 +62,6 @@ document.addEventListener('selectionchange', () => {
         node={node}
         offsets={node.getBoundingClientRect()}
         position={range.getBoundingClientRect()}
-        wysiwyg={element.wysiwyg}
       />,
       create(element)
     );

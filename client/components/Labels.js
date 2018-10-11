@@ -6,7 +6,7 @@ import {h} from 'preact';
 import type {LabelType} from '@types';
 
 type Label$Props = {|
-  label: {|active: boolean, ...LabelType|}
+  label: LabelType
 |};
 
 function Label({label}: Label$Props) {
@@ -34,7 +34,6 @@ export function Labels(props: Labels$Props) {
   return (
     <div class="flex-1 overflow-auto">
       {props.labels.length === 0 && <div className="pa3 tc">(no labels)</div>}
-
       {props.labels.map(label => (
         <Label key={label.name} label={label} />
       ))}

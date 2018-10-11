@@ -85,12 +85,7 @@ export class Application extends Component<
         class={`app dark-gray flex lh-copy${state.load ? ' hidden' : ''}`}
         data-application
       >
-        <Navigation
-          full={state.full}
-          pend={state.pend}
-          user={state.user}
-          view={view}
-        />
+        <Navigation full={state.full} pend={state.pend} user={state.user} />
 
         {view === '' && (
           <div class="flex flex-center w-100">
@@ -109,12 +104,7 @@ export class Application extends Component<
         {view === 'notes' && <Resizer />}
 
         {view === 'notes' && (
-          <Note
-            labels={state.labels}
-            note={state.note}
-            edit={state.edit}
-            user={state.user}
-          />
+          <Note edit={state.edit} note={state.note} user={state.user} />
         )}
 
         {(view === 'login' || view === 'signup') && (

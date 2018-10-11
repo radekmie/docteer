@@ -5,13 +5,17 @@ import {Component} from 'preact';
 import {h} from 'preact';
 
 import type {InputEventType} from '@types';
+import type {KeyboardEventType} from '@types';
 
 type Editable$Props = {|
-  class?: string,
+  class?: ?string,
   disabled: boolean,
   html: string,
   onChange: string => void,
+  onFocus?: InputEventType => void,
   onInput?: InputEventType => void,
+  onKeyDown?: KeyboardEventType => void,
+  onKeyUp?: KeyboardEventType => void,
   tag: string
 |};
 

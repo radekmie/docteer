@@ -37,7 +37,12 @@ export type InputEventType = {|
   target: HTMLInputElement & {|__skip: ?boolean|}
 |};
 
+export type KeyboardEventType = KeyboardEvent & {|
+  target: HTMLInputElement & {|__skip: ?boolean|}
+|};
+
 export type LabelType = {|
+  active: boolean,
   count: number,
   href: string,
   name: string,
