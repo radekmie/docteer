@@ -6,10 +6,10 @@ import {h} from 'preact';
 
 import {Account} from '@client/components/Account';
 import {Actions} from '@client/components/Actions';
+import {Filters} from '@client/components/Filters';
 import {Help} from '@client/components/Help';
 import {Landing} from '@client/components/Landing';
 import {Navigation} from '@client/components/Navigation';
-import {Notes} from '@client/components/Notes';
 import {Note} from '@client/components/Note';
 import {Resizer} from '@client/components/Resizer';
 import {Settings} from '@client/components/Settings';
@@ -94,7 +94,7 @@ export class Application extends Component<
         )}
 
         {view === 'notes' && (
-          <Notes
+          <Filters
             labels={state.labels}
             notes={state.notes}
             search={state.search}
