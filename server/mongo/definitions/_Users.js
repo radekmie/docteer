@@ -13,7 +13,7 @@ export const Users = {
     additionalProperties: false,
     properties: {
       _id: {
-        bsonType: 'objectId'
+        bsonType: ['objectId', 'string']
       },
       createdAt: {
         bsonType: 'date'

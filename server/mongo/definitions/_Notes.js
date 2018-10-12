@@ -15,7 +15,7 @@ export const Notes = {
         bsonType: 'objectId'
       },
       _id_user: {
-        bsonType: 'objectId'
+        bsonType: ['objectId', 'string']
       },
       _id_slug: {
         bsonType: 'string'
