@@ -1,7 +1,10 @@
 // @flow
 // @jsx h
 
+import {Component} from 'preact';
 import {h} from 'preact';
+
+import {shallowEqual} from '@shared';
 
 import type {NoteType} from '@types';
 
@@ -9,30 +12,37 @@ type NotesItem$Props = {|
   note: NoteType<{|name?: string|}>
 |};
 
-function NotesItem({note}: NotesItem$Props) {
-  const color = note._created
-    ? note._removed
-      ? 'gray hover-light-gray'
-      : 'green hover-light-green'
-    : note._removed
-      ? 'hover-light-red red'
-      : note._updated
-        ? 'blue hover-light-blue'
-        : 'dark-gray';
+class NotesItem extends Component<NotesItem$Props> {
+  shouldComponentUpdate(props) {
+    return !shallowEqual(this.props.note, props.note);
+  }
 
-  return (
-    <a
-      class={`${
-        note._active ? 'bg-near-white bl bw2 b--dark-gray ' : ''
-      }db ${color} hover-bg-near-white link ph2${
-        note._active ? ' pl1' : ''
-      } truncate`}
-      data-item
-      data-test-note={note.name || '(untitled)'}
-      dangerouslySetInnerHTML={{__html: note.name || '(untitled)'}}
-      href={note._href}
-    />
-  );
+  // $FlowFixMe
+  render({note}: NotesItem$Props) {
+    const color = note._created
+      ? note._removed
+        ? 'gray hover-light-gray'
+        : 'green hover-light-green'
+      : note._removed
+        ? 'hover-light-red red'
+        : note._updated
+          ? 'blue hover-light-blue'
+          : 'dark-gray';
+
+    return (
+      <a
+        class={`${
+          note._active ? 'bg-near-white bl bw2 b--dark-gray ' : ''
+        }db ${color} hover-bg-near-white link ph2${
+          note._active ? ' pl1' : ''
+        } truncate`}
+        data-item
+        data-test-note={note.name || '(untitled)'}
+        dangerouslySetInnerHTML={{__html: note.name || '(untitled)'}}
+        href={note._href}
+      />
+    );
+  }
 }
 
 type Notes$Props = {|
