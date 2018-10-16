@@ -22,11 +22,11 @@ export const tree = new Baobab(
       (origins, created, removed, updated) =>
         origins
           .concat(Object.keys(created).map(_id => ({_created: true, _id})))
-          .map(x =>
+          .map(note =>
             Object.assign(
-              {_removed: !!removed[x._id], _updated: !!updated[x._id]},
-              x,
-              updated[x._id]
+              {_removed: !!removed[note._id], _updated: !!updated[note._id]},
+              note,
+              updated[note._id]
             )
           )
           .sort(compareDocs)
