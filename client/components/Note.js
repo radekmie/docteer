@@ -70,7 +70,7 @@ export class Note extends Component<Note$Props> {
     if (!props.note) return null;
 
     return (
-      <dl class="h-100 ma0 overflow-auto pa3 pr w-100">
+      <dl class="h-100 ma0 overflow-auto strict pa3 pr w-100">
         {props.user.schemas.length > 1 && (
           <select
             class={`b--dark-gray ba bg-white br-0 bw1 h2 mb1${
