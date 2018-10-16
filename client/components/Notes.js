@@ -42,7 +42,7 @@ type Notes$Props = {|
 
 export function Notes(props: Notes$Props) {
   return (
-    <div class="b--dark-gray bl bw1 flex-1 overflow-auto">
+    <div class="b--dark-gray bl bw1 flex-1 overflow-auto strict">
       {props.notes.length === 0 && (
         <div class="pa3 tc">{`(no notes${props.search ? ' found' : ''})`}</div>
       )}
