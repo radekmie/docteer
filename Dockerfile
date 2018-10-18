@@ -3,6 +3,7 @@ ARG NODE=10.11.0-alpine
 FROM node:$NODE
 WORKDIR /app
 COPY package.json package-lock.json ./
+COPY packages packages
 RUN HUSKY_SKIP_INSTALL=true npm ci --no-audit && npm cache clean --force
 COPY . .
 RUN PARCEL_WORKERS=1 npm run build
