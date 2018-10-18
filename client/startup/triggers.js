@@ -126,7 +126,7 @@ tree.select(['labels']).on('update', event => {
   );
 
   if (filter.length !== filterAvailable.length)
-    tree.set(['filter'], filterAvailable);
+    tree.set(['filter'], filterAvailable.sort(compare));
 });
 
 tree.select(['userToken']).on('update', event => {
@@ -182,5 +182,5 @@ function syncHistory() {
   tree.set(['view'], state.view);
 
   if (JSON.stringify(tree.get(['filter'])) !== JSON.stringify(state.filter))
-    tree.set(['filter'], state.filter);
+    tree.set(['filter'], state.filter.sort(compare));
 }

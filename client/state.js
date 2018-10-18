@@ -96,39 +96,43 @@ export const tree = new Baobab(
     labels: Baobab.monkey(
       ['notes'],
       ['notesFiltered'],
-      ['noteId'],
       ['filter'],
       ['search'],
-      (notes, notesFiltered, noteId, filter, search) =>
-        notes
-          .reduce((labels, note) => {
-            note.labels.forEach(label => {
-              if (label && !labels.includes(label)) labels.push(label);
-            });
+      (notes, notesFiltered, filter, search) => {
+        const labels = Object.create(null);
+        const labelsList = [];
 
-            return labels;
-          }, [])
-          .sort(compare)
-          .map(name => {
-            const active = filter.includes(name);
-            const toggle = active
-              ? filter.filter(filter => filter !== name)
-              : filter.concat(name);
+        notes.forEach(note => {
+          note.labels.forEach(name => {
+            if (name in labels) {
+              labels[name].total++;
+            } else if (name) {
+              const active = filter.includes(name);
+              const toggle = active
+                ? filter.filter(filter => filter !== name)
+                : filter.concat(name);
 
-            return {
-              active,
-              name,
-              href: stateToHref('notes', noteId, toggle, search),
-              count: notesFiltered.reduce(
-                (count, note) => count + note.labels.includes(name),
-                0
-              ),
-              total: notes.reduce(
-                (count, note) => count + note.labels.includes(name),
-                0
-              )
-            };
-          })
+              labels[name] = {
+                active,
+                count: 0,
+                href: stateToHrefQuery(toggle.sort(compare), search),
+                name,
+                total: 1
+              };
+
+              labelsList.push(labels[name]);
+            }
+          });
+        });
+
+        notesFiltered.forEach(note => {
+          note.labels.forEach(name => {
+            if (name in labels) labels[name].count++;
+          });
+        });
+
+        return labelsList.sort(compareDocs);
+      }
     ),
 
     // History
@@ -170,19 +174,22 @@ export const tree = new Baobab(
 );
 
 function stateToHref(view, noteId, filter, search) {
-  return [
-    `/${[view, view && noteId].filter(Boolean).join('/')}`,
-    [
-      filter.length &&
-        `filter=${filter
-          .slice()
-          .sort(compare)
-          .join(',')}`,
-      search && `search=${search}`
-    ]
-      .filter(Boolean)
-      .join('&')
-  ]
-    .filter(Boolean)
-    .join('?');
+  let path = '/';
+  if (view) {
+    path += view;
+    if (noteId) path += `/${noteId}`;
+  }
+
+  return path + stateToHrefQuery(filter, search);
+}
+
+function stateToHrefQuery(filter, search) {
+  let query = '?';
+  if (filter.length) query += `filter=${filter}`;
+  if (search) {
+    if (filter.length) query += '&';
+    query += `search=${search}`;
+  }
+
+  return query;
 }
