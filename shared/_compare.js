@@ -11,6 +11,9 @@ try {
 
 export const compare = collator.compare.bind(collator);
 export const compareDocs = (
-  a: {_id: string, name: string},
-  b: {_id: string, name: string}
-) => compare(a.name, b.name) || compare(a._id, b._id);
+  a: {_id: string, name: string} | {name: string},
+  b: {_id: string, name: string} | {name: string}
+) => {
+  // $FlowFixMe: Field _id is optional.
+  return compare(a.name, b.name) || compare(a._id, b._id);
+};

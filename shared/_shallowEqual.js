@@ -1,7 +1,14 @@
 // @flow
 
-export function shallowEqual<T: {}>(a: T, b: T) {
-  for (const key in a) if (!(key in b) || a[key] !== b[key]) return false;
-  for (const key in b) if (!(key in a) || b[key] !== a[key]) return false;
+export function shallowEqual<T>(a: T, b: T) {
+  if (a === b) return true;
+  if (typeof a !== 'object' || typeof b !== 'object' || !a || !b) return false;
+
+  const keysA = Object.keys(a);
+  const keysB = Object.keys(b);
+  if (keysA.length !== keysB.length) return false;
+  for (let index = 0; index < keysA.length; ++index)
+    if (a[keysA[index]] !== b[keysA[index]]) return false;
+
   return true;
 }
