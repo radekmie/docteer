@@ -450,12 +450,15 @@ export function onSettingsReset() {
 export function onSettingsSave() {
   toast('info', 'Saving...');
 
-  return call('POST', '/api/users/settings', tree.state().userDiff)
-    .then(login)
-    .then(() => {
+  return call('POST', '/api/users/settings', tree.state().userDiff).then(
+    userData => {
       toast('success', 'Saved.');
+      tree.update(store => {
+        Object.assign(store.userData, userData);
+      });
       onSettingsReset();
-    });
+    }
+  );
 }
 
 export function onSignup(email: string, password: string) {

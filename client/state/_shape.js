@@ -153,7 +153,9 @@ const _notesVisible = pure((notes, noteId, filter, search) => {
 const _user = pure((data, diff) => {
   if (!data) return null;
   if (!diff) return {...data, _changed: false};
-  return {...data, ...diff, _changed: true};
+  const user = {...data, ...diff};
+  user._changed = JSON.stringify(data) !== JSON.stringify(user);
+  return user;
 });
 
 const _userLoggedIn = pure(data => {

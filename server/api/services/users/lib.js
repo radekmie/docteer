@@ -99,13 +99,17 @@ export async function changeSettings(
   context: APIContextType
 ) {
   const {Users} = context.collections;
-  await Users.updateOne(
+  const {value} = await Users.findOneAndUpdate(
     {_id: context.userId},
     {$set: input},
-    {session: context.session}
+    {
+      projection: {_id: 0, schemas: 1},
+      returnOriginal: false,
+      session: context.session
+    }
   );
 
-  return await byId({_id: context.userId}, context);
+  return value;
 }
 
 export async function login(
