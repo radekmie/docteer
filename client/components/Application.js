@@ -42,7 +42,6 @@ type Application$Props = {|
 
 type Application$State = {|
   edit: boolean,
-  full: boolean,
   help: boolean,
   labels: LabelType[],
   load: boolean,
@@ -85,7 +84,7 @@ export class Application extends Component<
         class={`app dark-gray flex lh-copy${state.load ? ' hidden' : ''}`}
         data-application
       >
-        <Navigation full={state.full} pend={state.pend} user={state.user} />
+        <Navigation pend={state.pend} user={state.user} />
 
         {view === '' && (
           <div class="flex flex-center w-100">

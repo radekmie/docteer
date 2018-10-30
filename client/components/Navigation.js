@@ -13,7 +13,6 @@ import {onLogout} from '@client/actions';
 import type {UserType} from '@types';
 
 type Navigation$Props = {|
-  full: boolean,
   pend: number,
   user: ?UserType
 |};
