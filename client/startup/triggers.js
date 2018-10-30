@@ -118,7 +118,8 @@ history.listen(syncHistory);
 
 // Tree
 tree.on(({href}) => {
-  if (createPath(history.location) !== href) history.push(href);
+  if (createPath(history.location) !== href.replace(/\?$/, ''))
+    history.push(href);
 });
 
 tree.on(({filter, labels}) => {
@@ -153,6 +154,7 @@ function syncHistory() {
         : '';
 
     const invalidView =
+      (userLoggedIn && store.view === '') ||
       (userLoggedIn && store.view === 'login') ||
       (userLoggedIn && store.view === 'signup') ||
       (!userLoggedIn && store.view === 'notes') ||
