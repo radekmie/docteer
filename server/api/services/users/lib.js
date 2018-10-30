@@ -99,11 +99,13 @@ export async function changeSettings(
   context: APIContextType
 ) {
   const {Users} = context.collections;
-  return await Users.updateOne(
+  await Users.updateOne(
     {_id: context.userId},
     {$set: input},
     {session: context.session}
   );
+
+  return await byId({_id: context.userId}, context);
 }
 
 export async function login(
