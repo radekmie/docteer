@@ -1,12 +1,15 @@
 // @flow
 
-import immer from 'immer';
+import {produce} from 'immer';
+import {setAutoFreeze} from 'immer';
 
 import {storeToShape} from '@client/state';
 
 import type {ShapeType} from '@types';
 import type {StoreType} from '@types';
 import type {StateType} from '@types';
+
+setAutoFreeze(process.env.NODE_ENV === 'development');
 
 const initialStore: StoreType = {
   notesOrigins: [],
@@ -52,7 +55,7 @@ export const tree = {
 
   update(action: (StoreType, $ReadOnly<ShapeType>) => void) {
     const prevStore = store;
-    const nextStore = immer(store, store => action(store, shape));
+    const nextStore = produce(store, store => action(store, shape));
     if (prevStore === nextStore) return;
     store = nextStore;
     shape = storeToShape(store);
