@@ -21,20 +21,23 @@ import type {NoteType} from '@types';
 import type {ToastType} from '@types';
 import type {UserType} from '@types';
 
-const watcher = tree.watch({
-  edit: ['edit'],
-  full: ['full'],
-  help: ['help'],
-  labels: ['labels'],
-  load: ['load'],
-  note: ['note'],
-  notes: ['notesVisible'],
-  pend: ['pend'],
-  search: ['search'],
-  toasts: ['toasts'],
-  user: ['user'],
-  view: ['view']
-});
+const refresh = () => {
+  const state = tree.state();
+
+  return {
+    edit: state.edit,
+    help: state.help,
+    labels: state.labels,
+    load: state.load,
+    note: state.note,
+    notes: state.notesVisible,
+    pend: state.pend,
+    search: state.search,
+    toasts: state.toasts,
+    user: state.user,
+    view: state.view
+  };
+};
 
 type Application$Props = {|
   view?: string
@@ -44,13 +47,13 @@ type Application$State = {|
   edit: boolean,
   help: boolean,
   labels: LabelType[],
-  load: boolean,
+  load: number,
   note: ?NoteType<>,
   notes: NoteType<>[],
   pend: number,
   search: string,
   toasts: ToastType[],
-  user: UserType,
+  user: UserType | null,
   view: string
 |};
 
@@ -63,16 +66,16 @@ export class Application extends Component<
   constructor() {
     super(...arguments);
 
-    this.state = watcher.get();
+    this.state = refresh();
     this._sync = () => {
-      this.setState(watcher.get());
+      this.setState(refresh());
     };
 
-    watcher.on('update', this._sync);
+    tree.on(this._sync);
   }
 
   componentWillUnmount() {
-    watcher.release();
+    tree.off(this._sync);
   }
 
   // $FlowFixMe
@@ -102,7 +105,8 @@ export class Application extends Component<
 
         {view === 'notes' && <Resizer />}
 
-        {view === 'notes' && (
+        {//prettier-ignore
+        view === 'notes' && state.user && (
           <Note edit={state.edit} note={state.note} user={state.user} />
         )}
 
@@ -112,7 +116,8 @@ export class Application extends Component<
           </div>
         )}
 
-        {view === 'settings' && (
+        {//prettier-ignore
+        view === 'settings' && state.user && (
           <div class="h-100 overflow-auto pa3 w-100">
             <Settings user={state.user} />
           </div>

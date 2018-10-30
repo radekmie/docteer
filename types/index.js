@@ -110,9 +110,46 @@ export type SchemaType<T = *> = {|
   name: string
 |};
 
+export type StateType = {|
+  ...ShapeType,
+  ...StoreType
+|};
+
+export type ShapeType = {|
+  href: string,
+  labels: LabelType[],
+  note: NoteType | null,
+  notes: NoteType[],
+  notesFiltered: NoteType[],
+  notesVisible: NoteType[],
+  user: UserType | null,
+  userLoggedIn: boolean,
+  userToken: string | null
+|};
+
+export type StoreType = {|
+  edit: boolean,
+  filter: string[],
+  help: boolean,
+  last: Date,
+  load: number,
+  noteId: string | null,
+  notesCreated: {[string]: true},
+  notesOrigins: NotePatchType[],
+  notesRemoved: {[string]: true},
+  notesUpdated: {[string]: NotePatchType},
+  pend: number,
+  search: string,
+  toasts: ToastType[],
+  userData: UserType | null,
+  userDiff: $Shape<UserType> | null,
+  view: '' | 'login' | 'notes' | 'settings' | 'signup'
+|};
+
 export type ToastType = {|
   _id: number,
   dead: boolean,
+  marked: boolean,
   text: string,
   type: 'info' | 'error' | 'success'
 |};
@@ -121,5 +158,6 @@ export type UserType = {|
   _id: ObjectId | string,
   _changed: boolean,
   emails: {address: string, verified: boolean}[],
-  schemas: SchemaType<>[]
+  schemas: SchemaType<>[],
+  token: string
 |};

@@ -20,8 +20,11 @@ new Promise(window.requestIdleCallback || window.setTimeout)
   .then(loaded, loaded);
 
 function loaded() {
-  tree.set(['load'], tree.get(['load']) - 1);
-  tree.set(['pend'], tree.get(['pend']) - 1);
+  tree.update(store => {
+    --store.load;
+    --store.pend;
+  });
+
   syncHistory();
   setInterval(refreshToken, 1 * 60 * 60 * 1000);
 }
@@ -104,7 +107,7 @@ window.document.addEventListener('keydown', event => {
       event.preventDefault();
     }
   } else if (keyHelp.includes(key)) {
-    tree.set(['help'], key === '?');
+    tree.updateWith({help: key === '?'});
   } else if (key === 'Enter') {
     if (target.__preactattr_ && target.__preactattr_.onClick) target.click();
   }
@@ -114,73 +117,71 @@ window.document.addEventListener('keydown', event => {
 history.listen(syncHistory);
 
 // Tree
-tree.select(['href']).on('update', event => {
-  if (createPath(history.location) !== event.data.currentData)
-    history.push(event.data.currentData);
+tree.on(({href}) => {
+  if (createPath(history.location) !== href) history.push(href);
 });
 
-tree.select(['labels']).on('update', event => {
-  const filter = tree.get(['filter']);
+tree.on(({filter, labels}) => {
   const filterAvailable = filter.filter(name =>
-    event.data.currentData.find(label => label.name === name)
+    labels.find(label => label.name === name)
   );
 
   if (filter.length !== filterAvailable.length)
-    tree.set(['filter'], filterAvailable.sort(compare));
+    tree.updateWith({filter: filterAvailable.sort(compare)});
 });
 
-tree.select(['userToken']).on('update', event => {
-  const token = event.data.currentData;
-  if (token) storage.token = token;
+tree.on(({userToken}) => {
+  if (userToken) storage.token = userToken;
   else delete storage.token;
 });
 
 // Helpers
 const pattern = /^\/(\w+)?(?:\/(\w+))?.*?(?:[&?]filter=([^&?]+))?(?:[&?]search=([^&?]+))?.*$/;
 
-// eslint-disable-next-line complexity
 function syncHistory() {
-  const loggedIn = tree.get(['userLoggedIn']);
+  // eslint-disable-next-line complexity
+  tree.update((store, {notes, userLoggedIn}) => {
+    const [, view, noteId, filterString, search] =
+      pattern.exec(createPath(history.location)) || [];
 
-  const match = pattern.exec(createPath(history.location)) || [];
-  const state = {
-    noteId: (match[1] === 'notes' && match[2]) || undefined,
-    filter: match[3]
-      ? decodeURIComponent(match[3])
-          .split(',')
-          .sort(compare)
-      : [],
-    search: match[4] ? decodeURIComponent(match[4]) : '',
-    view: match[1] || ''
-  };
+    store.view =
+      view === 'login' ||
+      view === 'notes' ||
+      view === 'settings' ||
+      view === 'signup'
+        ? view
+        : '';
 
-  if (!loggedIn) {
-    state.noteId = undefined;
-    state.filter = [];
-    state.search = '';
-  }
+    const invalidView =
+      (userLoggedIn && store.view === 'login') ||
+      (userLoggedIn && store.view === 'signup') ||
+      (!userLoggedIn && store.view === 'notes') ||
+      (!userLoggedIn && store.view === 'settings');
 
-  if (
-    ![
-      !loggedIn && 'login',
-      !loggedIn && 'signup',
-      loggedIn && 'notes',
-      loggedIn && 'settings'
-    ].includes(state.view)
-  )
-    state.view = loggedIn ? 'notes' : '';
+    if (invalidView) store.view = userLoggedIn ? 'notes' : '';
 
-  document.title = `${titleForView(state.view)} | DocTeer`;
+    store.search = userLoggedIn && search ? decodeURIComponent(search) : '';
 
-  tree.set(
-    ['noteId'],
-    tree.get(['notes']).find(note => note._id === state.noteId)
-      ? state.noteId
-      : undefined
-  );
-  tree.set(['search'], state.search);
-  tree.set(['view'], state.view);
+    const filter =
+      userLoggedIn && filterString
+        ? decodeURIComponent(filterString)
+            .split(',')
+            .sort(compare)
+        : [];
 
-  if (JSON.stringify(tree.get(['filter'])) !== JSON.stringify(state.filter))
-    tree.set(['filter'], state.filter.sort(compare));
+    if (store.filter.length !== filter.length) {
+      store.filter = filter;
+    } else {
+      for (let index = 0; index < filter.length; ++index)
+        store.filter[index] = filter[index];
+    }
+
+    store.noteId =
+      userLoggedIn && store.view === 'notes' ? noteId || null : null;
+    store.noteId = notes.some(note => note._id === store.noteId)
+      ? store.noteId
+      : null;
+
+    document.title = `${titleForView(store.view)} | DocTeer`;
+  });
 }
