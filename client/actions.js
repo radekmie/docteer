@@ -309,6 +309,7 @@ export function onSchemaAdd() {
     if (shape.user === null) return;
     if (store.userDiff === null) store.userDiff = {};
     if (store.userDiff.schemas === undefined) store.userDiff.schemas = [];
+
     store.userDiff.schemas.push({
       name: `_${shape.user.schemas.length}`,
       fields: {name: 'div', labels: 'ul'}
@@ -319,74 +320,95 @@ export function onSchemaAdd() {
 export function onSchemaDelete(event: EventType) {
   const name = event.target.parentNode.dataset.name;
   const index = +event.target.parentNode.dataset.index;
-  const schema = tree._get(['user', 'schemas', {name}, 'fields']);
 
-  tree._set(
-    ['userDiff', 'schemas', {name}, 'fields'],
-    // $FlowFixMe
-    Object.keys(schema).reduce(
-      (next, key, index2) =>
-        // $FlowFixMe
-        index === index2 ? next : Object.assign(next, {[key]: schema[key]}),
-      {}
-    )
-  );
+  tree.update((store, shape) => {
+    if (shape.user === null) return;
+
+    const schema = shape.user.schemas.find(schema => schema.name === name);
+    if (schema === undefined || store.userDiff === null) return;
+
+    const diff = store.userDiff.schemas.find(schema => schema.name === name);
+    if (diff === undefined) return;
+
+    const fields = schema.fields;
+    delete diff.fields[Object.keys(fields)[index]];
+  });
 }
 
 export function onSchemaField(event: EventType) {
   const name = event.target.parentNode.dataset.name;
-  const schema = tree._get(['user', 'schemas', {name}, 'fields']);
 
-  tree._set(
-    ['userDiff', 'schemas', {name}, 'fields'],
-    // $FlowFixMe
-    Object.assign({}, schema, {[`_${Object.keys(schema).length}`]: 'div'})
-  );
+  tree.update((store, shape) => {
+    if (shape.user === null) return;
+
+    const schema = shape.user.schemas.find(schema => schema.name === name);
+    if (schema === undefined || store.userDiff === null) return;
+
+    const diff = store.userDiff.schemas.find(schema => schema.name === name);
+    if (diff === undefined) return;
+
+    const fields = schema.fields;
+    diff.fields[`_${Object.keys(fields).length}`] = 'div';
+  });
 }
 
 export function onSchemaKey(event: EventType) {
   const name = event.target.parentNode.dataset.name;
+  const value = event.target.value;
   const index = +event.target.parentNode.dataset.index;
-  const schema = tree._get(['user', 'schemas', {name}, 'fields']);
 
-  tree._set(
-    ['userDiff', 'schemas', {name}, 'fields'],
-    // $FlowFixMe
-    Object.keys(schema).reduce(
-      (next, key, index2) =>
-        Object.assign(next, {
-          // $FlowFixMe
-          [index === index2 ? event.target.value : key]: schema[key]
-        }),
-      {}
-    )
-  );
+  tree.update((store, shape) => {
+    if (shape.user === null) return;
+
+    const schema = shape.user.schemas.find(schema => schema.name === name);
+    if (schema === undefined || store.userDiff === null) return;
+
+    const diff = store.userDiff.schemas.find(schema => schema.name === name);
+    if (diff === undefined) return;
+
+    const fields = schema.fields;
+    const type = diff.fields[Object.keys(fields)[index]];
+    delete diff.fields[Object.keys(fields)[index]];
+    diff.fields[value] = type;
+  });
 }
 
 export function onSchemaName(event: EventType) {
   const name = event.target.parentNode.dataset.name;
+  const value = event.target.value;
 
-  tree._set(['userDiff', 'schemas', {name}, 'name'], event.target.value);
+  tree.update(store => {
+    if (store.userDiff === null) return;
+
+    const diff = store.userDiff.schemas.find(schema => schema.name === name);
+    if (diff === undefined) return;
+
+    diff.name = value;
+  });
 }
 
 export function onSchemaOrder(event: EventType) {
   const name = event.target.parentNode.dataset.name;
   const index = +event.target.parentNode.dataset.index;
-  const schema = tree._get(['user', 'schemas', {name}, 'fields']);
-  // $FlowFixMe
-  const fields = Object.keys(schema);
+  const order = +event.target.dataset.order;
 
-  fields[index] = fields.splice(
-    index + +event.target.dataset.order,
-    1,
-    fields[index]
-  )[0];
+  tree.update((store, shape) => {
+    if (shape.user === null) return;
 
-  tree._set(
-    ['userDiff', 'schemas', {name}, 'fields'],
-    // $FlowFixMe
-    fields.reduce((next, key) => Object.assign(next, {[key]: schema[key]}), {})
-  );
+    const schema = shape.user.schemas.find(schema => schema.name === name);
+    if (schema === undefined || store.userDiff === null) return;
+
+    const diff = store.userDiff.schemas.find(schema => schema.name === name);
+    if (diff === undefined) return;
+
+    const fields = Object.keys(schema.fields);
+    fields[index] = fields.splice(index + order, 1, fields[index])[0];
+
+    diff.fields = fields.reduce(
+      (next, key) => Object.assign(next, {[key]: fields[key]}),
+      {}
+    );
+  });
 }
 
 export function onSchemaRemove(event: EventType) {
@@ -403,11 +425,16 @@ export function onSchemaRemove(event: EventType) {
 export function onSchemaType(event: EventType) {
   const name = event.target.parentNode.dataset.name;
   const field = event.target.parentNode.dataset.field;
+  const value = event.target.value;
 
-  tree._set(
-    ['userDiff', 'schemas', {name}, 'fields', field],
-    event.target.value
-  );
+  tree.update(store => {
+    if (store.userDiff === null) return;
+
+    const diff = store.userDiff.schemas.find(schema => schema.name === name);
+    if (diff === undefined) return;
+
+    diff.fields[field] = value;
+  });
 }
 
 export function onSearch(event: InputEventType) {
