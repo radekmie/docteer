@@ -50,16 +50,23 @@ type Notes$Props = {|
   search: string
 |};
 
-export function Notes(props: Notes$Props) {
-  return (
-    <div class="b--dark-gray bl bw1 flex-1 overflow-auto strict">
-      {props.notes.length === 0 && (
-        <div class="pa3 tc">{`(no notes${props.search ? ' found' : ''})`}</div>
-      )}
+export class Notes extends Component<Notes$Props> {
+  shouldComponentUpdate(props: Notes$Props) {
+    return !shallowEqual(this.props, props);
+  }
 
-      {props.notes.map(note => (
-        <NotesItem key={note._id} note={note} />
-      ))}
-    </div>
-  );
+  // $FlowFixMe
+  render({notes, search}: Notes$Props) {
+    return (
+      <div class="b--dark-gray bl bw1 flex-1 overflow-auto strict">
+        {notes.length === 0 && (
+          <div class="pa3 tc">{`(no notes${search ? ' found' : ''})`}</div>
+        )}
+
+        {notes.map(note => (
+          <NotesItem key={note._id} note={note} />
+        ))}
+      </div>
+    );
+  }
 }
