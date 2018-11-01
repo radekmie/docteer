@@ -26,6 +26,7 @@ function loaded() {
   });
 
   syncHistory();
+  setTriggers();
   setInterval(refreshToken, 1 * 60 * 60 * 1000);
 }
 
@@ -117,24 +118,26 @@ window.document.addEventListener('keydown', event => {
 history.listen(syncHistory);
 
 // Tree
-tree.on(({href}) => {
-  if (createPath(history.location) !== href.replace(/\?$/, ''))
-    history.push(href);
-});
+function setTriggers() {
+  tree.on(({href}) => {
+    if (createPath(history.location) !== href.replace(/\?$/, ''))
+      history.push(href);
+  });
 
-tree.on(({filter, labels}) => {
-  const filterAvailable = filter.filter(name =>
-    labels.find(label => label.name === name)
-  );
+  tree.on(({filter, labels}) => {
+    const filterAvailable = filter.filter(name =>
+      labels.find(label => label.name === name)
+    );
 
-  if (filter.length !== filterAvailable.length)
-    tree.updateWith({filter: filterAvailable.sort(compare)});
-});
+    if (filter.length !== filterAvailable.length)
+      tree.updateWith({filter: filterAvailable.sort(compare)});
+  });
 
-tree.on(({userToken}) => {
-  if (userToken) storage.token = userToken;
-  else delete storage.token;
-});
+  tree.on(({userToken}) => {
+    if (userToken) storage.token = userToken;
+    else delete storage.token;
+  });
+}
 
 // Helpers
 const pattern = /^\/(\w+)?(?:\/(\w+))?.*?(?:[&?]filter=([^&?]+))?(?:[&?]search=([^&?]+))?.*$/;
