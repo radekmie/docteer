@@ -4,7 +4,7 @@ import fuzzysort from 'fuzzysort';
 
 import {hash} from '@shared';
 import {schemaEmpty} from '@shared';
-import {tree} from '@client/state';
+import * as tree from '@client/state';
 
 import type {EventType} from '@types';
 import type {InputEventType} from '@types';

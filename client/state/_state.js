@@ -1,7 +1,6 @@
 // @flow
 
 import {produce} from 'immer';
-import {setAutoFreeze} from 'immer';
 
 import {storeToShape} from '@client/state';
 
@@ -9,9 +8,13 @@ import type {ShapeType} from '@types';
 import type {StoreType} from '@types';
 import type {StateType} from '@types';
 
-setAutoFreeze(process.env.NODE_ENV === 'development');
+let _shape: ShapeType;
+let _state: StateType;
+let _store: StoreType;
 
-const initialStore: StoreType = {
+const _watchers = [];
+
+write({
   notesOrigins: [],
   notesCreated: {},
   notesRemoved: {},
@@ -33,40 +36,34 @@ const initialStore: StoreType = {
 
   userData: null,
   userDiff: null
-};
+});
 
-let store: StoreType = initialStore;
-let shape: ShapeType = storeToShape(store);
-let state: StateType = {...shape, ...store};
+export function off(fn: ($ReadOnly<StateType>) => void) {
+  _watchers.splice(_watchers.indexOf(fn), 1);
+}
 
-export const tree = {
-  _watchers: [],
+export function on(fn: ($ReadOnly<StateType>) => void) {
+  _watchers.push(fn);
+}
 
-  off(fn: ($ReadOnly<StateType>) => void) {
-    tree._watchers.splice(tree._watchers.indexOf(fn), 1);
-  },
-  on(fn: ($ReadOnly<StateType>) => void) {
-    tree._watchers.push(fn);
-  },
+export function state(): $ReadOnly<StateType> {
+  return _state;
+}
 
-  state(): $ReadOnly<StateType> {
-    return state;
-  },
+export function update(action: (StoreType, $ReadOnly<ShapeType>) => void) {
+  const nextStore = produce(_store, store => action(store, _shape));
+  if (nextStore !== _store) write(nextStore);
+}
 
-  update(action: (StoreType, $ReadOnly<ShapeType>) => void) {
-    const prevStore = store;
-    const nextStore = produce(store, store => action(store, shape));
-    if (prevStore === nextStore) return;
-    store = nextStore;
-    shape = storeToShape(store);
-    state = {...shape, ...store};
+export function updateWith(diff: $Shape<StoreType>) {
+  update(store => {
+    Object.assign(store, diff);
+  });
+}
 
-    tree._watchers.forEach(fn => fn(state));
-  },
-
-  updateWith(diff: $Shape<StoreType>) {
-    tree.update(store => {
-      Object.assign(store, diff);
-    });
-  }
-};
+export function write(store: StoreType) {
+  _store = store;
+  _shape = storeToShape(_store);
+  _state = {..._shape, ..._store};
+  _watchers.forEach(fn => fn(_state));
+}

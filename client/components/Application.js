@@ -14,7 +14,7 @@ import {Note} from '@client/components/Note';
 import {Resizer} from '@client/components/Resizer';
 import {Settings} from '@client/components/Settings';
 import {Toasts} from '@client/components/Toasts';
-import {tree} from '@client/state';
+import * as tree from '@client/state';
 
 import type {LabelType} from '@types';
 import type {NoteType} from '@types';

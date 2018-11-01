@@ -9,7 +9,7 @@ import {createPath} from 'history/PathUtils';
 import {compare} from '@shared';
 import {onLoginWithToken} from '@client/actions';
 import {titleForView} from '@shared';
-import {tree} from '@client/state';
+import * as tree from '@client/state';
 
 // Startup
 const history = createHistory();
