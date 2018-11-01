@@ -23,18 +23,16 @@ export class Editable extends Component<Editable$Props> {
   element: ?HTMLElement;
 
   onChange = () => {
-    if (!this.props.onChange) return;
+    if (this.element && this.props.onChange) {
+      // $FlowFixMe: Hard to define this constraint.
+      const value = this.element[
+        this.element.tagName.toLowerCase() === 'textarea'
+          ? 'value'
+          : 'innerHTML'
+      ];
 
-    if (!this.element) return;
-
-    // $FlowFixMe: Hard to define this constraint.
-    const value = this.element[
-      this.props.tag === 'textarea' ? 'value' : 'innerHTML'
-    ];
-
-    if (value === this.props.html) return;
-
-    this.props.onChange(value);
+      if (value !== this.props.html) this.props.onChange(value);
+    }
   };
 
   onElement = (element: ?HTMLElement) => {
@@ -42,20 +40,19 @@ export class Editable extends Component<Editable$Props> {
   };
 
   shouldComponentUpdate(props: Editable$Props) {
-    if (!this.element) return true;
-
-    if (this.props.disabled !== props.disabled) return true;
-
-    if (this.props.html !== props.html && this.element.innerHTML !== props.html)
-      return true;
-
-    if (
-      (props.tag === 'ol' || props.tag === 'ul') &&
-      !this.element.innerHTML.startsWith('<li>')
-    )
-      return true;
-
-    return false;
+    return (
+      // Not yet rendered.
+      !this.element ||
+      // Props changed.
+      this.props.disabled !== props.disabled ||
+      this.props.tag !== props.tag ||
+      // Content changed.
+      (this.props.html !== props.html &&
+        this.element.innerHTML !== props.html) ||
+      // Refresh.
+      ((props.tag === 'ol' || props.tag === 'ul') &&
+        !this.element.innerHTML.startsWith('<li>'))
+    );
   }
 
   componentDidMount() {
