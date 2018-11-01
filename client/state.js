@@ -1,6 +1,8 @@
 // @flow
 
 import fuzzysort from 'fuzzysort';
+import {produce} from 'immer';
+import {setAutoFreeze} from 'immer';
 
 import {compare} from '@shared';
 import {compareDocs} from '@shared';
@@ -8,8 +10,41 @@ import {pure} from '@shared';
 
 import type {ShapeType} from '@types';
 import type {StoreType} from '@types';
+import type {StateType} from '@types';
 
-export function storeToShape({
+// Definition.
+let _shape: ShapeType;
+let _state: StateType;
+let _store: StoreType;
+
+const _watchers = [];
+
+// Public API.
+export function off(fn: ($ReadOnly<StateType>) => void) {
+  _watchers.splice(_watchers.indexOf(fn), 1);
+}
+
+export function on(fn: ($ReadOnly<StateType>) => void) {
+  _watchers.push(fn);
+}
+
+export function state(): $ReadOnly<StateType> {
+  return _state;
+}
+
+export function update(action: (StoreType, $ReadOnly<ShapeType>) => void) {
+  const nextStore = produce(_store, store => action(store, _shape));
+  if (nextStore !== _store) write(nextStore);
+}
+
+export function updateWith(diff: $Shape<StoreType>) {
+  update(store => {
+    Object.assign(store, diff);
+  });
+}
+
+// Private API.
+function storeToShape({
   filter,
   noteId,
   notesCreated,
@@ -37,6 +72,14 @@ export function storeToShape({
   };
 }
 
+function write(store: StoreType) {
+  _store = store;
+  _shape = storeToShape(_store);
+  _state = {..._shape, ..._store};
+  _watchers.forEach(fn => fn(_state));
+}
+
+// Helpers.
 function _href(view, noteId, filter, search) {
   let path = '/';
   if (view) {
@@ -56,6 +99,14 @@ function _query(filter, search) {
   }
 
   return query;
+}
+
+function _userLoggedIn(data) {
+  return !!data;
+}
+
+function _userToken(data) {
+  return data && data.token;
 }
 
 const _labels = pure((notes, notesFiltered, filter, search) => {
@@ -158,10 +209,28 @@ const _user = pure((data, diff) => {
   return user;
 });
 
-const _userLoggedIn = pure(data => {
-  return !!data;
-});
+// Startup.
+setAutoFreeze(process.env.NODE_ENV !== 'production');
+write({
+  notesOrigins: [],
+  notesCreated: {},
+  notesRemoved: {},
+  notesUpdated: {},
 
-const _userToken = pure(data => {
-  return data && data.token;
+  noteId: null,
+
+  load: 1,
+  pend: 1,
+
+  filter: [],
+  search: '',
+  toasts: [],
+
+  edit: false,
+  help: false,
+  last: new Date(0),
+  view: '',
+
+  userData: null,
+  userDiff: null
 });
