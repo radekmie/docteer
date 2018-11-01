@@ -11,28 +11,28 @@ function blurs() {
 }
 
 function clientX(event) {
-  return (event.touches ? event.touches[0] : event).clientX;
+  return (event instanceof TouchEvent ? event.touches[0] : event).clientX;
 }
 
 function onMoved(ref) {
   mover = ref;
 }
 
-function onSized(event) {
+function onSized(event: MouseEvent | TouchEvent) {
   if (sizer) {
     blurs();
     sizer.style.width = `${clientX(event) - sizer.offsetLeft}px`;
   }
 }
 
-function onStart(event) {
-  if (!mover || (event.target !== mover && event.target.parentNode !== mover))
-    return;
-
-  blurs();
-  if (mover.previousSibling instanceof HTMLElement)
-    sizer = mover.previousSibling;
-  onSized(event);
+function onStart(event: MouseEvent | TouchEvent) {
+  // $FlowFixMe: EventTarget has no parentNode.
+  if (mover && (event.target === mover || event.target.parentNode === mover)) {
+    blurs();
+    if (mover.previousSibling instanceof HTMLElement)
+      sizer = mover.previousSibling;
+    onSized(event);
+  }
 }
 
 function onStop() {
@@ -44,31 +44,19 @@ function onStop() {
 
 if (typeof window !== 'undefined') {
   let modifier = false;
-  try {
-    window.addEventListener(
-      '',
-      null,
-      // $FlowFixMe
-      Object.defineProperty({}, 'passive', {
-        get() {
-          modifier = {passive: true};
-          return undefined;
-        }
-      })
-    );
-  } catch (error) {
-    // Empty.
-  }
+  window.addEventListener('', null, {
+    // $FlowFixMe: unsafe-getters-setters
+    get passive() {
+      modifier = {passive: true};
+      return false;
+    }
+  });
 
-  // $FlowFixMe
   document.addEventListener('mousedown', onStart, modifier);
-  // $FlowFixMe
   document.addEventListener('mousemove', onSized, modifier);
   document.addEventListener('mouseup', onStop, modifier);
   document.addEventListener('touchend', onStop, modifier);
-  // $FlowFixMe
   document.addEventListener('touchmove', onSized, modifier);
-  // $FlowFixMe
   document.addEventListener('touchstart', onStart, modifier);
 }
 
