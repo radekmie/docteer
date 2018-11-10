@@ -105,8 +105,7 @@ export class Application extends Component<
 
         {view === 'notes' && <Resizer />}
 
-        {//prettier-ignore
-        view === 'notes' && state.user && (
+        {view === 'notes' && state.user && (
           <Note edit={state.edit} note={state.note} user={state.user} />
         )}
 
@@ -116,8 +115,7 @@ export class Application extends Component<
           </div>
         )}
 
-        {//prettier-ignore
-        view === 'settings' && state.user && (
+        {view === 'settings' && state.user && (
           <div class="h-100 overflow-auto pa3 w-100">
             <Settings user={state.user} />
           </div>

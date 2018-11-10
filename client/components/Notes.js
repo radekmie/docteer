@@ -24,10 +24,10 @@ class NotesItem extends Component<NotesItem$Props> {
         ? 'gray hover-light-gray'
         : 'green hover-light-green'
       : note._removed
-        ? 'hover-light-red red'
-        : note._updated
-          ? 'blue hover-light-blue'
-          : 'dark-gray';
+      ? 'hover-light-red red'
+      : note._updated
+      ? 'blue hover-light-blue'
+      : 'dark-gray';
 
     return (
       <a

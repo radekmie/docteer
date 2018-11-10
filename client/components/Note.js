@@ -143,8 +143,8 @@ function listToSteps(html) {
         .slice(1)
         .map(element => element.slice(0, -5).replace(/(<br>)+$/, ''))
     : html
-      ? [html]
-      : [];
+    ? [html]
+    : [];
 }
 
 function stepsToList(steps: string[]) {

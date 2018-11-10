@@ -43,18 +43,20 @@ export function Actions({note, edit, user, view}: Actions$Props) {
 
   return (
     <div class="bottom-1 fixed right-1 w2">
-      {buttons.filter(props => props[0]).map(props => (
-        <div
-          class={button(props[1], props[2])}
-          data-test-notes-action={props[3].toLowerCase()}
-          key={props[3]}
-          onClick={props[4]}
-          tabIndex="0"
-          title={props[3]}
-        >
-          {props[5]}
-        </div>
-      ))}
+      {buttons
+        .filter(props => props[0])
+        .map(props => (
+          <div
+            class={button(props[1], props[2])}
+            data-test-notes-action={props[3].toLowerCase()}
+            key={props[3]}
+            onClick={props[4]}
+            tabIndex="0"
+            title={props[3]}
+          >
+            {props[5]}
+          </div>
+        ))}
     </div>
   );
 }
