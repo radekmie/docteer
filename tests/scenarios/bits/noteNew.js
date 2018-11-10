@@ -9,6 +9,7 @@ import {noteField} from '@tests/actions';
 
 import user from './user';
 
+// $FlowFixMe: Generics.
 export default user
   .with(() => ({
     note: {

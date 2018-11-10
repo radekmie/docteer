@@ -7,7 +7,7 @@ import * as definitions from '@server/mongo/definitions';
 import {cache} from '@shared';
 import {getDb} from '@server/mongo';
 
-export const getCollections = cache(async () => {
+export const getCollections = cache<void, _>(async () => {
   const db = await getDb();
 
   const collections = {};

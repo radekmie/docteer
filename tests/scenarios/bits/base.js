@@ -8,6 +8,7 @@ import {browserOpen} from '@tests/actions';
 import {load} from '@tests/actions';
 import {resize} from '@tests/actions';
 
+// $FlowFixMe: Generics.
 export default DAG.create()
   .with(() => ({
     user: {

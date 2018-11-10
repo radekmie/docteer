@@ -6,6 +6,7 @@ import {userSignUp} from '@tests/actions';
 
 import base from './base';
 
+// $FlowFixMe: Generics.
 export default base
   .next(userSignUp, context => [context.user])
   .next(toastCheck, ['Signing up...'])

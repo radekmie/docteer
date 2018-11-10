@@ -5,7 +5,7 @@ import MongoClient from 'mongodb';
 import config from '@server/config';
 import {cache} from '@shared';
 
-export const getMongo = cache(async () => {
+export const getMongo = cache<void, _>(async () => {
   for (let retries = config.mongo.retry.count; retries >= 0; --retries) {
     const clientPromise = MongoClient.connect(
       config.mongo.client.url,

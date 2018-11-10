@@ -6,6 +6,7 @@ import {toastCheck} from '@tests/actions';
 
 import noteNew from './noteNew';
 
+// $FlowFixMe: Generics.
 export default noteNew
   .next(noteAction, ['save'])
   .next(toastCheck, ['Saving...'])

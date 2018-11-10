@@ -24,7 +24,7 @@ type Note$Props = {|
 |};
 
 export class Note extends Component<Note$Props> {
-  onChange = cache((key: string) => (html: string) => {
+  onChange = cache<string, _>((key: string) => (html: string) => {
     onChange(
       this.props.note._id,
       key,
@@ -32,7 +32,7 @@ export class Note extends Component<Note$Props> {
     );
   });
 
-  onFocus = cache((key: string) => {
+  onFocus = cache<string, _>((key: string) => {
     if (!schemaIsArray(this.props.note._outline[key])) return undefined;
 
     return () => {

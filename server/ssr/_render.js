@@ -18,7 +18,7 @@ export const params = (url: string) => {
   return view !== 'login' && view !== 'signup' ? '' : view;
 };
 
-export const render = cache(view => {
+export const render = cache<string, _>(view => {
   const $html = cheerio.load(template());
   $html('body')
     .prepend(preact(<Logo class="center dark-gray fixed" />))
@@ -50,6 +50,6 @@ export const render = cache(view => {
   };
 });
 
-export const template = cache(() =>
+export const template = cache<void, string>(() =>
   fs.readFileSync(path.join(__dirname, '..', 'client', 'index.html')).toString()
 );
