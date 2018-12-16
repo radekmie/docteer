@@ -29,5 +29,10 @@ for (const key of Object.keys(config)) {
   }
 }
 
+// No random secret to make HMR work.
+if (config['node.env'] === 'development') {
+  config['jwt.secret'] = 'koń';
+}
+
 // $FlowFixMe
 export default Object.entries(config).reduce((a, b) => set(a, ...b), {});
