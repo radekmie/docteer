@@ -5,7 +5,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "run-s -lns build:*",
-    "build:client": "parcel build --detailed-report --no-autoinstall --no-cache --no-source-maps --out-dir dist/client client/index.html --experimental-scope-hoisting",
+    "build:client": "parcel build --detailed-report --no-autoinstall --no-cache --no-source-maps --out-dir dist/client client/index.html",
     "build:server": "parcel build --detailed-report --no-autoinstall --no-cache --no-source-maps --out-dir dist/server server/index.js --bundle-node-modules --no-minify --target=node",
     "build:static": "mkdir -p dist/public && cp -R client/public dist",
     "e2e": "jest --ci .spec.js",
