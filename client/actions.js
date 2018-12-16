@@ -405,7 +405,7 @@ export function onSchemaOrder(event: EventType) {
     fields[index] = fields.splice(index + order, 1, fields[index])[0];
 
     diff.fields = fields.reduce(
-      (next, key) => Object.assign(next, {[key]: fields[key]}),
+      (next, key) => Object.assign(next, {[key]: schema.fields[key]}),
       {}
     );
   });
