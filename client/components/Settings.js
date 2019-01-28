@@ -6,7 +6,8 @@ import {h} from 'preact';
 
 import {Button} from '@client/components/Button';
 import {onChangePassword} from '@client/actions';
-import {onExport} from '@client/actions';
+import {onExportCSV} from '@client/actions';
+import {onExportJSON} from '@client/actions';
 import {onImport} from '@client/actions';
 import {onSchemaAdd} from '@client/actions';
 import {onSchemaDelete} from '@client/actions';
@@ -278,12 +279,16 @@ export function Settings(props: Settings$Props) {
 
       <dd class="ml4">
         <div class="flex mt1">
-          <Button class="flex-1" onClick={onImport} title="Import">
-            Import
+          <Button class="flex-1" onClick={onExportCSV} title="Export CSV">
+            Export CSV
           </Button>
 
-          <Button class="flex-1 ml1" onClick={onExport} title="Export">
-            Export
+          <Button class="flex-1 ml1" onClick={onExportJSON} title="Export JSON">
+            Export JSON
+          </Button>
+
+          <Button class="flex-1 ml1" onClick={onImport} title="Import">
+            Import JSON
           </Button>
         </div>
       </dd>

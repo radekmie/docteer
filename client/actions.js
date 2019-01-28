@@ -71,21 +71,18 @@ export function onEdit() {
   onReset();
 }
 
-export function onExport() {
-  const {last, notesOrigins} = tree.state();
+export function onExport(data: string, extension: string) {
   const link = document.createElement('a');
-  const url = URL.createObjectURL(
-    new Blob([JSON.stringify(notesOrigins)], {
-      type: 'application/json'
-    })
-  );
+  const type = `application/${extension}`;
+  const url = URL.createObjectURL(new Blob([data], {type}));
 
   link.href = url;
-  link.download = `docteer-${last
-    .toJSON()
+  link.download = `docteer-${tree
+    .state()
+    .last.toJSON()
     .slice(0, 16)
     .replace(/[:-]/g, '_')
-    .replace('T', '-')}.json`;
+    .replace('T', '-')}.${extension}`;
   link.style.display = 'none';
 
   // $FlowFixMe: Is body really nullable?
@@ -98,6 +95,41 @@ export function onExport() {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   }, 0);
+}
+
+export function onExportCSV() {
+  const items = tree.state().notesOrigins;
+  const data = new Array(items.length);
+  const keys = [];
+
+  let parse: string => string;
+  try {
+    const parser = new DOMParser();
+    parse = text => {
+      const body = parser.parseFromString(text, 'text/html').body;
+      return body ? body.textContent || '' : '';
+    };
+  } catch (error) {
+    parse = text => text;
+  }
+
+  items.forEach((item, index) => {
+    Object.keys(item).forEach(key => {
+      if (!key.startsWith('_') && !keys.includes(key)) keys.push(key);
+
+      data[index] = keys
+        .map(key => [].concat(item[key]).join('\n'))
+        .map(parse)
+        .map(value => `"${value.replace(/"/g, '\\"')}"`)
+        .join(';');
+    });
+  });
+
+  onExport(`${keys.join(';')}\n${data.join('\n')}`, 'csv');
+}
+
+export function onExportJSON() {
+  onExport(JSON.stringify(tree.state().notesOrigins), 'json');
 }
 
 export function onImport() {
@@ -162,6 +194,11 @@ export function onImport() {
                 row[key].every(line => typeof line === 'string')
               )
                 return;
+
+              if (row._outline[key] === undefined) {
+                delete row[key];
+                return;
+              }
 
               throw new Error();
             });
