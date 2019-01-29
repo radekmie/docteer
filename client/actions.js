@@ -348,7 +348,7 @@ export function onSchemaAdd() {
     if (store.userDiff.schemas === undefined) store.userDiff.schemas = [];
 
     store.userDiff.schemas.push({
-      name: `_${shape.user.schemas.length}`,
+      name: `Schema ${shape.user.schemas.length + 1}`,
       fields: {name: 'div', labels: 'ul'}
     });
   });
