@@ -22,7 +22,8 @@
   },
   "settings": {
     "react": {
-      "pragma": "h"
+      "pragma": "h",
+      "version": "16.0.0"
     }
   }
 }

@@ -4,6 +4,18 @@
       "plugins": [
         "./.babel-plugin.js"
       ]
+    },
+    "test": {
+      "presets": [
+        [
+          "@babel/preset-env",
+          {
+            "targets": {
+              "node": "current"
+            }
+          }
+        ]
+      ]
     }
   },
   "plugins": [
