@@ -13,9 +13,14 @@ import type {SchemaType} from '@types';
 import type {StoreType} from '@types';
 
 export function onAdd() {
-  const _id = Math.random()
-    .toString(36)
-    .substr(2, 6);
+  const notes = tree.state().notes;
+
+  let _id;
+  do {
+    _id = Math.random()
+      .toString(36)
+      .substr(2, 6);
+  } while (notes.some(note => note._id === _id));
 
   tree.update((store, shape) => {
     if (shape.user === null) return;
