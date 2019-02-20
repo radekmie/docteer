@@ -4,6 +4,7 @@
 [lints]
 all=error
 deprecated-utility=warn
+dynamic-export=off
 sketchy-null=off
 
 [options]
