@@ -1,4 +1,4 @@
-ARG NODE=10.11.0-alpine
+ARG NODE=11.9.0-alpine
 
 FROM node:$NODE
 WORKDIR /app
