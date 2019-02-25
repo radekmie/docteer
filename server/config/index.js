@@ -14,8 +14,7 @@ const config = {
   'mongo.retry.delay': 1000,
   'node.env': 'development',
   'server.port': 3000,
-  'server.static.client.extensions.0': 'js',
-  'server.static.client.extensions.1': 'map',
+  'server.static.client.extensions': ['js', 'map'],
   'server.static.client.index': false,
   'server.static.public.index': false
 };
@@ -24,8 +23,13 @@ for (const key of Object.keys(config)) {
   const env = key.replace(/\./g, '_').toUpperCase();
 
   if (env in process.env) {
-    // $FlowFixMe
-    config[key] = process.env[env];
+    try {
+      // $FlowFixMe
+      config[key] = JSON.stringify(process.env[env]);
+    } catch (error) {
+      // $FlowFixMe
+      config[key] = process.env[env];
+    }
   }
 }
 
