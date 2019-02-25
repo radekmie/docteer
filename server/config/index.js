@@ -25,7 +25,7 @@ for (const key of Object.keys(config)) {
   if (env in process.env) {
     try {
       // $FlowFixMe
-      config[key] = JSON.stringify(process.env[env]);
+      config[key] = JSON.parse(process.env[env]);
     } catch (error) {
       // $FlowFixMe
       config[key] = process.env[env];
