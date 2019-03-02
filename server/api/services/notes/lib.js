@@ -27,7 +27,7 @@ export async function getMine(
   const diff: PatchType<> = {created: [], removed: [], updated: []};
   if (refresh === Infinity) return diff;
 
-  const after = new Date(refresh - 5 * 60 * 1000);
+  const after = new Date(refresh);
   const projection = {
     _id: 0,
     _id_user: 0,
