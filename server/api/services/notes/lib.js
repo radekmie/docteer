@@ -27,7 +27,7 @@ export async function getMine(
   const diff: PatchType<> = {created: [], removed: [], updated: []};
   if (refresh === Infinity) return diff;
 
-  const after = new Date(refresh);
+  const after = new Date(refresh - 5 * 60 * 1000);
   const projection = {
     _id: 0,
     _id_user: 0,
@@ -37,7 +37,7 @@ export async function getMine(
 
   const {Notes} = context.collections;
   await Notes.find(
-    {_id_user: context.userId, ...(after ? {_updated: {$gte: after}} : {})},
+    {_id_user: context.userId, ...(after ? {_updated: {$gt: after}} : {})},
     {projection, session: context.session}
   ).forEach(note => {
     if (note._removed && note._removed > after) {
