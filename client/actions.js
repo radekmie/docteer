@@ -15,8 +15,6 @@ import type {SchemaType} from '@types';
 import type {ShapeType} from '@types';
 import type {StoreType} from '@types';
 
-(typeof window === 'object' ? window : global).tree = tree;
-
 export function onAdd() {
   create((_, shape) => {
     if (shape.user) return schemaEmpty(shape.user.schemas[0]);

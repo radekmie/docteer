@@ -37,7 +37,7 @@ export async function getMine(
 
   const {Notes} = context.collections;
   await Notes.find(
-    {_id_user: context.userId, ...(after ? {_updated: {$gt: after}} : {})},
+    {_id_user: context.userId, ...(after ? {_updated: {$gte: after}} : {})},
     {projection, session: context.session}
   ).forEach(note => {
     if (note._removed && note._removed > after) {
