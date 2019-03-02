@@ -1,6 +1,7 @@
 // @flow
 
 import fuzzysort from 'fuzzysort';
+import omit from 'lodash/omit';
 
 import {hash} from '@shared';
 import {schemaEmpty} from '@shared';
@@ -8,26 +9,24 @@ import * as tree from '@client/state';
 
 import type {EventType} from '@types';
 import type {InputEventType} from '@types';
+import type {NotePatchType} from '@types';
 import type {PatchType} from '@types';
 import type {SchemaType} from '@types';
+import type {ShapeType} from '@types';
 import type {StoreType} from '@types';
 
+(typeof window === 'object' ? window : global).tree = tree;
+
 export function onAdd() {
-  const notes = tree.state().notes;
+  create((_, shape) => {
+    if (shape.user) return schemaEmpty(shape.user.schemas[0]);
+  });
+}
 
-  let _id;
-  do {
-    _id = Math.random()
-      .toString(36)
-      .substr(2, 6);
-  } while (notes.some(note => note._id === _id));
-
-  tree.update((store, shape) => {
-    if (shape.user === null) return;
-    store.notesUpdated[_id] = schemaEmpty(shape.user.schemas[0]);
-    store.notesCreated[_id] = true;
-    store.noteId = _id;
-    store.edit = true;
+export function onClone() {
+  create((store, shape) => {
+    if (shape.note)
+      return omit(shape.note, ['_created', '_id', '_removed', '_updated']);
   });
 }
 
@@ -599,6 +598,27 @@ function call(method: 'GET' | 'POST', path, data, {silent, token} = {}) {
         resolve(response);
       }
     }
+  });
+}
+
+function create(make: (StoreType, $ReadOnly<ShapeType>) => ?NotePatchType<>) {
+  const notes = tree.state().notes;
+
+  let _id;
+  do {
+    _id = Math.random()
+      .toString(36)
+      .substr(2, 6);
+  } while (notes.some(note => note._id === _id));
+
+  tree.update((store, shape) => {
+    const instance = make(store, shape);
+    if (instance === undefined) return;
+
+    store.notesUpdated[_id] = instance;
+    store.notesCreated[_id] = true;
+    store.noteId = _id;
+    store.edit = true;
   });
 }
 

@@ -4,12 +4,14 @@
 import {h} from 'preact';
 
 import {iconAdd} from '@client/components/Icon';
+import {iconClone} from '@client/components/Icon';
 import {iconMinus} from '@client/components/Icon';
 import {iconNo} from '@client/components/Icon';
 import {iconOk} from '@client/components/Icon';
 import {iconPen} from '@client/components/Icon';
 import {iconRefresh} from '@client/components/Icon';
 import {onAdd} from '@client/actions';
+import {onClone} from '@client/actions';
 import {onEdit} from '@client/actions';
 import {onRefresh} from '@client/actions';
 import {onRemove} from '@client/actions';
@@ -32,6 +34,7 @@ export function Actions({note, edit, user, view}: Actions$Props) {
   // prettier-ignore
   const buttons = [
     [view === 'notes',                 'dark-pink', false,                  'Create',  onAdd,           iconAdd],
+    [view === 'notes' && edit && note, 'lavender',  false,                  'Clone',   onClone,         iconClone],
     [view === 'notes' && edit && note, 'red',       false,                  'Remove',  onRemove,        iconMinus],
     [view === 'notes' && edit,         'green',     false,                  'Save',    onSave,          iconOk],
     [view === 'notes' && !edit,        'dark-blue', false,                  'Edit',    onEdit,          iconPen],

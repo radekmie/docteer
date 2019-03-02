@@ -14,14 +14,15 @@
   --dark-red:    rgba(231, 4, 15, 1);
   --gray:        rgba(119, 119, 119, 1);
   --green:       rgba(25, 169, 116, 1);
+  --lavender:    rgba(192, 127, 223, 1);
   --light-blue:  rgba(150, 204, 255, 1);
   --light-gray:  rgba(238, 238, 238, 1);
   --light-green: rgba(158, 235, 207, 1);
   --light-red:   rgba(255, 114, 92, 1);
   --near-white:  rgba(244, 244, 244, 1);
-  --shade:       rgba(244, 244, 244, 0.1);
   --orange:      rgba(255, 99, 0, 1);
   --red:         rgba(255, 65, 54, 1);
+  --shade:       rgba(244, 244, 244, 0.1);
   --white:       rgba(255, 255, 255, 1);
 }
 
@@ -518,6 +519,11 @@ textarea {
 .hover-green:focus,
 .hover-green:hover {
   color: var(--green);
+}
+
+.hover-lavender:focus,
+.hover-lavender:hover {
+  color: var(--lavender);
 }
 
 .hover-light-blue:focus,
