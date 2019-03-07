@@ -17,14 +17,14 @@ import type {StoreType} from '@types';
 
 export function onAdd() {
   create((_, shape) => {
-    if (shape.user) return schemaEmpty(shape.user.schemas[0]);
+    if (shape.user) schemaEmpty(shape.user.schemas[0]);
   });
 }
 
 export function onClone() {
   create((store, shape) => {
     if (shape.note)
-      return omit(shape.note, ['_created', '_id', '_removed', '_updated']);
+      omit(shape.note, ['_created', '_id', '_removed', '_updated']);
   });
 }
 
