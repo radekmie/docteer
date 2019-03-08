@@ -16,16 +16,12 @@ import type {ShapeType} from '@types';
 import type {StoreType} from '@types';
 
 export function onAdd() {
-  create((_, shape) => {
-    if (shape.user) schemaEmpty(shape.user.schemas[0]);
-  });
+  create((_, {user}) => (user ? schemaEmpty(user.schemas[0]) : undefined));
 }
 
 export function onClone() {
-  create((store, shape) => {
-    if (shape.note)
-      omit(shape.note, ['_created', '_id', '_removed', '_updated']);
-  });
+  const fields = ['_created', '_id', '_removed', '_updated'];
+  create((_, {note}) => (note ? omit(note, fields) : undefined));
 }
 
 export function onChange(_id: string, key: string, value: string | string[]) {
