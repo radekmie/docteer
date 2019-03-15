@@ -28,6 +28,10 @@ export function on(fn: ($ReadOnly<StateType>) => void) {
   _watchers.push(fn);
 }
 
+export function shape(): $ReadOnly<ShapeType> {
+  return _shape;
+}
+
 export function state(): $ReadOnly<StateType> {
   return _state;
 }
@@ -211,6 +215,8 @@ const _user = pure((data, diff) => {
 
 // Startup.
 setAutoFreeze(process.env.NODE_ENV !== 'production');
+
+// Initial state.
 write({
   notesOrigins: [],
   notesCreated: {},

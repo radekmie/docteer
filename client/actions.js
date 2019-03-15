@@ -15,6 +15,9 @@ import type {SchemaType} from '@types';
 import type {ShapeType} from '@types';
 import type {StoreType} from '@types';
 
+// Publish tree.
+if (typeof window !== 'undefined') window.__DOCTEER_STATE__ = tree;
+
 export function onAdd() {
   create((_, {user}) => (user ? schemaEmpty(user.schemas[0]) : undefined));
 }
