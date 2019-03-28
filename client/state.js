@@ -177,21 +177,19 @@ const _notesFiltered = pure((notes, filter, search) => {
   return notes
     .reduce((notes, note) => {
       const match = fuzzysort.single(term, note.name);
-
       if (match) notes.push({note, match});
-
       return notes;
     }, [])
-    .sort(
-      (a, b) => b.match.score - a.match.score || compareDocs(a.note, b.note)
-    )
+    .sort(_notesResultOrder)
     .slice(0, 50)
-    .map(single =>
-      Object.assign({}, single.note, {
-        name: fuzzysort.highlight(single.match, '<b>', '</b>')
-      })
-    );
+    .map(_notesResultMapper);
 });
+
+const _notesResultMapper = single =>
+  Object.assign({}, single.note, {name: fuzzysort.highlight(single.match)});
+
+const _notesResultOrder = (a, b) =>
+  b.match.score - a.match.score || compareDocs(a.note, b.note);
 
 const _notesVisible = pure((notes, noteId, filter, search) => {
   return notes.map(note =>
