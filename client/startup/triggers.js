@@ -1,10 +1,11 @@
 // @flow
 
-import createHistory from 'history/createBrowserHistory';
-// $FlowFixMe: Untyped import.
-import {createLocation} from 'history/LocationUtils';
-// $FlowFixMe: Untyped import.
-import {createPath} from 'history/PathUtils';
+// $FlowFixMe: Incomplete typings!
+import {createBrowserHistory} from 'history';
+// $FlowFixMe: Incomplete typings!
+import {createLocation} from 'history';
+// $FlowFixMe: Incomplete typings!
+import {createPath} from 'history';
 
 import {compare} from '@shared';
 import {onLoginWithToken} from '@client/actions';
@@ -12,7 +13,7 @@ import {titleForView} from '@shared';
 import * as tree from '@client/state';
 
 // Startup
-const history = createHistory();
+const history = createBrowserHistory();
 const storage = window.localStorage || {};
 
 new Promise(window.requestIdleCallback || window.setTimeout)
