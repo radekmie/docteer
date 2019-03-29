@@ -17,10 +17,7 @@ noteNew
   .with(() => ({
     schema: {
       name: (faker.lorem.word(): string),
-      fields: {
-        textA: 'div',
-        textB: 'textarea'
-      }
+      fields: [{name: 'textA', type: 'div'}, {name: 'textB', type: 'textarea'}]
     }
   }))
   .next(userAddSchema, context => [context.schema])

@@ -4,9 +4,9 @@ import type {SchemaOutlineFieldType} from '@types';
 import type {SchemaType} from '@types';
 
 export function schemaEmpty({fields, name}: SchemaType<>) {
-  return Object.keys(fields).reduce(
-    (empty, key) =>
-      Object.assign(empty, {[key]: schemaIsArray(fields[key]) ? [] : ''}),
+  return fields.reduce(
+    (empty, {name, type}) =>
+      Object.assign(empty, {[name]: schemaIsArray(type) ? [] : ''}),
     {_outline: fields, _outname: name}
   );
 }

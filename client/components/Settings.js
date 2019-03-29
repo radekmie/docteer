@@ -175,16 +175,16 @@ export function Settings(props: Settings$Props) {
               />
             </div>
 
-            {Object.keys(schema.fields).map((key, index, array) => {
-              const disabled = key === 'labels' || key === 'name';
+            {schema.fields.map(({name, type}, index, array) => {
+              const disabled = name === 'labels' || name === 'name';
 
               return (
                 <div
                   class="flex mt1"
-                  data-field={key}
+                  data-field={name}
                   data-index={index}
                   data-name={schema.name}
-                  key={key}
+                  key={name}
                 >
                   <Button
                     class="ph1"
@@ -216,7 +216,7 @@ export function Settings(props: Settings$Props) {
                     disabled={disabled}
                     onChange={onSchemaKey}
                     title="Field name"
-                    value={key}
+                    value={name}
                   />
 
                   <select
@@ -226,13 +226,13 @@ export function Settings(props: Settings$Props) {
                       disabled ? '' : ' pointer'
                     } trans`}
                     data-test-schema-field-type
-                    disabled={key === 'labels'}
+                    disabled={name === 'labels'}
                     onChange={onSchemaType}
                     title="Field type"
-                    value={schema.fields[key]}
+                    value={type}
                   >
-                    {key !== 'name' && <option value="ol">List</option>}
-                    {key !== 'name' && <option value="ul">Tags</option>}
+                    {name !== 'name' && <option value="ol">List</option>}
+                    {name !== 'name' && <option value="ul">Tags</option>}
                     <option value="textarea">Text</option>
                     <option value="div">Snippet</option>
                   </select>

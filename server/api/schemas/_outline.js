@@ -1,12 +1,19 @@
 // @flow
 
 export const outline = {
-  type: 'object',
-  patternProperties: {
-    '^[^$_][^.]*$': {
-      type: 'string',
-      enum: ['div', 'ol', 'ul', 'textarea']
+  type: 'array',
+  items: {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      name: {
+        type: 'string',
+        pattern: '^[^$_][^.]*$'
+      },
+      type: {
+        type: 'string',
+        enum: ['div', 'ol', 'textarea', 'ul']
+      }
     }
-  },
-  additionalProperties: false
+  }
 };

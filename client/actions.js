@@ -54,10 +54,10 @@ export function onChangeSchema(_id: string, schema: SchemaType<>) {
     const doc = shape.notes.find(note => note._id === _id);
     if (!doc) return;
 
-    store.notesUpdated[_id] = Object.keys(schema.fields).reduce(
-      (clone, field) =>
-        doc._outline[field] && typeof clone[field] === typeof doc[field]
-          ? Object.assign(clone, {[field]: doc[field]})
+    store.notesUpdated[_id] = schema.fields.reduce(
+      (clone, {name}) =>
+        typeof clone[name] === typeof doc[name]
+          ? Object.assign(clone, {[name]: doc[name]})
           : clone,
       schemaEmpty(schema)
     );
@@ -176,7 +176,18 @@ export function onImport() {
               typeof row._id !== 'string' ||
               row._id.length === 0 ||
               row._id.length > 100 ||
-              (row._outname !== undefined && typeof row._outname !== 'string')
+              row._outline === undefined ||
+              row._outname === undefined ||
+              typeof row._outname !== 'string' ||
+              !Array.isArray(row._outline) ||
+              row._outline.some(
+                field =>
+                  row[field.name] === undefined ||
+                  typeof field.name !== 'string' ||
+                  !/^[^$_][^.]*$/.test(field.name) ||
+                  !['div', 'ol', 'textarea', 'ul'].includes(field.type) ||
+                  Object.keys(field).length !== 2
+              )
             )
               throw new Error();
 
@@ -187,25 +198,20 @@ export function onImport() {
                 return;
               }
 
-              if (row._outline[key] === 'div' && typeof row[key] === 'string')
-                return;
-
-              if (
-                (row._outline[key] === 'ol' || row._outline[key] === 'ul') &&
-                row[key].every(line => typeof line === 'string')
-              )
-                return;
-
-              if (row._outline[key] === undefined) {
+              const field = row._outline.find(field => field.name === key);
+              if (field === undefined) {
                 delete row[key];
                 return;
               }
 
-              throw new Error();
-            });
+              if (field.type === 'div' && typeof row[key] === 'string') return;
+              if (
+                (field.type === 'ol' || field.type === 'ul') &&
+                row[key].every(line => typeof line === 'string')
+              )
+                return;
 
-            Object.keys(row._outline).forEach(key => {
-              if (row[key] === undefined) throw new Error();
+              throw new Error();
             });
 
             if (!store.notesOrigins.some(note => note._id === row._id))
@@ -350,7 +356,7 @@ export function onSchemaAdd() {
 
     store.userDiff.schemas.push({
       name: `Schema ${shape.user.schemas.length + 1}`,
-      fields: {name: 'div', labels: 'ul'}
+      fields: [{name: 'name', type: 'div'}, {name: 'labels', type: 'ul'}]
     });
   });
 }
@@ -368,8 +374,7 @@ export function onSchemaDelete(event: EventType) {
     const diff = store.userDiff.schemas.find(schema => schema.name === name);
     if (diff === undefined) return;
 
-    const fields = schema.fields;
-    delete diff.fields[Object.keys(fields)[index]];
+    diff.fields.splice(index, 1);
   });
 }
 
@@ -385,8 +390,7 @@ export function onSchemaField(event: EventType) {
     const diff = store.userDiff.schemas.find(schema => schema.name === name);
     if (diff === undefined) return;
 
-    const fields = schema.fields;
-    diff.fields[`_${Object.keys(fields).length}`] = 'div';
+    diff.fields.push({name: `_${schema.fields.length}`, type: 'div'});
   });
 }
 
@@ -404,10 +408,7 @@ export function onSchemaKey(event: EventType) {
     const diff = store.userDiff.schemas.find(schema => schema.name === name);
     if (diff === undefined) return;
 
-    const fields = schema.fields;
-    const type = diff.fields[Object.keys(fields)[index]];
-    delete diff.fields[Object.keys(fields)[index]];
-    diff.fields[value] = type;
+    diff.fields[index].name = value;
   });
 }
 
@@ -439,13 +440,8 @@ export function onSchemaOrder(event: EventType) {
     const diff = store.userDiff.schemas.find(schema => schema.name === name);
     if (diff === undefined) return;
 
-    const fields = Object.keys(schema.fields);
-    fields[index] = fields.splice(index + order, 1, fields[index])[0];
-
-    diff.fields = fields.reduce(
-      (next, key) => Object.assign(next, {[key]: schema.fields[key]}),
-      {}
-    );
+    const fields = diff.fields;
+    fields.splice(index, 1, fields.splice(index + order, 1, fields[index])[0]);
   });
 }
 
@@ -462,8 +458,8 @@ export function onSchemaRemove(event: EventType) {
 
 export function onSchemaType(event: EventType) {
   const name = event.target.parentNode.dataset.name;
-  const field = event.target.parentNode.dataset.field;
   const value = event.target.value;
+  const index = +event.target.parentNode.dataset.index;
 
   tree.update(store => {
     if (store.userDiff === null) return;
@@ -471,7 +467,8 @@ export function onSchemaType(event: EventType) {
     const diff = store.userDiff.schemas.find(schema => schema.name === name);
     if (diff === undefined) return;
 
-    diff.fields[field] = value;
+    // $FlowFixMe
+    diff.fields[index].type = value;
   });
 }
 

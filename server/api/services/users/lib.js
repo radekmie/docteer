@@ -20,16 +20,16 @@ const defaultPatch: PatchType<> = {
     {
       _id: 'introduction',
       _outname: 'Introduction',
-      _outline: {
-        name: 'textarea',
-        labels: 'ul',
-        text: 'textarea',
-        points: 'ul',
-        list: 'ol',
-        snippet: 'div',
-        what: 'div',
-        why: 'div'
-      },
+      _outline: [
+        {name: 'name', type: 'textarea'},
+        {name: 'labels', type: 'ul'},
+        {name: 'text', type: 'textarea'},
+        {name: 'points', type: 'ul'},
+        {name: 'list', type: 'ol'},
+        {name: 'snippet', type: 'div'},
+        {name: 'what', type: 'div'},
+        {name: 'why', type: 'div'}
+      ],
       name: 'Introduction to DocTeer',
       labels: [],
       text: 'DocTeer is a multi-purpose data container.',
@@ -56,8 +56,21 @@ const defaultPatch: PatchType<> = {
 };
 
 const defaultSchemas: SchemaType<>[] = [
-  {name: 'Default', fields: {name: 'textarea', labels: 'ul', text: 'div'}}
+  {
+    name: 'Default',
+    fields: [
+      {name: 'name', type: 'textarea'},
+      {name: 'labels', type: 'ul'},
+      {name: 'text', type: 'div'}
+    ]
+  }
 ];
+
+function _hasDuplicatedField(schema) {
+  return schema.fields
+    .map(field => field.name)
+    .some((name, index, fields) => fields.indexOf(name) !== index);
+}
 
 export async function byId({_id}: {|_id: string|}, context: APIContextType) {
   const {Users} = context.collections;
@@ -98,6 +111,9 @@ export async function changeSettings(
   input: {|schemas: SchemaType<>[]|},
   context: APIContextType
 ) {
+  if (input.schemas.some(_hasDuplicatedField))
+    throw new APIError({code: 'schema-field-duplicated'});
+
   const {Users} = context.collections;
   const {value} = await Users.findOneAndUpdate(
     {_id: context.userId},

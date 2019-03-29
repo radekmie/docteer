@@ -25,6 +25,7 @@ export const APIErrors = {
   'api-validation':           'Validation Failed',
 
   // Business logic.
+  'schema-field-duplicated':  'Schema fields must be unique.',
   'user-already-exists':      'User already exists.',
   'user-invalid-credentials': "Sounds good, doesn't work.",
   'user-password-incorrect':  'Incorrect old password.',

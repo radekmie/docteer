@@ -58,12 +58,19 @@ export const Users = {
               bsonType: 'string'
             },
             fields: {
-              bsonType: 'object',
-              additionalProperties: false,
-              patternProperties: {
-                '^[^$_][^.]*$': {
-                  bsonType: 'string',
-                  enum: ['div', 'ol', 'textarea', 'ul']
+              bsonType: 'array',
+              items: {
+                bsonType: 'object',
+                additionalProperties: false,
+                properties: {
+                  name: {
+                    bsonType: 'string',
+                    pattern: '^[^$_][^.]*$'
+                  },
+                  type: {
+                    bsonType: 'string',
+                    enum: ['div', 'ol', 'textarea', 'ul']
+                  }
                 }
               }
             }

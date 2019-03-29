@@ -102,7 +102,10 @@ export type PatchType<
 
 export type SchemaOutlineFieldType = 'div' | 'ol' | 'ul' | 'textarea';
 
-export type SchemaOutlineType<T> = $ObjMap<T, () => SchemaOutlineFieldType>;
+export type SchemaOutlineType<T> = {|
+  name: $Keys<T>,
+  type: SchemaOutlineFieldType
+|}[];
 
 // $FlowFixMe: * is deprecated
 export type SchemaType<T = *> = {|

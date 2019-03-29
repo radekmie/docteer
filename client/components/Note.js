@@ -24,16 +24,21 @@ type Note$Props = {|
 |};
 
 export class Note extends Component<Note$Props> {
+  isArray = (key: string) => {
+    const field = this.props.note._outline.find(field => field.name === key);
+    return !!field && schemaIsArray(field.type);
+  };
+
   onChange = cache<string, _>((key: string) => (html: string) => {
     onChange(
       this.props.note._id,
       key,
-      schemaIsArray(this.props.note._outline[key]) ? listToSteps(html) : html
+      this.isArray(key) ? listToSteps(html) : html
     );
   });
 
   onFocus = cache<string, _>((key: string) => {
-    if (!schemaIsArray(this.props.note._outline[key])) return undefined;
+    if (!this.isArray(key)) return undefined;
 
     return () => {
       if (!this.props.note[key].length) {
@@ -59,7 +64,7 @@ export class Note extends Component<Note$Props> {
 
   // NOTE: Keys with 'ol' or 'ul' in outline are arrays.
   transform = (key: string, html: string | string[]) =>
-    schemaIsArray(this.props.note._outline[key])
+    this.isArray(key)
       ? // $FlowFixMe: Look up.
         stepsToList(html)
       : // $FlowFixMe: Look up.
@@ -94,36 +99,36 @@ export class Note extends Component<Note$Props> {
           </select>
         )}
 
-        {Object.keys(props.note._outline).reduce((fields, key, index) => {
-          if (props.edit || key === 'name' || props.note[key].length) {
+        {props.note._outline.reduce((fields, {name}, index) => {
+          if (props.edit || name === 'name' || props.note[name].length) {
             fields.push(
               <dt
-                key={`${key}-dt`}
+                key={`${name}-dt`}
                 class={index === 0 ? null : 'mt3'}
-                data-test-note-label={schemaKey(key)}
+                data-test-note-label={schemaKey(name)}
               >
-                <b>{`${schemaKey(key)}:`}</b>
+                <b>{`${schemaKey(name)}:`}</b>
               </dt>
             );
 
             fields.push(
               <dd
-                key={`${key}-dd`}
+                key={`${name}-dd`}
                 class="ml4"
-                data-test-note-field={schemaKey(key)}
+                data-test-note-field={schemaKey(name)}
               >
                 <Editable
                   class={
-                    schemaIsArray(props.note._outline[key]) ? 'mv0 pl0' : null
+                    schemaIsArray(props.note._outline[name]) ? 'mv0 pl0' : null
                   }
                   disabled={!props.edit}
-                  html={this.transform(key, props.note[key])}
-                  onChange={this.onChange(key)}
-                  onFocus={this.onFocus(key)}
-                  onInput={key === 'labels' ? onTypeAhead : undefined}
-                  onKeyDown={key === 'labels' ? onTypeAhead.pre : undefined}
-                  onKeyUp={key === 'labels' ? onTypeAhead.post : undefined}
-                  tag={props.note._outline[key]}
+                  html={this.transform(name, props.note[name])}
+                  onChange={this.onChange(name)}
+                  onFocus={this.onFocus(name)}
+                  onInput={name === 'labels' ? onTypeAhead : undefined}
+                  onKeyDown={name === 'labels' ? onTypeAhead.pre : undefined}
+                  onKeyUp={name === 'labels' ? onTypeAhead.post : undefined}
+                  tag={props.note._outline[name]}
                 />
               </dd>
             );
