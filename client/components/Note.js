@@ -99,7 +99,7 @@ export class Note extends Component<Note$Props> {
           </select>
         )}
 
-        {props.note._outline.reduce((fields, {name}, index) => {
+        {props.note._outline.reduce((fields, {name, type}, index) => {
           if (props.edit || name === 'name' || props.note[name].length) {
             fields.push(
               <dt
@@ -118,9 +118,7 @@ export class Note extends Component<Note$Props> {
                 data-test-note-field={schemaKey(name)}
               >
                 <Editable
-                  class={
-                    schemaIsArray(props.note._outline[name]) ? 'mv0 pl0' : null
-                  }
+                  class={schemaIsArray(type) ? 'mv0 pl0' : null}
                   disabled={!props.edit}
                   html={this.transform(name, props.note[name])}
                   onChange={this.onChange(name)}
@@ -128,7 +126,7 @@ export class Note extends Component<Note$Props> {
                   onInput={name === 'labels' ? onTypeAhead : undefined}
                   onKeyDown={name === 'labels' ? onTypeAhead.pre : undefined}
                   onKeyUp={name === 'labels' ? onTypeAhead.post : undefined}
-                  tag={props.note._outline[name]}
+                  tag={type}
                 />
               </dd>
             );
