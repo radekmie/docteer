@@ -56,18 +56,20 @@ export class Editable extends Component<Editable$Props> {
   }
 
   componentDidMount() {
-    this.componentDidUpdate();
+    this.componentDidUpdate(this.props);
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(props: Editable$Props) {
     const element = this.element;
     if (element) {
       if (element.innerHTML !== this.props.html)
         element.innerHTML = content(this.props.disabled, this.props.html);
 
-      element.style.height = '';
-      if (this.props.tag === 'textarea')
+      if (this.props.tag === 'textarea') {
         element.style.height = element.scrollHeight + 'px';
+      } else if (props.tag === 'textarea') {
+        element.style.height = '';
+      }
     }
   }
 
