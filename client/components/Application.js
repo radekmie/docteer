@@ -16,45 +16,14 @@ import {Settings} from '@client/components/Settings';
 import {Toasts} from '@client/components/Toasts';
 import * as tree from '@client/state';
 
-import type {LabelType} from '@types';
-import type {NoteType} from '@types';
-import type {ToastType} from '@types';
-import type {UserType} from '@types';
-
-const refresh = () => {
-  const state = tree.state();
-
-  return {
-    edit: state.edit,
-    help: state.help,
-    labels: state.labels,
-    load: state.load,
-    note: state.note,
-    notes: state.notesVisible,
-    pend: state.pend,
-    search: state.search,
-    toasts: state.toasts,
-    user: state.user,
-    view: state.view
-  };
-};
+import type {StateType} from '@types';
 
 type Application$Props = {|
   view?: string
 |};
 
 type Application$State = {|
-  edit: boolean,
-  help: boolean,
-  labels: LabelType[],
-  load: number,
-  note: ?NoteType<>,
-  notes: NoteType<>[],
-  pend: number,
-  search: string,
-  toasts: ToastType[],
-  user: UserType | null,
-  view: string
+  state: StateType
 |};
 
 export class Application extends Component<
@@ -66,9 +35,9 @@ export class Application extends Component<
   constructor() {
     super(...arguments);
 
-    this.state = refresh();
+    this.state = {state: tree.state()};
     this._sync = () => {
-      this.setState(refresh());
+      this.setState({state: tree.state()});
     };
 
     tree.on(this._sync);
@@ -79,7 +48,7 @@ export class Application extends Component<
   }
 
   // $FlowFixMe
-  render(props: Application$Props, state: Application$State) {
+  render(props: Application$Props, {state}: Application$State) {
     const view = props.view || state.view;
 
     return (
@@ -98,7 +67,7 @@ export class Application extends Component<
         {view === 'notes' && (
           <Filters
             labels={state.labels}
-            notes={state.notes}
+            notes={state.notesVisible}
             search={state.search}
           />
         )}

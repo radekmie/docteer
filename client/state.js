@@ -95,14 +95,10 @@ function _href(view, noteId, filter, search) {
 }
 
 function _query(filter, search) {
-  let query = '?';
-  if (filter.length) query += `filter=${filter.join()}`;
-  if (search) {
-    if (filter.length) query += '&';
-    query += `search=${search}`;
-  }
-
-  return query;
+  const query = [];
+  if (filter.length) query.push(`filter=${filter.join()}`);
+  if (search.length) query.push(`search=${search}`);
+  return '?' + query.join('&');
 }
 
 function _userLoggedIn(data) {

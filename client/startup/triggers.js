@@ -55,9 +55,9 @@ window.document.addEventListener('click', event => {
 
   let node = event.target;
   do {
-    if (node instanceof HTMLAnchorElement && node.__preactattr_) {
+    if (node instanceof HTMLAnchorElement) {
       const href = node.getAttribute('href');
-      if (href) {
+      if (/^[/?]/.test(href)) {
         event.stopImmediatePropagation();
         event.stopPropagation();
         event.preventDefault();
