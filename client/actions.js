@@ -293,7 +293,9 @@ export function onRemove() {
 
 export function onReset() {
   tree.update(store => {
-    if (store.noteId && store.notesCreated[store.noteId]) store.noteId = null;
+    const noteId = store.noteId;
+    if (noteId && !store.notesOrigins.some(note => note._id === noteId))
+      store.noteId = null;
 
     store.notesCreated = {};
     store.notesRemoved = {};

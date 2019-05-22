@@ -30,4 +30,5 @@ noteNew
   .next(toastCheck, ['Saving...'])
   .next(toastCheck, ['Saved.'])
   .next(noteCheck, context => [context.note.title])
+  .next(noteSelect, context => [context.note.title])
   .save('Add note with different schema');
