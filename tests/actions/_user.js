@@ -80,11 +80,8 @@ export function userSignUp(user: {email: string, password: string}) {
   it(`should sign in as ${user.email}:${user.password}`, async () => {
     const selector = '[href="/signup"]';
     const page = await this.page;
-    await page.waitFor(100);
     await page.waitForSelector(selector);
-    await page.waitFor(100);
     await page.click(selector);
-    await page.waitFor(100);
     await page.waitForSelector(selector, {hidden: true});
 
     await type(page, '#email', user.email);
