@@ -1,6 +1,5 @@
 // @flow
 
-import {expand} from '@tests/helpers';
 import {navigate} from '@tests/actions';
 import {type} from '@tests/helpers';
 
@@ -16,7 +15,7 @@ export function userAddSchema(schema: SchemaType<>) {
     const page = await this.page;
     await page.click('[data-test-schema-add]');
     await page.waitFor(10);
-    await page.click(inA);
+    await page.click(`${inA} summary`);
     await type(page, `${inA} [data-test-schema-name]`, schema.name);
     await page.$eval(
       `${inA} [data-test-schema-name]`,
@@ -28,6 +27,8 @@ export function userAddSchema(schema: SchemaType<>) {
       await page.select(`${inB} [data-test-schema-field-type]`, fieldType);
       await type(page, `${inB} [data-test-schema-field-name]`, fieldName);
     }
+
+    await page.click(`${inA} summary`);
   });
 }
 
@@ -44,11 +45,12 @@ export function userChangePassword({
 
   it(`should change password from ${current} to ${new1}/${new2}`, async () => {
     const page = await this.page;
-    await expand(page, 'Change password');
+    await page.click('[data-test-settings="credentials"] details');
     await type(page, '#current', current);
     await type(page, '#new1', new1);
     await type(page, '#new2', new2);
     await page.click('[title="Change password"]');
+    await page.click('[data-test-settings="credentials"] details');
   });
 }
 
