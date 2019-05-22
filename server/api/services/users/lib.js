@@ -1,6 +1,7 @@
 // @flow
 
 import bcrypt from 'bcryptjs';
+import cloneDeep from 'lodash/cloneDeep';
 import jwt from 'jsonwebtoken';
 import {ObjectId} from 'mongodb';
 
@@ -199,7 +200,10 @@ export async function register(
   context.user = user;
   context.userId = user._id;
 
-  await notes.patchMine({patch: defaultPatch, refresh: Infinity}, context);
+  await notes.patchMine(
+    {patch: cloneDeep(defaultPatch), refresh: Infinity},
+    context
+  );
 
   return refreshToken({}, context);
 }
