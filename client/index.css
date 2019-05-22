@@ -592,7 +592,7 @@ textarea {
   animation-delay: 0.4s;
 }
 
-.pointer:hover {
+.pointer {
   cursor: pointer;
 }
 

@@ -60,8 +60,8 @@ class Credentials extends Component<Credentials$Props> {
   // $FlowFixMe
   render(props: Credentials$Props) {
     return (
-      <details class="pointer">
-        <summary>Change password</summary>
+      <details>
+        <summary class="pointer">Change password</summary>
 
         <form action="#" onSubmit={this.onChangePassword}>
           <label class="flex flex-column mt1" for="email" title="Email">
@@ -143,7 +143,7 @@ export function Settings(props: Settings$Props) {
         <b>Credentials:</b>
       </dt>
 
-      <dd class="ml4">
+      <dd class="ml4" data-test-settings="credentials">
         <Credentials user={props.user} />
       </dd>
 
@@ -151,7 +151,7 @@ export function Settings(props: Settings$Props) {
         <b>Schemas:</b>
       </dt>
 
-      <dd class="ml4">
+      <dd class="ml4" data-test-settings="schemas">
         <Button
           class="w-100"
           data-test-schema-add
@@ -277,17 +277,32 @@ export function Settings(props: Settings$Props) {
         <b>Import / Export:</b>
       </dt>
 
-      <dd class="ml4">
+      <dd class="ml4" data-test-settings="import-export">
         <div class="flex mt1">
-          <Button class="flex-1" onClick={onExportCSV} title="Export CSV">
+          <Button
+            class="flex-1"
+            data-test-export="csv"
+            onClick={onExportCSV}
+            title="Export CSV"
+          >
             Export CSV
           </Button>
 
-          <Button class="flex-1 ml1" onClick={onExportJSON} title="Export JSON">
+          <Button
+            class="flex-1 ml1"
+            data-test-export="json"
+            onClick={onExportJSON}
+            title="Export JSON"
+          >
             Export JSON
           </Button>
 
-          <Button class="flex-1 ml1" onClick={onImport} title="Import">
+          <Button
+            class="flex-1 ml1"
+            data-test-import="json"
+            onClick={onImport}
+            title="Import JSON"
+          >
             Import JSON
           </Button>
         </div>
