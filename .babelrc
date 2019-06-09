@@ -1,10 +1,5 @@
 {
   "env": {
-    "production": {
-      "plugins": [
-        "./.babel-plugin.js"
-      ]
-    },
     "test": {
       "presets": [
         [
