@@ -2,7 +2,7 @@
 
 import * as notes from '@server/api/services/notes';
 import * as schemas from '@server/api/schemas';
-import {endpoint} from '@server/api';
+import {endpoint} from '@server/api/adapters/rest';
 
 endpoint('GET', '/notes', {
   handle: notes.getMine,

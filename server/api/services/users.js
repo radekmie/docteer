@@ -6,8 +6,8 @@ import jwt from 'jsonwebtoken';
 import {ObjectId} from 'mongodb';
 
 import * as notes from '@server/api/services/notes';
+import APIError from '@server/api/APIError';
 import config from '@server/config';
-import {APIError} from '@server/api';
 
 import type {APIContextType} from '@types';
 import type {PassType} from '@types';

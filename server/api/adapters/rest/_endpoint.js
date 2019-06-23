@@ -6,9 +6,9 @@ import url from 'url';
 import {ObjectId} from 'mongodb';
 
 import * as users from '@server/api/services/users';
+import APIError from '@server/api/APIError';
 import config from '@server/config';
-import {APIError} from '@server/api';
-import {server} from '@server/api';
+import {server} from '@server/api/adapters/rest';
 import {withTransaction} from '@server/mongo';
 
 import type {APIContextType} from '@types';

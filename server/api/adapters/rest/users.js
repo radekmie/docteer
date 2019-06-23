@@ -2,7 +2,7 @@
 
 import * as schemas from '@server/api/schemas';
 import * as users from '@server/api/services/users';
-import {endpoint} from '@server/api';
+import {endpoint} from '@server/api/adapters/rest';
 
 endpoint('POST', '/users/login', {
   authorize: false,
