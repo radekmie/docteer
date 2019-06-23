@@ -5,7 +5,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import jwt from 'jsonwebtoken';
 import {ObjectId} from 'mongodb';
 
-import * as notes from '@server/api/services/notes/lib';
+import * as notes from '@server/api/services/notes';
 import config from '@server/config';
 import {APIError} from '@server/api';
 

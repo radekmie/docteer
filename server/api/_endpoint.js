@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import url from 'url';
 import {ObjectId} from 'mongodb';
 
-import * as users from '@server/api/services/users/lib';
+import * as users from '@server/api/services/users';
 import config from '@server/config';
 import {APIError} from '@server/api';
 import {server} from '@server/api';

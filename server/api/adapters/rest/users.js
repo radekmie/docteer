@@ -1,14 +1,12 @@
 // @flow
 
 import * as schemas from '@server/api/schemas';
-import * as users from '@server/api/services/users/lib';
+import * as users from '@server/api/services/users';
 import {endpoint} from '@server/api';
 
 endpoint('POST', '/users/login', {
   authorize: false,
-  async handle(input, context) {
-    return await users.login(input, context);
-  },
+  handle: users.login,
   schema: {
     type: 'object',
     properties: {
@@ -21,9 +19,7 @@ endpoint('POST', '/users/login', {
 });
 
 endpoint('POST', '/users/password', {
-  async handle(input, context) {
-    return await users.changePassword(input, context);
-  },
+  handle: users.changePassword,
   schema: {
     type: 'object',
     properties: {
@@ -38,9 +34,7 @@ endpoint('POST', '/users/password', {
 
 endpoint('POST', '/users/register', {
   authorize: false,
-  async handle(input, context) {
-    return await users.register(input, context);
-  },
+  handle: users.register,
   schema: {
     type: 'object',
     properties: {
@@ -53,9 +47,7 @@ endpoint('POST', '/users/register', {
 });
 
 endpoint('POST', '/users/settings', {
-  async handle(input, context) {
-    return await users.changeSettings(input, context);
-  },
+  handle: users.changeSettings,
   schema: {
     type: 'object',
     properties: {
@@ -78,9 +70,7 @@ endpoint('POST', '/users/settings', {
 });
 
 endpoint('GET', '/users/token', {
-  async handle(input, context) {
-    return await users.refreshToken(input, context);
-  },
+  handle: users.refreshToken,
   schema: {
     type: 'object',
     properties: {},
