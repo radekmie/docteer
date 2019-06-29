@@ -1,64 +1,17 @@
 // @flow
 
+import * as schemas from '@server/schemas';
+import {archive} from '@server/services/notes';
+import {getMine} from '@server/services/notes';
+import {method} from '@server/services';
+
 import type {APIContextType} from '@types';
 import type {PatchType} from '@types';
 
-export async function archive(input: {}, context: APIContextType) {
-  const {Notes, NotesArchive} = context.collections;
-  const archive = await Notes.find(
-    {_removed: {$ne: null}},
-    {session: context.session}
-  ).toArray();
+type Params = {|patch: PatchType<>, refresh: number|};
 
-  if (archive.length === 0) return;
-
-  const $in = archive.map(note => note._id);
-
-  await Promise.all([
-    Notes.deleteMany({_id: {$in}}, {session: context.session}),
-    NotesArchive.insertMany(archive, {session: context.session})
-  ]);
-}
-
-export async function getMine(
-  {refresh}: {|refresh: number|},
-  context: APIContextType
-) {
-  const diff: PatchType<> = {created: [], removed: [], updated: []};
-  if (refresh === Infinity) return diff;
-
-  const after = new Date(refresh);
-  const projection = {
-    _id: 0,
-    _id_user: 0,
-    _updated: 0,
-    _version: 0
-  };
-
-  const {Notes} = context.collections;
-  await Notes.find(
-    {_id_user: context.userId, ...(after ? {_updated: {$gt: after}} : {})},
-    {projection, session: context.session}
-  ).forEach(note => {
-    if (note._removed && note._removed > after) {
-      diff.removed.push(note._id_slug);
-    } else {
-      diff.updated.push({
-        _id: note._id_slug,
-        _outname: note._outname,
-        _outline: note._outline,
-        ...note._objects
-      });
-
-      if (note._created > after) diff.created.push(note._id_slug);
-    }
-  });
-
-  return diff;
-}
-
-export async function patchMine(
-  {patch, refresh}: {|patch: PatchType<>, refresh: number|},
+export async function handle(
+  {patch, refresh}: Params,
   context: APIContextType
 ) {
   const now = new Date();
@@ -151,3 +104,15 @@ export async function patchMine(
 
   return result;
 }
+
+export const schema = {
+  type: 'object',
+  properties: {
+    patch: schemas.patch,
+    refresh: {type: 'integer', minimum: 0}
+  },
+  required: ['patch', 'refresh'],
+  additionalProperties: false
+};
+
+export default method<Params, _, _>(handle, schema);

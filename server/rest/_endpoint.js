@@ -1,53 +1,36 @@
 // @flow
 
-import Ajv from 'ajv';
 import jwt from 'jsonwebtoken';
 import url from 'url';
 import {ObjectId} from 'mongodb';
 
-import * as users from '@server/api/services/users';
-import APIError from '@server/api/APIError';
+import * as users from '@server/services/users';
 import config from '@server/config';
-import {server} from '@server/api/adapters/rest';
+import {APIError} from '@server/api';
+import {server} from '@server/rest';
 import {withTransaction} from '@server/mongo';
 
 import type {APIContextType} from '@types';
 
-const ajv = new Ajv({allErrors: true});
-
-export function endpoint<Params: {}, Result: {}, Schema: {}>(
-  method: string,
+export function endpoint<Params: {}, Result: {}>(
+  http: string,
   path: string,
-  {
-    authorize = true,
-    handle,
-    schema
-  }: {|
-    authorize?: boolean,
-    handle: (Params, APIContextType) => Promise<Result>,
-    schema: Schema
-  |}
+  method: (Params, APIContextType) => Promise<Result>,
+  {authorize}: {|authorize: boolean|}
 ) {
-  const validator = ajv.compile(schema);
-
-  // eslint-disable-next-line complexity
   server.use(path, async (request, response, next) => {
-    if (request.method !== method) {
+    if (request.method !== http) {
       next();
       return;
     }
 
     try {
-      if (request.method === 'GET') {
-        request.body = _parseQuery(request.url);
-      } else {
-        request.body = _parseJSON(request.body);
-      }
-
-      if (!validator(request.body))
-        throw new APIError({code: 'api-validation', info: validator.errors});
-
       // $FlowFixMe
+      const data: Params =
+        request.method === 'GET'
+          ? _parseQuery(request.url)
+          : _parseJSON(request.body);
+
       const result = await withTransaction(async transaction => {
         // $FlowFixMe
         const context: APIContextType = {
@@ -65,7 +48,7 @@ export function endpoint<Params: {}, Result: {}, Schema: {}>(
         if (authorize && !context.user)
           throw new APIError({code: 'api-log-in'});
 
-        return await handle(request.body, context);
+        return await method(data, context);
       });
 
       _response(response, null, result);

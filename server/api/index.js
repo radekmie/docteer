@@ -1,3 +1,3 @@
 // @flow
 
-export * from './adapters/rest';
+export * from './_APIError';
