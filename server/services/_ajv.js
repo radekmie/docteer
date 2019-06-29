@@ -1,7 +1,6 @@
 // @flow
 
 import Ajv from 'ajv';
-// $FlowFixMe
 import ajvKeywords from 'ajv-keywords';
 import {ObjectId} from 'mongodb';
 

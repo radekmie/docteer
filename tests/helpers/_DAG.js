@@ -28,7 +28,8 @@ export class DAG<Context> {
 
   bind(): () => void {
     return (): void => {
-      let context: $Shape<Context> = {};
+      // $FlowFixMe: It's valid only at the beginning.
+      let context: Context = {};
       for (const step of this._next) context = invoke(context, step);
       for (const step of this._last) context = invoke(context, step);
       for (const step of this._dead) context = invoke(context, step);

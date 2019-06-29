@@ -71,7 +71,6 @@ export class Editable extends Component<Editable$Props> {
     this.element = element;
   };
 
-  // $FlowFixMe
   render({disabled, html, tag, ...props}: Editable$Props) {
     const __html = content(disabled, html);
 

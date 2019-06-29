@@ -25,14 +25,14 @@ export function endpoint<Params: {}, Result: {}>(
     }
 
     try {
-      // $FlowFixMe
+      // $FlowFixMe: Force type, validation will verify it.
       const data: Params =
         request.method === 'GET'
           ? _parseQuery(request.url)
           : _parseJSON(request.body);
 
       const result = await withTransaction(async transaction => {
-        // $FlowFixMe
+        // $FlowFixMe: Filled later.
         const context: APIContextType = {
           ...transaction,
           jwt: null,

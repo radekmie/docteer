@@ -46,7 +46,6 @@ export class Application extends Component<
 
   _sync: () => void;
 
-  // $FlowFixMe
   render(props: Application$Props, {state}: Application$State) {
     const view = props.view || state.view;
 

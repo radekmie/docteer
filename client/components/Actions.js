@@ -42,7 +42,6 @@ export class Actions extends Component<Actions$Props> {
     );
   }
 
-  // $FlowFixMe
   render({note, edit, user, view}: Actions$Props) {
     if (view !== 'notes' && view !== 'settings') return null;
 

@@ -1,7 +1,8 @@
 // @flow
 
-// $FlowFixMe: Puppeteer typings.
-export async function type(page: any, selector: string, value: string) {
+import type {Page} from 'puppeteer-core';
+
+export async function type(page: Page, selector: string, value: string) {
   await page.click(selector);
   await page.keyboard.down('Control');
   await page.keyboard.press('A');

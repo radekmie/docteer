@@ -16,7 +16,6 @@ class Label extends Component<Label$Props> {
     return !shallowEqual(this.props.label, props.label);
   }
 
-  // $FlowFixMe
   render({label}: Label$Props) {
     return (
       <a

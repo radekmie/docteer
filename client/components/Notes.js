@@ -16,7 +16,6 @@ class NotesItem extends Component<NotesItem$Props> {
     return !shallowEqual(this.props.note, props.note);
   }
 
-  // $FlowFixMe
   render({note}: NotesItem$Props) {
     const color = note._created
       ? note._removed
@@ -54,7 +53,6 @@ export class Notes extends Component<Notes$Props> {
     return !shallowEqual(this.props, props);
   }
 
-  // $FlowFixMe
   render({notes, search}: Notes$Props) {
     return (
       <div class="b--dark-gray bl bw1 flex-1 overflow-auto strict">

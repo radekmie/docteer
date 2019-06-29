@@ -28,7 +28,6 @@ export class Help extends Component<Help$Props> {
     return this.props.active !== props.active;
   }
 
-  // $FlowFixMe
   render(props: Help$Props) {
     return (
       <div

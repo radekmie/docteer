@@ -58,7 +58,6 @@ class Credentials extends Component<Credentials$Props> {
     }
   };
 
-  // $FlowFixMe
   render(props: Credentials$Props) {
     return (
       <details>

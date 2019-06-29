@@ -275,7 +275,7 @@ export function onRefresh(firstRun: ?boolean) {
 
   const last = new Date();
   return call('GET', '/api/notes', {refresh: +tree.state().last}).then(
-    // $FlowFixMe
+    // $FlowFixMe: Polymorphic API call.
     (patch: PatchType<>) => {
       tree.updateWith({last});
       toast('success', firstRun === true ? 'Loaded.' : 'Refreshed.');
@@ -337,7 +337,7 @@ export function onSave() {
   const last = new Date();
 
   return call('POST', '/api/notes', {patch, refresh: +refresh}).then(
-    // $FlowFixMe
+    // $FlowFixMe: Polymorphic API call.
     (patch: PatchType<>) => {
       tree.updateWith({last});
       toast('success', 'Saved.');
@@ -470,7 +470,7 @@ export function onSchemaType(event: EventType) {
     const diff = store.userDiff.schemas.find(schema => schema.name === name);
     if (diff === undefined) return;
 
-    // $FlowFixMe
+    // $FlowFixMe: No check for exact string enum values.
     diff.fields[index].type = value;
   });
 }
@@ -486,17 +486,18 @@ export function onSettingsReset() {
 }
 
 export function onSettingsSave() {
+  const userDiff = tree.state().userDiff;
+  if (userDiff === null) return Promise.resolve();
+
   toast('info', 'Saving...');
 
-  return call('POST', '/api/users/settings', tree.state().userDiff).then(
-    userData => {
-      toast('success', 'Saved.');
-      tree.update(store => {
-        Object.assign(store.userData, userData);
-      });
-      onSettingsReset();
-    }
-  );
+  return call('POST', '/api/users/settings', userDiff).then(userData => {
+    toast('success', 'Saved.');
+    tree.update(store => {
+      Object.assign(store.userData, userData);
+    });
+    onSettingsReset();
+  });
 }
 
 export function onSignup(email: string, password: string) {
@@ -556,7 +557,7 @@ onTypeAhead.post = event => {
   event.target.__skip = true;
 };
 
-function call(method: 'GET' | 'POST', path, data, {silent, token} = {}) {
+function call(method: 'GET' | 'POST', path, data: {}, {silent, token} = {}) {
   const headers = new Headers({'Content-Type': 'application/json'});
   const url = new URL(path, location.origin);
 
@@ -645,8 +646,8 @@ let toastId = 0;
 function toast(type, message) {
   const _id = toastId++;
   const text =
-    message instanceof Error // $FlowFixMe
-      ? message.code // $FlowFixMe
+    message instanceof Error // $FlowFixMe: Custom Error properties.
+      ? message.code // $FlowFixMe: Custom Error properties.
         ? message.text
         : message.message
       : message;

@@ -11,7 +11,7 @@ function create(node) {
     node.parentElement.appendChild(node.popup);
 
     document.addEventListener('click', function hide(event: MouseEvent) {
-      // $FlowFixMe
+      // $FlowFixMe: Lift EventTarget to HTMLElement.
       let element: HTMLElement = event.target;
       do {
         if (element === node) return;

@@ -24,10 +24,10 @@ for (const key of Object.keys(config)) {
 
   if (env in process.env) {
     try {
-      // $FlowFixMe
+      // $FlowFixMe: Environment variables are not typed.
       config[key] = JSON.parse(process.env[env]);
     } catch (error) {
-      // $FlowFixMe
+      // $FlowFixMe: Environment variables are not typed.
       config[key] = process.env[env];
     }
   }
@@ -38,5 +38,5 @@ if (config['node.env'] === 'development') {
   config['jwt.secret'] = 'koń';
 }
 
-// $FlowFixMe
+// $FlowFixMe: Implicit any.
 export default Object.entries(config).reduce((a, b) => set(a, ...b), {});

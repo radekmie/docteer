@@ -48,7 +48,6 @@ export class Popup extends Component<Popup$Props> {
     }
   ];
 
-  // $FlowFixMe
   render({node, offsets, position}: Popup$Props) {
     const x = position.x + position.width / 2 - offsets.x + node.scrollLeft;
     const y = position.y + position.height - offsets.y + node.scrollTop;

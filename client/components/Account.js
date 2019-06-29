@@ -37,7 +37,6 @@ export class Account extends Component<Account$Props> {
     }
   };
 
-  // $FlowFixMe
   render({signup}: Account$Props) {
     return (
       <form action="#" class="w5" onSubmit={this.onSubmit}>
