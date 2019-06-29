@@ -1,7 +1,6 @@
 // @flow
 
-import type {SchemaOutlineFieldType} from '@types';
-import type {SchemaType} from '@types';
+import type {SchemaOutlineFieldType, SchemaType} from '@types';
 
 export function schemaEmpty({fields, name}: SchemaType<>) {
   return fields.reduce(

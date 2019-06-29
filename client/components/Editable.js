@@ -1,11 +1,9 @@
 // @flow
 // @jsx h
 
-import {Component} from 'preact';
-import {h} from 'preact';
+import {Component, h} from 'preact';
 
-import type {InputEventType} from '@types';
-import type {KeyboardEventType} from '@types';
+import type {InputEventType, KeyboardEventType} from '@types';
 
 type Editable$Props = {|
   class?: ?string,
@@ -20,6 +18,40 @@ type Editable$Props = {|
 |};
 
 export class Editable extends Component<Editable$Props> {
+  componentDidMount() {
+    this.componentDidUpdate(this.props);
+  }
+
+  shouldComponentUpdate(props: Editable$Props) {
+    return (
+      // Not yet rendered.
+      !this.element ||
+      // Props changed.
+      this.props.disabled !== props.disabled ||
+      this.props.tag !== props.tag ||
+      // Content changed.
+      (this.props.html !== props.html &&
+        this.element.innerHTML !== props.html) ||
+      // Refresh.
+      ((props.tag === 'ol' || props.tag === 'ul') &&
+        !this.element.innerHTML.startsWith('<li>'))
+    );
+  }
+
+  componentDidUpdate(props: Editable$Props) {
+    const element = this.element;
+    if (element) {
+      if (element.innerHTML !== this.props.html)
+        element.innerHTML = content(this.props.disabled, this.props.html);
+
+      if (this.props.tag === 'textarea') {
+        element.style.height = element.scrollHeight + 'px';
+      } else if (props.tag === 'textarea') {
+        element.style.height = '';
+      }
+    }
+  }
+
   element: ?HTMLElement;
 
   onChange = () => {
@@ -38,40 +70,6 @@ export class Editable extends Component<Editable$Props> {
   onElement = (element: ?HTMLElement) => {
     this.element = element;
   };
-
-  shouldComponentUpdate(props: Editable$Props) {
-    return (
-      // Not yet rendered.
-      !this.element ||
-      // Props changed.
-      this.props.disabled !== props.disabled ||
-      this.props.tag !== props.tag ||
-      // Content changed.
-      (this.props.html !== props.html &&
-        this.element.innerHTML !== props.html) ||
-      // Refresh.
-      ((props.tag === 'ol' || props.tag === 'ul') &&
-        !this.element.innerHTML.startsWith('<li>'))
-    );
-  }
-
-  componentDidMount() {
-    this.componentDidUpdate(this.props);
-  }
-
-  componentDidUpdate(props: Editable$Props) {
-    const element = this.element;
-    if (element) {
-      if (element.innerHTML !== this.props.html)
-        element.innerHTML = content(this.props.disabled, this.props.html);
-
-      if (this.props.tag === 'textarea') {
-        element.style.height = element.scrollHeight + 'px';
-      } else if (props.tag === 'textarea') {
-        element.style.height = '';
-      }
-    }
-  }
 
   // $FlowFixMe
   render({disabled, html, tag, ...props}: Editable$Props) {

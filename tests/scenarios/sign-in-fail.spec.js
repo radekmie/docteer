@@ -1,7 +1,6 @@
 // @flow
 
-import {toastCheck} from '@tests/actions';
-import {userSignUp} from '@tests/actions';
+import {toastCheck, userSignUp} from '@tests/actions';
 
 import user from './bits/user';
 

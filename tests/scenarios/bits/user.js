@@ -1,9 +1,6 @@
 // @flow
 
-import {noteCheck} from '@tests/actions';
-import {toastCheck} from '@tests/actions';
-import {userLogOut} from '@tests/actions';
-import {userSignUp} from '@tests/actions';
+import {noteCheck, toastCheck, userLogOut, userSignUp} from '@tests/actions';
 
 import base from './base';
 

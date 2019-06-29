@@ -1,24 +1,27 @@
 // @flow
 // @jsx h
 
-import {Component} from 'preact';
-import {h} from 'preact';
+import {Component, h} from 'preact';
 
-import {iconAdd} from '@client/components/Icon';
-import {iconClone} from '@client/components/Icon';
-import {iconMinus} from '@client/components/Icon';
-import {iconNo} from '@client/components/Icon';
-import {iconOk} from '@client/components/Icon';
-import {iconPen} from '@client/components/Icon';
-import {iconRefresh} from '@client/components/Icon';
-import {onAdd} from '@client/actions';
-import {onClone} from '@client/actions';
-import {onEdit} from '@client/actions';
-import {onRefresh} from '@client/actions';
-import {onRemove} from '@client/actions';
-import {onSave} from '@client/actions';
-import {onSettingsReset} from '@client/actions';
-import {onSettingsSave} from '@client/actions';
+import {
+  iconAdd,
+  iconClone,
+  iconMinus,
+  iconNo,
+  iconOk,
+  iconPen,
+  iconRefresh
+} from '@client/components/Icon';
+import {
+  onAdd,
+  onClone,
+  onEdit,
+  onRefresh,
+  onRemove,
+  onSave,
+  onSettingsReset,
+  onSettingsSave
+} from '@client/actions';
 
 import type {UserType} from '@types';
 

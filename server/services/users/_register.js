@@ -10,10 +10,7 @@ import * as users from '@server/services/users';
 import {APIError} from '@server/api';
 import {method} from '@server/services';
 
-import type {APIContextType} from '@types';
-import type {PassType} from '@types';
-import type {PatchType} from '@types';
-import type {SchemaType} from '@types';
+import type {APIContextType, PassType, PatchType, SchemaType} from '@types';
 
 const defaultPatch: PatchType<> = {
   created: ['introduction'],

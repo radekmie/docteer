@@ -1,12 +1,10 @@
 // @flow
 
+import * as notes from '@server/services/notes';
 import * as schemas from '@server/schemas';
-import {archive} from '@server/services/notes';
-import {getMine} from '@server/services/notes';
 import {method} from '@server/services';
 
-import type {APIContextType} from '@types';
-import type {PatchType} from '@types';
+import type {APIContextType, PatchType} from '@types';
 
 type Params = {|patch: PatchType<>, refresh: number|};
 
@@ -98,9 +96,9 @@ export async function handle(
     await Notes.bulkWrite(bulk, {session: context.session});
   }
 
-  const result = await getMine({refresh}, context);
+  const result = await notes.getMine({refresh}, context);
 
-  if (patch.removed.length) await archive({}, context);
+  if (patch.removed.length) await notes.archive({}, context);
 
   return result;
 }

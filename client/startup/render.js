@@ -1,7 +1,6 @@
 // @flow
 
-import {h} from 'preact';
-import {render} from 'preact';
+import {h, render} from 'preact';
 
 import {Application} from '@client/components/Application';
 

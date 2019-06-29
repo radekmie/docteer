@@ -1,8 +1,7 @@
 // @flow
 // @jsx h
 
-import {Component} from 'preact';
-import {h} from 'preact';
+import {Component, h} from 'preact';
 
 import {Account} from '@client/components/Account';
 import {Actions} from '@client/components/Actions';
@@ -30,8 +29,6 @@ export class Application extends Component<
   Application$Props,
   Application$State
 > {
-  _sync: () => void;
-
   constructor() {
     super(...arguments);
 
@@ -46,6 +43,8 @@ export class Application extends Component<
   componentWillUnmount() {
     tree.off(this._sync);
   }
+
+  _sync: () => void;
 
   // $FlowFixMe
   render(props: Application$Props, {state}: Application$State) {

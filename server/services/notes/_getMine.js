@@ -2,8 +2,7 @@
 
 import {method} from '@server/services';
 
-import type {APIContextType} from '@types';
-import type {PatchType} from '@types';
+import type {APIContextType, PatchType} from '@types';
 
 type Params = {|refresh: number|};
 

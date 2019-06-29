@@ -3,17 +3,18 @@
 import fuzzysort from 'fuzzysort';
 import omit from 'lodash/omit';
 
-import {hash} from '@shared';
-import {schemaEmpty} from '@shared';
+import {hash, schemaEmpty} from '@shared';
 import * as tree from '@client/state';
 
-import type {EventType} from '@types';
-import type {InputEventType} from '@types';
-import type {NotePatchType} from '@types';
-import type {PatchType} from '@types';
-import type {SchemaType} from '@types';
-import type {ShapeType} from '@types';
-import type {StoreType} from '@types';
+import type {
+  EventType,
+  InputEventType,
+  NotePatchType,
+  PatchType,
+  SchemaType,
+  ShapeType,
+  StoreType
+} from '@types';
 
 // Publish tree.
 if (typeof window !== 'undefined') window.__DOCTEER_STATE__ = tree;

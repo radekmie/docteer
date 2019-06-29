@@ -4,10 +4,12 @@
 import {h} from 'preact';
 
 import {Logo} from '@client/components/Logo';
-import {iconCog} from '@client/components/Icon';
-import {iconLogIn} from '@client/components/Icon';
-import {iconLogOut} from '@client/components/Icon';
-import {iconNote} from '@client/components/Icon';
+import {
+  iconCog,
+  iconLogIn,
+  iconLogOut,
+  iconNote
+} from '@client/components/Icon';
 import {onLogout} from '@client/actions';
 
 import type {UserType} from '@types';

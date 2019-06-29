@@ -8,8 +8,7 @@ import {Notes} from '@client/components/Notes';
 import {iconSearch} from '@client/components/Icon';
 import {onSearch} from '@client/actions';
 
-import type {LabelType} from '@types';
-import type {NoteType} from '@types';
+import type {LabelType, NoteType} from '@types';
 
 type Filters$Props = {|
   labels: LabelType[],

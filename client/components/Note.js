@@ -1,21 +1,13 @@
 // @flow
 // @jsx h
 
-import {Component} from 'preact';
-import {h} from 'preact';
+import {Component, h} from 'preact';
 
 import {Editable} from '@client/components/Editable';
-import {cache} from '@shared';
-import {compareDocs} from '@shared';
-import {onChangeSchema} from '@client/actions';
-import {onChange} from '@client/actions';
-import {onTypeAhead} from '@client/actions';
-import {schemaIsArray} from '@shared';
-import {schemaKey} from '@shared';
+import {cache, compareDocs, schemaIsArray, schemaKey} from '@shared';
+import {onChangeSchema, onChange, onTypeAhead} from '@client/actions';
 
-import type {EventType} from '@types';
-import type {NoteType} from '@types';
-import type {UserType} from '@types';
+import type {EventType, NoteType, UserType} from '@types';
 
 type Note$Props = {|
   edit: boolean,

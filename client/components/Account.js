@@ -1,14 +1,11 @@
 // @flow
 // @jsx h
 
-import {Component} from 'preact';
-import {h} from 'preact';
+import {Component, h} from 'preact';
 
 import {Button} from '@client/components/Button';
-import {iconLock} from '@client/components/Icon';
-import {iconUser} from '@client/components/Icon';
-import {onLogin} from '@client/actions';
-import {onSignup} from '@client/actions';
+import {iconLock, iconUser} from '@client/components/Icon';
+import {onLogin, onSignup} from '@client/actions';
 
 type Account$Props = {|
   signup?: boolean

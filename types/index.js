@@ -1,10 +1,12 @@
 // @flow
 
-import type {ClientSession} from 'mongodb';
-import type {Collection} from 'mongodb';
-import type {Db} from 'mongodb';
-import type {MongoClient} from 'mongodb';
-import type {ObjectId} from 'mongodb';
+import type {
+  ClientSession,
+  Collection,
+  Db,
+  MongoClient,
+  ObjectId
+} from 'mongodb';
 
 export type APIContextType = {|
   jwt: string,

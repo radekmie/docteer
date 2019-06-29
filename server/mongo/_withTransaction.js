@@ -1,8 +1,6 @@
 // @flow
 
-import {getCollections} from '@server/mongo';
-import {getDb} from '@server/mongo';
-import {getMongo} from '@server/mongo';
+import {getCollections, getDb, getMongo} from '@server/mongo';
 
 import type {APITransactionType} from '@types';
 

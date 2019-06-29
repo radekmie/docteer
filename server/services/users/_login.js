@@ -7,8 +7,7 @@ import * as users from '@server/services/users';
 import {APIError} from '@server/api';
 import {method} from '@server/services';
 
-import type {APIContextType} from '@types';
-import type {PassType} from '@types';
+import type {APIContextType, PassType} from '@types';
 
 type Params = {|email: string, password: PassType|};
 

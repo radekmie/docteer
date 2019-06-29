@@ -1,16 +1,11 @@
 // @flow
 
 import fuzzysort from 'fuzzysort';
-import {produce} from 'immer';
-import {setAutoFreeze} from 'immer';
+import {produce, setAutoFreeze} from 'immer';
 
-import {compare} from '@shared';
-import {compareDocs} from '@shared';
-import {pure} from '@shared';
+import {compare, compareDocs, pure} from '@shared';
 
-import type {ShapeType} from '@types';
-import type {StoreType} from '@types';
-import type {StateType} from '@types';
+import type {ShapeType, StoreType, StateType} from '@types';
 
 // Definition.
 let _shape: ShapeType;

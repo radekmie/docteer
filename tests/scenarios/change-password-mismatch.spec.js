@@ -2,8 +2,7 @@
 
 import faker from 'faker';
 
-import {toastCheck} from '@tests/actions';
-import {userChangePassword} from '@tests/actions';
+import {toastCheck, userChangePassword} from '@tests/actions';
 
 import user from './bits/user';
 

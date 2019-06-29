@@ -3,10 +3,7 @@
 import faker from 'faker';
 
 import {DAG} from '@tests/helpers';
-import {browserClose} from '@tests/actions';
-import {browserOpen} from '@tests/actions';
-import {load} from '@tests/actions';
-import {resize} from '@tests/actions';
+import {browserClose, browserOpen, load, resize} from '@tests/actions';
 
 // $FlowFixMe: Generics.
 export default DAG.create()

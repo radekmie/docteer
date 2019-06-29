@@ -1,15 +1,10 @@
 // @flow
 
 // $FlowFixMe: Incomplete typings!
-import {createBrowserHistory} from 'history';
-// $FlowFixMe: Incomplete typings!
-import {createLocation} from 'history';
-// $FlowFixMe: Incomplete typings!
-import {createPath} from 'history';
+import {createBrowserHistory, createLocation, createPath} from 'history';
 
-import {compare} from '@shared';
+import {compare, titleForView} from '@shared';
 import {onLoginWithToken} from '@client/actions';
-import {titleForView} from '@shared';
 import * as tree from '@client/state';
 
 // Startup

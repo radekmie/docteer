@@ -1,7 +1,6 @@
 // @flow
 
-import {noteAction} from '@tests/actions';
-import {noteCheck} from '@tests/actions';
+import {noteAction, noteCheck} from '@tests/actions';
 
 import noteNew from './bits/noteNew';
 

@@ -1,8 +1,7 @@
 // @flow
 // @jsx h
 
-import {Component} from 'preact';
-import {h} from 'preact';
+import {Component, h} from 'preact';
 
 import {shallowEqual} from '@shared';
 

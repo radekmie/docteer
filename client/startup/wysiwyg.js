@@ -1,8 +1,7 @@
 // @flow
 // @jsx h
 
-import {h} from 'preact';
-import {render} from 'preact';
+import {h, render} from 'preact';
 
 import {Popup} from '@client/components/Popup';
 

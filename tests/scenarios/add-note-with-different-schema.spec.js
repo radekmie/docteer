@@ -2,14 +2,16 @@
 
 import faker from 'faker';
 
-import {navigate} from '@tests/actions';
-import {noteAction} from '@tests/actions';
-import {noteCheck} from '@tests/actions';
-import {noteField} from '@tests/actions';
-import {noteSchema} from '@tests/actions';
-import {noteSelect} from '@tests/actions';
-import {toastCheck} from '@tests/actions';
-import {userAddSchema} from '@tests/actions';
+import {
+  navigate,
+  noteAction,
+  noteCheck,
+  noteField,
+  noteSchema,
+  noteSelect,
+  toastCheck,
+  userAddSchema
+} from '@tests/actions';
 
 import noteNew from './bits/noteNew';
 

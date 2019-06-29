@@ -4,8 +4,7 @@ import * as schemas from '@server/schemas';
 import {APIError} from '@server/api';
 import {method} from '@server/services';
 
-import type {APIContextType} from '@types';
-import type {SchemaType} from '@types';
+import type {APIContextType, SchemaType} from '@types';
 
 function _hasDuplicatedField(schema) {
   return schema.fields

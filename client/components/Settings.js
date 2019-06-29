@@ -1,22 +1,23 @@
 // @flow
 // @jsx h
 
-import {Component} from 'preact';
-import {h} from 'preact';
+import {Component, h} from 'preact';
 
 import {Button} from '@client/components/Button';
-import {onChangePassword} from '@client/actions';
-import {onExportCSV} from '@client/actions';
-import {onExportJSON} from '@client/actions';
-import {onImport} from '@client/actions';
-import {onSchemaAdd} from '@client/actions';
-import {onSchemaDelete} from '@client/actions';
-import {onSchemaField} from '@client/actions';
-import {onSchemaKey} from '@client/actions';
-import {onSchemaName} from '@client/actions';
-import {onSchemaOrder} from '@client/actions';
-import {onSchemaRemove} from '@client/actions';
-import {onSchemaType} from '@client/actions';
+import {
+  onChangePassword,
+  onExportCSV,
+  onExportJSON,
+  onImport,
+  onSchemaAdd,
+  onSchemaDelete,
+  onSchemaField,
+  onSchemaKey,
+  onSchemaName,
+  onSchemaOrder,
+  onSchemaRemove,
+  onSchemaType
+} from '@client/actions';
 
 import type {UserType} from '@types';
 
