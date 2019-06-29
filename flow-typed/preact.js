@@ -1,9 +1,6 @@
 // @flow
 
-import {createElement} from 'react';
-import {Component} from 'react';
-
-import type {Node} from 'react';
+import {Component, createElement, type Node} from 'react';
 
 declare module 'preact' {
   declare module.exports: {
@@ -11,4 +8,8 @@ declare module 'preact' {
     h: typeof createElement,
     render: (vnode: Node, parent: Element, toReplace?: Element) => Element
   };
+}
+
+declare module 'preact/debug' {
+  declare module.exports: {};
 }
