@@ -1,0 +1,30 @@
+on: push
+name: Deploy
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Build
+      uses: actions/docker/cli@c08a5fc9e0286844156fefff2c141072048141f6
+      with:
+        args: build --tag docteer .
+    - name: Tag
+      uses: actions/docker/tag@c08a5fc9e0286844156fefff2c141072048141f6
+      with:
+        args: docteer registry.docteer.com/docteer
+    - name: Login
+      uses: actions/docker/login@c08a5fc9e0286844156fefff2c141072048141f6
+      env:
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        DOCKER_REGISTRY_URL: ${{ secrets.DOCKER_REGISTRY_URL }}
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+    - name: Push
+      uses: actions/docker/cli@c08a5fc9e0286844156fefff2c141072048141f6
+      with:
+        args: push registry.docteer.com/docteer
+    - name: Update
+      uses: swinton/httpie.action@02571a073b9aaf33930a18e697278d589a8051c1
+      with:
+        args: POST https://portainer.docteer.com/api/webhooks/83d206af-2d99-4984-8228-6a4f21760322
