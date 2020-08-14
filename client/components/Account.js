@@ -44,7 +44,7 @@ export class Account extends Component<Account$Props> {
           {iconUser}
           <input
             autocomplete="email username"
-            class="ba bg-near-white br-0 bw1 flex-1 ml1 ph1"
+            class="ba bg-near-white br-0 bw1 flex-1 ml1 ph1 w-100"
             id="email"
             name="email"
             placeholder="Email"
@@ -58,7 +58,7 @@ export class Account extends Component<Account$Props> {
           {iconLock}
           <input
             autocomplete={`${signup ? 'new' : 'current'}-password`}
-            class="ba bg-near-white br-0 bw1 flex-1 ml1 ph1"
+            class="ba bg-near-white br-0 bw1 flex-1 ml1 ph1 w-100"
             id="password"
             minlength={4}
             name="password"

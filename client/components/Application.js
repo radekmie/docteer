@@ -51,7 +51,9 @@ export class Application extends Component<
 
     return (
       <main
-        class={`app dark-gray flex lh-copy${state.load ? ' hidden' : ''}`}
+        class={`app dark-gray flex h-100 lh-copy${
+          state.load ? ' hidden' : ''
+        } w-100`}
         data-application
       >
         <Navigation pend={state.pend} user={state.user} />

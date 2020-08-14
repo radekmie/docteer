@@ -29,7 +29,7 @@ export function Filters(props: Filters$Props) {
           <span class="flex flex-center input-icon pa2">{iconSearch}</span>
 
           <input
-            class="br-0 bw0 flex-1 pa2 ph1"
+            class="br-0 bw0 flex-1 pa2 ph1 w-100"
             id="search"
             name="search"
             placeholder="Search..."

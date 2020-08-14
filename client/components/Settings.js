@@ -68,7 +68,7 @@ class Credentials extends Component<Credentials$Props> {
             <b>Email</b>
             <input
               autocomplete="email username"
-              class="ba bg-near-white br-0 bw1 ph1"
+              class="ba bg-near-white br-0 bw1 ph1 w-100"
               disabled
               id="email"
               name="email"
@@ -85,7 +85,7 @@ class Credentials extends Component<Credentials$Props> {
             <b>Current password</b>
             <input
               autocomplete="current-password"
-              class="ba br-0 bw1 ph1"
+              class="ba br-0 bw1 ph1 w-100"
               id="current"
               name="current"
               ref={this.onCurrent}
@@ -97,7 +97,7 @@ class Credentials extends Component<Credentials$Props> {
             <b>New password</b>
             <input
               autocomplete="new-password"
-              class="ba br-0 bw1 ph1"
+              class="ba br-0 bw1 ph1 w-100"
               id="new1"
               minlength={4}
               name="new1"
@@ -114,7 +114,7 @@ class Credentials extends Component<Credentials$Props> {
             <b>New password (again)</b>
             <input
               autocomplete="new-password"
-              class="ba br-0 bw1 ph1"
+              class="ba br-0 bw1 ph1 w-100"
               id="new2"
               minlength={4}
               name="new2"
@@ -167,7 +167,7 @@ export function Settings(props: Settings$Props) {
 
             <div class="flex mt1" data-name={schema.name}>
               <input
-                class="b--dark-gray br-0 bw1 flex-1 ph1"
+                class="b--dark-gray br-0 bw1 flex-1 ph1 w-100"
                 data-test-schema-name
                 onChange={onSchemaName}
                 type="Schema name"
@@ -211,7 +211,7 @@ export function Settings(props: Settings$Props) {
                   <input
                     class={`b--dark-gray ${
                       disabled ? 'bg-near-white ' : ''
-                    }br-0 bw1 ml1 flex-1 ph1`}
+                    }br-0 bw1 ml1 flex-1 ph1 w-100`}
                     data-test-schema-field-name
                     disabled={disabled}
                     onChange={onSchemaKey}
