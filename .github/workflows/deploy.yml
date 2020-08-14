@@ -12,9 +12,7 @@ jobs:
       with:
         password: ${{ secrets.DOCKER_PASSWORD }}
         registry: ${{ secrets.DOCKER_REGISTRY }}
-        repository: registry.docteer.com/docteer
-        tag_with_ref: true
-        tag_with_sha: true
+        repository: docteer
         tags: latest
         username: ${{ secrets.DOCKER_USERNAME }}
     - uses: fjogeleit/http-request-action@v1.4.1
