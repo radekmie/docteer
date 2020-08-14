@@ -18,7 +18,13 @@ export const getCollections = cache<void, _>(async () => {
 });
 
 async function createCollection(db, {indexes, name, schema}) {
-  const collection = await db.createCollection(name);
+  try {
+    await db.createCollection(name);
+  } catch (error) {
+    // It's OK.
+  }
+
+  const collection = await db.collection(name);
 
   // Update indexes.
   for (const index of indexes) {
