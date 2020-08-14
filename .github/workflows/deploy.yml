@@ -1,4 +1,6 @@
-on: push
+on:
+  push:
+  workflow_dispatch:
 name: Deploy
 jobs:
   deploy:
@@ -13,7 +15,7 @@ jobs:
         repository: registry.docteer.com/docteer
         tag_with_ref: true
         tag_with_sha: true
-        tags: docteer
+        tags: latest
         username: ${{ secrets.DOCKER_USERNAME }}
     - uses: fjogeleit/http-request-action@v1.4.1
       with:
