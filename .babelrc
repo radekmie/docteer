@@ -1,20 +1,5 @@
 {
-  "env": {
-    "test": {
-      "presets": [
-        [
-          "@babel/preset-env",
-          {
-            "targets": {
-              "node": "current"
-            }
-          }
-        ]
-      ]
-    }
-  },
   "plugins": [
-    "@babel/plugin-proposal-class-properties",
     [
       "module-resolver",
       {
@@ -30,8 +15,15 @@
     ]
   ],
   "presets": [
-    "@babel/preset-env",
-    "@babel/preset-flow",
-    "@babel/preset-react"
+    [
+      "@babel/preset-env",
+      {
+        "corejs": 2,
+        "exclude": ["@babel/plugin-transform-regenerator"],
+        "useBuiltIns": "entry"
+      }
+    ],
+    ["@babel/preset-flow"],
+    ["@babel/preset-react"]
   ]
 }

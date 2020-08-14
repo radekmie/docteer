@@ -1,5 +1,8 @@
 // @flow
 
+// $FlowFixMe: Incomplete typings!
+require('core-js');
+
 if (process.env.NODE_ENV === 'development') require('preact/debug');
 
 require('./startup/render');
