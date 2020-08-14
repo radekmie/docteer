@@ -11,7 +11,7 @@ jobs:
     - uses: docker/build-push-action@v1.1.0
       with:
         password: ${{ secrets.DOCKER_PASSWORD }}
-        registry: ${{ secrets.DOCKER_REGISTRY_URL }}
+        registry: ${{ secrets.DOCKER_REGISTRY }}
         repository: registry.docteer.com/docteer
         tag_with_ref: true
         tag_with_sha: true
