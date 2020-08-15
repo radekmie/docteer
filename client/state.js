@@ -1,7 +1,7 @@
 // @flow
 
 import fuzzysort from 'fuzzysort';
-import {produce, setAutoFreeze} from 'immer';
+import {produce} from 'immer';
 
 import {compare, compareDocs, pure} from '@shared';
 
@@ -201,9 +201,6 @@ const _user = pure((data, diff) => {
   user._changed = JSON.stringify(data) !== JSON.stringify(user);
   return user;
 });
-
-// Startup.
-setAutoFreeze(process.env.NODE_ENV !== 'production');
 
 // Initial state.
 write({
