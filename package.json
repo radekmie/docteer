@@ -5,21 +5,21 @@
   "version": "1.0.0",
   "scripts": {
     "build": "run-s -lns build:*",
-    "build:client": "parcel build --detailed-report --no-autoinstall --no-cache --no-source-maps --out-dir dist/client client/index.html",
-    "build:server": "parcel build --detailed-report --no-autoinstall --no-cache --no-source-maps --out-dir dist/server server/index.js --bundle-node-modules --no-minify --target=node",
+    "build:client": "parcel build --no-autoinstall --no-source-maps --target client client/index.html",
+    "build:server": "parcel build --no-autoinstall --no-source-maps --target server server/index.js",
     "build:static": "mkdir -p dist/public && cp -R client/public dist",
     "e2e": "jest --ci .spec.js",
-    "postbuild": "for file in dist/client/*.js ; do npx terser -cem -o $file -- $file ; done",
+    "postbuild": "for file in dist/**/*.js ; do npx terser -cem -o $file -- $file ; done",
     "prebuild": "npm run reset:build",
     "reset": "run-s -lns reset:*",
     "reset:build": "rm -rf dist",
     "reset:db": "docker kill docteer-db || true",
     "reset:db-data": "docker volume rm docteer-db || true",
     "start": "run-p -lns start:*",
-    "start:client": "parcel watch --no-autoinstall --no-cache --out-dir dist/client client/index.html",
+    "start:client": "parcel watch --no-autoinstall --no-hmr --target client client/index.html",
     "start:db": "docker run --rm -p 27017:27017 --name docteer-db --volume docteer-db:/data/db mongo:4.0.10 --replSet rs0",
     "start:db-rs": "sleep 3 && docker exec docteer-db mongo --eval \"rs.initiate({_id: 'rs0', members: [{_id: 0, host: 'localhost:27017'}]})\"",
-    "start:server": "parcel watch --no-autoinstall --no-cache --out-dir dist/server server/index.js --target=node",
+    "start:server": "parcel watch --no-autoinstall --no-hmr --target server server/index.js",
     "start:static": "nodemon -w 'client/public/**' -x 'npm run build:static'",
     "start:ssr": "nodemon -C -w 'dist/**' -x 'node dist/server/index.js'",
     "test": "run-s -lns test:*",
@@ -59,6 +59,23 @@
       "<rootDir>/**/*.spec.js",
       "<rootDir>/**/*.test.js"
     ]
+  },
+  "targets": {
+    "client": {
+      "context": "browser",
+      "distDir": "dist/client",
+      "engines": {
+        "browsers": ">= 1% and not IE 11 and not dead"
+      }
+    },
+    "server": {
+      "context": "node",
+      "distDir": "dist/server",
+      "engines": {
+        "node": "12"
+      },
+      "includeNodeModules": true
+    }
   },
   "dependencies": {
     "ajv": "6.12.3",
@@ -107,7 +124,7 @@
     "jest": "26.4.0",
     "nodemon": "2.0.4",
     "npm-run-all": "4.1.5",
-    "parcel": "1.12.4",
+    "parcel": "2.0.0-beta.1",
     "parcel-plugin-inline-css": "file:packages/parcel-plugin-inline-css",
     "postcss-custom-properties": "9.1.1",
     "prettier": "1.18.2",

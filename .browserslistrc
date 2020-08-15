@@ -1,3 +1,1 @@
-> 1%
-not IE 11
-not dead
+>= 1% and not IE 11 and not dead
