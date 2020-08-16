@@ -260,7 +260,7 @@ export function onLogin(email: string, password: string) {
 export function onLoginWithToken(token: string, skipRefresh?: boolean) {
   if (!token) return Promise.reject();
 
-  return call('GET', '/api/users/token', {}, {silent: true, token})
+  return call('POST', '/api/users/token', {}, {silent: true, token})
     .then(userData => login(userData, skipRefresh))
     .then(() => (skipRefresh ? undefined : onRefresh(true)));
 }

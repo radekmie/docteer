@@ -64,6 +64,7 @@ const keyNote = ['ArrowDown', 'ArrowUp'];
 const keyHelp = ['Escape', '?'];
 const keyNext = ['ArrowDown', 'ArrowRight'];
 
+// eslint-disable-next-line complexity
 window.document.addEventListener('keydown', event => {
   const {key, target} = event;
   if (target.contentEditable === 'true' || target instanceof HTMLInputElement)
@@ -127,6 +128,7 @@ function setTriggers() {
 const pattern = /^\/(\w+)?(?:\/(\w+))?.*?(?:[&?]filter=([^&?]+))?(?:[&?]search=([^&?]+))?.*$/;
 
 function pushHistory(href) {
+  if (href !== '?') href = href.replace(/\?$/, '');
   if (location.href !== location.origin + href) {
     history.pushState(null, '', href);
     syncHistory();
