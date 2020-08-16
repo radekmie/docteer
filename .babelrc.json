@@ -18,10 +18,8 @@
     [
       "@babel/preset-env",
       {
-        "corejs": 2,
         "exclude": ["@babel/plugin-transform-regenerator"],
-        "shippedProposals": true,
-        "useBuiltIns": "entry"
+        "shippedProposals": true
       }
     ],
     ["@babel/preset-flow"],
