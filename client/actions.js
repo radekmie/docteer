@@ -1,7 +1,6 @@
 // @flow
 
 import fuzzysort from 'fuzzysort';
-import omit from 'lodash/omit';
 
 import {hash, schemaEmpty} from '@shared';
 import * as tree from '@client/state';
@@ -24,8 +23,17 @@ export function onAdd() {
 }
 
 export function onClone() {
-  const fields = ['_created', '_id', '_removed', '_updated'];
-  create((_, {note}) => (note ? omit(note, fields) : undefined));
+  create((_, {note}) => {
+    if (note) {
+      note = Object.assign({}, note);
+      delete note._created;
+      delete note._id;
+      delete note._removed;
+      delete note._updated;
+    }
+
+    return note;
+  });
 }
 
 export function onChange(_id: string, key: string, value: string | string[]) {
