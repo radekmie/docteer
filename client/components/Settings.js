@@ -169,7 +169,7 @@ export function Settings(props: Settings$Props) {
               <input
                 class="b--dark-gray br-0 bw1 flex-1 ph1 w-100"
                 data-test-schema-name
-                onChange={onSchemaName}
+                onInput={onSchemaName}
                 type="Schema name"
                 value={schema.name}
               />
@@ -184,7 +184,7 @@ export function Settings(props: Settings$Props) {
                   data-field={name}
                   data-index={index}
                   data-name={schema.name}
-                  key={name}
+                  key={index}
                 >
                   <Button
                     class="ph1"
@@ -214,7 +214,7 @@ export function Settings(props: Settings$Props) {
                     }br-0 bw1 ml1 flex-1 ph1 w-100`}
                     data-test-schema-field-name
                     disabled={disabled}
-                    onChange={onSchemaKey}
+                    onInput={onSchemaKey}
                     title="Field name"
                     value={name}
                   />
