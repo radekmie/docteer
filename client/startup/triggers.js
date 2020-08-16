@@ -1,14 +1,10 @@
 // @flow
 
-// $FlowFixMe: Incomplete typings!
-import {createBrowserHistory, createLocation, createPath} from 'history';
-
 import {compare, titleForView} from '@shared';
 import {onLoginWithToken} from '@client/actions';
 import * as tree from '@client/state';
 
 // Startup
-const history = createBrowserHistory();
 const storage = window.localStorage || {};
 
 new Promise(window.requestIdleCallback || window.setTimeout)
@@ -56,14 +52,7 @@ window.document.addEventListener('click', event => {
         event.stopImmediatePropagation();
         event.stopPropagation();
         event.preventDefault();
-
-        const prev = createPath(history.location);
-        const next = createPath(
-          createLocation(href, undefined, undefined, history.location)
-        );
-
-        if (prev !== next) history.push(href);
-
+        pushHistory(href);
         return;
       }
     }
@@ -111,13 +100,12 @@ window.document.addEventListener('keydown', event => {
 });
 
 // History
-history.listen(syncHistory);
+window.addEventListener('popstate', syncHistory);
 
 // Tree
 function setTriggers() {
   tree.on(({href}) => {
-    if (createPath(history.location) !== href.replace(/\?$/, ''))
-      history.push(href);
+    pushHistory(href);
   });
 
   tree.on(({filter, labels}) => {
@@ -138,11 +126,18 @@ function setTriggers() {
 // Helpers
 const pattern = /^\/(\w+)?(?:\/(\w+))?.*?(?:[&?]filter=([^&?]+))?(?:[&?]search=([^&?]+))?.*$/;
 
+function pushHistory(href) {
+  if (location.href !== location.origin + href) {
+    history.pushState(null, '', href);
+    syncHistory();
+  }
+}
+
 function syncHistory() {
   // eslint-disable-next-line complexity
   tree.update((store, {notes, userLoggedIn}) => {
     const [, view, noteId, filterString, search] =
-      pattern.exec(createPath(history.location)) || [];
+      pattern.exec(location.href.replace(location.origin, '')) || [];
 
     store.view =
       view === 'login' ||
