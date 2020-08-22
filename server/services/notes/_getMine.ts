@@ -1,5 +1,5 @@
+import { method } from '..';
 import { APIContextType, PatchType } from '../../../types';
-import { method } from './..';
 
 type Params = { refresh: number };
 

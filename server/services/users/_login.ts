@@ -1,10 +1,10 @@
 import bcrypt from 'bcryptjs';
 
+import * as users from '.';
+import { method } from '..';
 import { APIContextType, PassType } from '../../../types';
 import { APIError } from '../../api';
 import * as schemas from '../../schemas';
-import * as users from './';
-import { method } from './..';
 
 type Params = { email: string; password: PassType };
 

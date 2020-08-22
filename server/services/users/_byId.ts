@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 
+import { method } from '..';
 import { APIContextType } from '../../../types';
-import { method } from './..';
 
 type Params = { _id: ObjectId | string };
 

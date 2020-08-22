@@ -1,6 +1,6 @@
+import { ajv } from '.';
 import { APIContextType } from '../../types';
 import { APIError } from '../api';
-import { ajv } from './';
 
 export function method<Params extends {}, Result>(
   handle: (params: Params, context: APIContextType) => Promise<Result>,

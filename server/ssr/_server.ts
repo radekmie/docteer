@@ -1,7 +1,7 @@
 import connect from 'connect';
 import { extname } from 'path';
 
-import { params, render } from './';
+import { params, render } from '.';
 
 export const server = connect();
 

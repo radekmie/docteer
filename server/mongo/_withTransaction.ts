@@ -1,5 +1,5 @@
+import { getCollections, getDb, getMongo } from '.';
 import { APITransactionType } from '../../types';
-import { getCollections, getDb, getMongo } from './';
 
 export async function withTransaction<Result>(
   fn: (transaction: APITransactionType) => Result | Promise<Result>,

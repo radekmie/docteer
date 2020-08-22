@@ -1,4 +1,4 @@
-import config from './';
+import config from '.';
 
 describe('Config', () => {
   it('is an object', () => {

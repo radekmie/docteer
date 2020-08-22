@@ -1,9 +1,9 @@
 import { BulkWriteOperation } from 'mongodb';
 
+import * as notes from '.';
+import { method } from '..';
 import { APIContextType, NoteDocType, PatchType } from '../../../types';
 import * as schemas from '../../schemas';
-import * as notes from './';
-import { method } from './..';
 
 type Params = { patch: PatchType; refresh: number };
 

@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
 
+import { method } from '..';
 import { APIContextType } from '../../../types';
 import config from '../../config';
-import { method } from './..';
 
 type Params = {};
 

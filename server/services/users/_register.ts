@@ -2,6 +2,8 @@ import bcrypt from 'bcryptjs';
 import cloneDeep from 'lodash/cloneDeep';
 import { ObjectId } from 'mongodb';
 
+import * as users from '.';
+import { method } from '..';
 import {
   APIContextType,
   PassType,
@@ -11,8 +13,6 @@ import {
 import { APIError } from '../../api';
 import * as schemas from '../../schemas';
 import * as notes from '../notes';
-import * as users from './';
-import { method } from './..';
 
 const defaultPatch: PatchType = {
   created: ['introduction'],

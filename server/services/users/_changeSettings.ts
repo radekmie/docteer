@@ -1,7 +1,7 @@
+import { method } from '..';
 import { APIContextType, SchemaType } from '../../../types';
 import { APIError } from '../../api';
 import * as schemas from '../../schemas';
-import { method } from './..';
 
 function _hasDuplicatedField(schema: SchemaType) {
   return schema.fields

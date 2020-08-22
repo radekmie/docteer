@@ -1,4 +1,4 @@
-import * as schemas from './';
+import * as schemas from '.';
 
 export const patch = {
   type: 'object',

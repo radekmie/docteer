@@ -1,4 +1,4 @@
-import { shallowEqual } from './';
+import { shallowEqual } from '.';
 
 export function pure<Args extends any[], Result>(
   fn: (...args: Args) => Result,

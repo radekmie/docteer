@@ -1,9 +1,9 @@
 import bcrypt from 'bcryptjs';
 
+import { method } from '..';
 import { APIContextType, PassType } from '../../../types';
 import { APIError } from '../../api';
 import * as schemas from '../../schemas';
-import { method } from './..';
 
 type Params = { new1: PassType; new2: PassType; old: PassType };
 
