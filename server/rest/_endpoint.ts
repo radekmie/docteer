@@ -3,28 +3,29 @@ import jwt from 'jsonwebtoken';
 import { ObjectId } from 'mongodb';
 import url from 'url';
 
-import { APIContextType } from '../../types';
+import { server } from '.';
+import { APIContextType, APIEndpoints } from '../../types';
 import { APIError } from '../api';
 import config from '../config';
 import { withTransaction } from '../mongo';
 import * as users from '../services/users';
-import { server } from './';
 
-export function endpoint<Params extends {}, Result extends {}>(
-  http: string,
-  path: string,
-  method: (params: Params, context: APIContextType) => Promise<Result>,
+export function endpoint<Endpoint extends keyof APIEndpoints>(
+  endpoint: Endpoint,
+  fn: APIEndpoints[Endpoint],
   { authorize }: { authorize: boolean },
 ) {
+  const [method, path] = endpoint.split(' ');
+
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   server.use(path, async (request, response, next) => {
-    if (request.method !== http) {
+    if (request.method !== method) {
       next();
       return;
     }
 
     try {
-      const data: Params =
+      const data =
         request.method === 'GET'
           ? _parseQuery(request.url)
           : _parseJSON(request.body);
@@ -51,7 +52,7 @@ export function endpoint<Params extends {}, Result extends {}>(
           throw new APIError({ code: 'api-log-in' });
         }
 
-        return await method(data, context);
+        return await fn(data, context);
       });
 
       _response(response, null, result);
@@ -108,7 +109,7 @@ function _parseJSON(text: string) {
 
 function _parseQuery(path: string) {
   try {
-    const result = url.parse(path, true).query as Record<string, unknown>;
+    const result = url.parse(path, true).query as any;
     for (const [key, value] of Object.entries(result)) {
       const valueInt = parseInt(value as string);
       if (isFinite(valueInt) && '' + valueInt === value) {

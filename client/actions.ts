@@ -2,6 +2,9 @@ import fuzzysort from 'fuzzysort';
 
 import { hash, schemaEmpty } from '../shared';
 import {
+  APIEndpoints,
+  APIEndpointParams,
+  APIEndpointResult,
   NotePatchType,
   NoteType,
   PatchType,
@@ -49,7 +52,7 @@ export function onChange(_id: string, key: string, value: string | string[]) {
 export function onChangePassword(old: string, new1: string, new2: string) {
   toast('info', 'Changing password...');
 
-  return call('POST', '/api/users/password', {
+  return call('POST /users/password', {
     new1: hash(new1),
     new2: hash(new2),
     old: hash(old),
@@ -257,16 +260,13 @@ export function onImport() {
 export function onLogin(email: string, password: string) {
   toast('info', 'Logging in...');
 
-  return (
-    call('POST', '/api/users/login', { email, password: hash(password) })
-      // @ts-expect-error Unknown response.
-      .then(login)
-      .then(() => {
-        toast('success', 'Logged in.');
-        tree.updateWith({ view: 'notes' });
-      })
-      .then(() => onRefresh(true))
-  );
+  return call('POST /users/login', { email, password: hash(password) })
+    .then(login)
+    .then(() => {
+      toast('success', 'Logged in.');
+      tree.updateWith({ view: 'notes' });
+    })
+    .then(() => onRefresh(true));
 }
 
 export function onLoginWithToken(token: string, skipRefresh?: boolean) {
@@ -274,12 +274,9 @@ export function onLoginWithToken(token: string, skipRefresh?: boolean) {
     return Promise.reject();
   }
 
-  return (
-    call('POST', '/api/users/token', {}, { silent: true, token })
-      // @ts-expect-error Unknown response.
-      .then(userData => login(userData, skipRefresh))
-      .then(() => (skipRefresh ? undefined : onRefresh(true)))
-  );
+  return call('POST /users/token', {}, { silent: true, token })
+    .then(userData => login(userData, skipRefresh))
+    .then(() => (skipRefresh ? undefined : onRefresh(true)));
 }
 
 export function onLogout() {
@@ -299,14 +296,11 @@ export function onRefresh(firstRun?: boolean) {
   toast('info', firstRun === true ? 'Loading...' : 'Refreshing...');
 
   const last = new Date();
-  return call('GET', '/api/notes', { refresh: +tree.state().last }).then(
-    // @ts-expect-error Unknown response.
-    (patch: PatchType) => {
-      tree.updateWith({ last });
-      toast('success', firstRun === true ? 'Loaded.' : 'Refreshed.');
-      merge(patch);
-    },
-  );
+  return call('GET /notes', { refresh: +tree.state().last }).then(patch => {
+    tree.updateWith({ last });
+    toast('success', firstRun === true ? 'Loaded.' : 'Refreshed.');
+    merge(patch);
+  });
 }
 
 export function onRemove() {
@@ -314,6 +308,7 @@ export function onRemove() {
     if (!store.noteId) {
       return;
     }
+
     store.notesRemoved[store.noteId] = true;
     store.noteId = null;
   });
@@ -366,9 +361,8 @@ export function onSave() {
 
   const last = new Date();
 
-  return call('POST', '/api/notes', { patch, refresh: +refresh }).then(
-    // @ts-expect-error Unknown response.
-    (patch: PatchType) => {
+  return call('POST /notes', { patch, refresh: +refresh }).then(
+    patch => {
       tree.updateWith({ last });
       toast('success', 'Saved.');
       merge(patch);
@@ -386,11 +380,9 @@ export function onSchemaAdd() {
     if (shape.user === null) {
       return;
     }
+
     if (store.userDiff === null) {
-      store.userDiff = {};
-    }
-    if (store.userDiff.schemas === undefined) {
-      store.userDiff.schemas = [];
+      store.userDiff = { schemas: [] };
     }
 
     store.userDiff.schemas.push({
@@ -416,7 +408,8 @@ export function onSchemaDelete(event: Event) {
     if (schema === undefined || store.userDiff === null) {
       return;
     }
-    const diff = store.userDiff.schemas!.find(schema => schema.name === name);
+
+    const diff = store.userDiff.schemas.find(schema => schema.name === name);
     if (diff === undefined) {
       return;
     }
@@ -437,7 +430,8 @@ export function onSchemaField(event: Event) {
     if (schema === undefined || store.userDiff === null) {
       return;
     }
-    const diff = store.userDiff.schemas!.find(schema => schema.name === name);
+
+    const diff = store.userDiff.schemas.find(schema => schema.name === name);
     if (diff === undefined) {
       return;
     }
@@ -460,7 +454,8 @@ export function onSchemaKey(event: Event) {
     if (schema === undefined || store.userDiff === null) {
       return;
     }
-    const diff = store.userDiff.schemas!.find(schema => schema.name === name);
+
+    const diff = store.userDiff.schemas.find(schema => schema.name === name);
     if (diff === undefined) {
       return;
     }
@@ -477,7 +472,8 @@ export function onSchemaName(event: Event) {
     if (store.userDiff === null) {
       return;
     }
-    const diff = store.userDiff.schemas!.find(schema => schema.name === name);
+
+    const diff = store.userDiff.schemas.find(schema => schema.name === name);
     if (diff === undefined) {
       return;
     }
@@ -500,7 +496,8 @@ export function onSchemaOrder(event: Event) {
     if (schema === undefined || store.userDiff === null) {
       return;
     }
-    const diff = store.userDiff.schemas!.find(schema => schema.name === name);
+
+    const diff = store.userDiff.schemas.find(schema => schema.name === name);
     if (diff === undefined) {
       return;
     }
@@ -530,7 +527,8 @@ export function onSchemaType(event: Event) {
     if (store.userDiff === null) {
       return;
     }
-    const diff = store.userDiff.schemas!.find(schema => schema.name === name);
+
+    const diff = store.userDiff.schemas.find(schema => schema.name === name);
     if (diff === undefined) {
       return;
     }
@@ -559,7 +557,7 @@ export function onSettingsSave() {
 
   toast('info', 'Saving...');
 
-  return call('POST', '/api/users/settings', userDiff).then(userData => {
+  return call('POST /users/settings', userDiff).then(userData => {
     toast('success', 'Saved.');
     tree.update(store => {
       Object.assign(store.userData, userData);
@@ -571,19 +569,16 @@ export function onSettingsSave() {
 export function onSignup(email: string, password: string) {
   toast('info', 'Signing up...');
 
-  return (
-    call('POST', '/api/users/register', {
-      email,
-      password: hash(password),
+  return call('POST /users/register', {
+    email,
+    password: hash(password),
+  })
+    .then(login)
+    .then(() => {
+      toast('success', 'Signed in.');
+      tree.updateWith({ noteId: 'introduction' });
     })
-      // @ts-expect-error Unknown response.
-      .then(login)
-      .then(() => {
-        toast('success', 'Signed in.');
-        tree.updateWith({ noteId: 'introduction' });
-      })
-      .then(() => onRefresh(true))
-  );
+    .then(() => onRefresh(true));
 }
 
 export function onTypeAhead(event: InputEvent) {
@@ -630,22 +625,22 @@ onTypeAhead.post = (event: KeyboardEvent) => {
   event.target!.__skip = true;
 };
 
-function call(
-  method: 'GET' | 'POST',
-  path: string,
-  data: object,
+function call<Endpoint extends keyof APIEndpoints>(
+  endpoint: Endpoint,
+  params: APIEndpointParams<Endpoint>,
   { silent, token }: { silent?: boolean; token?: string } = {},
 ) {
+  const [method, path] = endpoint.split(' ');
   const headers = new Headers({ 'Content-Type': 'application/json' });
-  const url = new URL(path, location.origin);
+  const url = new URL(`/api/${path}`, location.origin);
 
   let body: string;
   if (method === 'GET') {
-    for (const [key, value] of Object.entries(data)) {
+    for (const [key, value] of Object.entries(params as object)) {
       url.searchParams.append(key, String(value));
     }
   } else {
-    body = JSON.stringify(data);
+    body = JSON.stringify(params);
   }
 
   const auth = token || tree.state().userToken;
@@ -653,8 +648,9 @@ function call(
     headers.append('Authorization', `Bearer ${auth}`);
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise<APIEndpointResult<Endpoint>>((resolve, reject) => {
     const id = setTimeout(done, 5000, new Error('Sorry, try again later.'));
+
     // @ts-expect-error Use `URL` instead of `string`.
     fetch(url, { body, headers, method })
       .then(response => {
@@ -671,7 +667,7 @@ function call(
       })
       .then(response => done(null, response), done);
 
-    function done(error: Error | null, response?: unknown) {
+    function done(error: Error | null, response?: any) {
       clearTimeout(id);
 
       if (error) {
@@ -712,7 +708,10 @@ function create(
   });
 }
 
-function login(userData: UserType | null = null, skipRefresh?: boolean) {
+function login(
+  userData: APIEndpointResult<'POST /users/login'> | null = null,
+  skipRefresh?: boolean,
+) {
   const diff: Partial<StoreType> = { last: new Date(0), userData };
   if (!skipRefresh && userData) {
     diff.userDiff = { schemas: userData.schemas };

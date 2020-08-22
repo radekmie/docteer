@@ -7,6 +7,27 @@ export type APIContextType = APITransactionType & {
   userId: ObjectId | string;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface APIEndpoints {}
+
+export type APIEndpointParams<
+  Endpoint extends keyof APIEndpoints
+> = APIEndpoints[Endpoint] extends (
+  params: infer Params,
+  context: APIContextType,
+) => Promise<any>
+  ? Params
+  : never;
+
+export type APIEndpointResult<
+  Endpoint extends keyof APIEndpoints
+> = APIEndpoints[Endpoint] extends (
+  params: any,
+  context: APIContextType,
+) => Promise<infer Result>
+  ? Result
+  : never;
+
 export type APITransactionType = {
   collections: {
     Notes: Collection<NoteDocType>;
@@ -114,7 +135,7 @@ export type StoreType = {
   search: string;
   toasts: ToastType[];
   userData: UserType | null;
-  userDiff: Partial<UserType> | null;
+  userDiff: Pick<UserBaseType, 'schemas'> | null;
   view: '' | 'login' | 'notes' | 'settings' | 'signup';
 };
 
@@ -127,17 +148,17 @@ export type ToastType = {
 };
 
 export type UserBaseType = {
-  _id: ObjectId | string;
   emails: { address: string; verified?: boolean }[];
   schemas: SchemaType[];
 };
 
 export type UserDocType = UserBaseType & {
+  _id: ObjectId | string;
   createdAt: Date;
   services: { password: { bcrypt: string } };
 };
 
 export type UserType = UserBaseType & {
-  _changed: boolean;
+  _changed?: boolean;
   token: string;
 };
