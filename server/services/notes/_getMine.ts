@@ -1,27 +1,29 @@
-// @flow
+import { APIContextType, PatchType } from '../../../types';
+import { method } from './..';
 
-import {method} from '@server/services';
+type Params = { refresh: number };
 
-import type {APIContextType, PatchType} from '@types';
-
-type Params = {|refresh: number|};
-
-export async function handle({refresh}: Params, context: APIContextType) {
-  const diff: PatchType<> = {created: [], removed: [], updated: []};
-  if (refresh === Infinity) return diff;
+export async function handle({ refresh }: Params, context: APIContextType) {
+  const diff: PatchType = { created: [], removed: [], updated: [] };
+  if (refresh === Infinity) {
+    return diff;
+  }
 
   const after = new Date(refresh);
-  const projection = {
+  const projection: object = {
     _id: 0,
     _id_user: 0,
     _updated: 0,
-    _version: 0
+    _version: 0,
   };
 
-  const {Notes} = context.collections;
+  const { Notes } = context.collections;
   await Notes.find(
-    {_id_user: context.userId, ...(after ? {_updated: {$gt: after}} : {})},
-    {projection, session: context.session}
+    {
+      _id_user: context.userId,
+      ...(after ? { _updated: { $gt: after } } : {}),
+    },
+    { projection, session: context.session },
   ).forEach(note => {
     if (note._removed && note._removed > after) {
       diff.removed.push(note._id_slug);
@@ -30,10 +32,13 @@ export async function handle({refresh}: Params, context: APIContextType) {
         _id: note._id_slug,
         _outname: note._outname,
         _outline: note._outline,
-        ...note._objects
+        // @ts-expect-error `note._objects` is an array.
+        ...note._objects,
       });
 
-      if (note._created > after) diff.created.push(note._id_slug);
+      if (note._created > after) {
+        diff.created.push(note._id_slug);
+      }
     }
   });
 
@@ -43,10 +48,10 @@ export async function handle({refresh}: Params, context: APIContextType) {
 export const schema = {
   type: 'object',
   properties: {
-    refresh: {type: 'integer', minimum: 0}
+    refresh: { type: 'integer', minimum: 0 },
   },
   required: ['refresh'],
-  additionalProperties: false
+  additionalProperties: false,
 };
 
-export default method<Params, _, _>(handle, schema);
+export default method(handle, schema);

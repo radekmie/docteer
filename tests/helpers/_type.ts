@@ -1,6 +1,4 @@
-// @flow
-
-import type {Page} from 'puppeteer-core';
+import { Page } from 'puppeteer-core';
 
 export async function type(page: Page, selector: string, value: string) {
   await page.click(selector);

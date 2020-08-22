@@ -1,29 +1,15 @@
 {
-  "env": {
-    "jest": true
-  },
-  "extends": [
-    "plugin:flowtype/recommended",
-    "vazco/prettier"
-  ],
-  "plugins": [
-    "flowtype"
-  ],
+  "env": { "jest": true },
+  "extends": "vazco/typescript",
   "rules": {
-    "flowtype/no-types-missing-file-annotation": "off",
-    "flowtype/space-after-type-colon": "off",
-    "prettier/prettier": [
-      "error",
-      {
-        "bracketSpacing": false,
-        "singleQuote": true
-      }
-    ]
+    "@typescript-eslint/camelcase": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/require-await": "off"
   },
   "settings": {
-    "react": {
-      "pragma": "h",
-      "version": "16.0.0"
-    }
+    "react": { "pragma": "h", "version": "16.0.0" }
   }
 }

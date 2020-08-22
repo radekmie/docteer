@@ -1,5 +1,3 @@
-// @flow
-
 export * from './_browser';
 export * from './_load';
 export * from './_navigate';

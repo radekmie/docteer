@@ -7,14 +7,14 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2.3.2
-    - uses: docker/build-push-action@v1.1.0
-      with:
-        password: ${{ secrets.DOCKER_PASSWORD }}
-        registry: ${{ secrets.DOCKER_REGISTRY }}
-        repository: docteer
-        tags: latest
-        username: ${{ secrets.DOCKER_USERNAME }}
-    - uses: fjogeleit/http-request-action@v1.4.1
-      with:
-        url: ${{ secrets.DEPLOY_URL }}
+      - uses: actions/checkout@v2.3.2
+      - uses: docker/build-push-action@v1.1.0
+        with:
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: ${{ secrets.DOCKER_REGISTRY }}
+          repository: docteer
+          tags: latest
+          username: ${{ secrets.DOCKER_USERNAME }}
+      - uses: fjogeleit/http-request-action@v1.4.1
+        with:
+          url: ${{ secrets.DEPLOY_URL }}

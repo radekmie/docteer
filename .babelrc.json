@@ -1,16 +1,11 @@
 {
   "plugins": [
     [
-      "module-resolver",
+      "@babel/plugin-transform-runtime",
       {
-        "alias": {
-          "@client": "./client",
-          "@server": "./server",
-          "@shared": "./shared",
-          "@tests": "./tests",
-          "@types": "./types"
-        },
-        "cwd": "babelrc"
+        "helpers": true,
+        "regenerator": false,
+        "useESModules": true
       }
     ]
   ],
@@ -22,7 +17,7 @@
         "shippedProposals": true
       }
     ],
-    ["@babel/preset-flow"],
-    ["@babel/preset-react"]
+    ["@babel/preset-react", { "pragma": "h", "pragmaFrag": "Fragment" }],
+    ["@babel/preset-typescript", { "jsxPragma": "h" }]
   ]
 }

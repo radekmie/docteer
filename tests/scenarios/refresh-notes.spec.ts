@@ -1,7 +1,4 @@
-// @flow
-
-import {noteAction, toastCheck} from '@tests/actions';
-
+import { noteAction, toastCheck } from '../actions';
 import noteOne from './bits/noteOne';
 
 noteOne

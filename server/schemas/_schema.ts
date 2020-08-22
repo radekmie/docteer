@@ -1,13 +1,11 @@
-// @flow
-
-import * as schemas from '@server/schemas';
+import * as schemas from './';
 
 export const schema = {
   type: 'object',
   properties: {
     fields: schemas.outline,
-    name: {type: 'string'}
+    name: { type: 'string' },
   },
   required: ['fields', 'name'],
-  additionalProperties: false
+  additionalProperties: false,
 };

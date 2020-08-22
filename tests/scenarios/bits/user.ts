@@ -1,12 +1,8 @@
-// @flow
-
-import {noteCheck, toastCheck, userLogOut, userSignUp} from '@tests/actions';
-
+import { noteCheck, toastCheck, userLogOut, userSignUp } from '../../actions';
 import base from './base';
 
-// $FlowFixMe: Generics.
 export default base
-  .next(userSignUp, context => [context.user])
+  .next(userSignUp, context => [context.user] as const)
   .next(toastCheck, ['Signing up...'])
   .next(toastCheck, ['Signed in.'])
   .next(toastCheck, ['Loading...'])

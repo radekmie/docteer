@@ -1,20 +1,21 @@
-// @flow
+import { APIContextType } from '../../types';
+import { APIError } from '../api';
+import { ajv } from './';
 
-import {APIError} from '@server/api';
-import {ajv} from '@server/services';
-
-import type {APIContextType} from '@types';
-
-export function method<Params: {}, Result, Schema: {}>(
-  handle: (Params, APIContextType) => Promise<Result>,
-  schema: Schema
-): (Params, APIContextType) => Promise<Result> {
+export function method<Params extends {}, Result>(
+  handle: (params: Params, context: APIContextType) => Promise<Result>,
+  schema: object,
+) {
   const validator = ajv.compile(schema);
 
-  return async (data, context) => {
-    if (!validator(data))
-      throw new APIError({code: 'api-validation', info: validator.errors});
+  return async (params: Params, context: APIContextType) => {
+    if (!validator(params)) {
+      throw new APIError({
+        code: 'api-validation',
+        info: { errors: validator.errors },
+      });
+    }
 
-    return await handle(data, context);
+    return await handle(params, context);
   };
 }

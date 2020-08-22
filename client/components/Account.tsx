@@ -1,30 +1,27 @@
-// @flow
-// @jsx h
+import { Component, h } from 'preact';
 
-import {Component, h} from 'preact';
+import { onLogin, onSignup } from '../actions';
+import { Button } from './Button';
+import { iconLock, iconUser } from './Icon';
 
-import {Button} from '@client/components/Button';
-import {iconLock, iconUser} from '@client/components/Icon';
-import {onLogin, onSignup} from '@client/actions';
-
-type Account$Props = {|
-  signup?: boolean
-|};
+type Account$Props = {
+  signup?: boolean;
+};
 
 export class Account extends Component<Account$Props> {
-  email: ?HTMLInputElement;
-  password: ?HTMLInputElement;
-  password2: ?HTMLInputElement;
+  email: HTMLInputElement | null | undefined;
+  password: HTMLInputElement | null | undefined;
+  password2: HTMLInputElement | null | undefined;
 
-  onRefEmail = (ref: ?HTMLInputElement) => {
+  onRefEmail = (ref: HTMLInputElement | null | undefined) => {
     this.email = ref;
   };
 
-  onRefPassword = (ref: ?HTMLInputElement) => {
+  onRefPassword = (ref: HTMLInputElement | null | undefined) => {
     this.password = ref;
   };
 
-  onRefPassword2 = (ref: ?HTMLInputElement) => {
+  onRefPassword2 = (ref: HTMLInputElement | null | undefined) => {
     this.password2 = ref;
   };
 
@@ -37,14 +34,14 @@ export class Account extends Component<Account$Props> {
     }
   };
 
-  render({signup}: Account$Props) {
+  render({ signup }: Account$Props) {
     return (
-      <form action="#" class="w5" onSubmit={this.onSubmit}>
-        <label class="flex h2 mb1" for="email" title="Email">
+      <form action="#" className="w5" onSubmit={this.onSubmit}>
+        <label className="flex h2 mb1" htmlFor="email" title="Email">
           {iconUser}
           <input
-            autocomplete="email username"
-            class="ba bg-near-white br-0 bw1 flex-1 ml1 ph1 w-100"
+            autoComplete="email username"
+            className="ba bg-near-white br-0 bw1 flex-1 ml1 ph1 w-100"
             id="email"
             name="email"
             placeholder="Email"
@@ -53,14 +50,13 @@ export class Account extends Component<Account$Props> {
             type="email"
           />
         </label>
-
-        <label class="flex h2 mb1" for="password" title="Password">
+        <label className="flex h2 mb1" htmlFor="password" title="Password">
           {iconLock}
           <input
-            autocomplete={`${signup ? 'new' : 'current'}-password`}
-            class="ba bg-near-white br-0 bw1 flex-1 ml1 ph1 w-100"
+            autoComplete={`${signup ? 'new' : 'current'}-password`}
+            className="ba bg-near-white br-0 bw1 flex-1 ml1 ph1 w-100"
             id="password"
-            minlength={4}
+            minLength={4}
             name="password"
             placeholder="Password"
             ref={this.onRefPassword}
@@ -68,21 +64,18 @@ export class Account extends Component<Account$Props> {
             type="password"
           />
         </label>
-
         <Button
-          class="h2 w-100"
+          className="h2 w-100"
           data-test-user={signup ? 'signup' : 'login'}
           title={signup ? 'Sign up' : 'Log in'}
           type="submit"
         >
           {signup ? 'Sign up' : 'Log in'}
         </Button>
-
-        <hr class="ba mt3" />
-
-        <span class="db tc">
+        <hr className="ba mt3" />
+        <span className="db tc">
           {`${signup ? 'Already a' : 'New'} member?`}
-          <a class="ml1" href={`/${signup ? 'login' : 'signup'}`}>
+          <a className="ml1" href={`/${signup ? 'login' : 'signup'}`}>
             {signup ? 'Log in' : 'Sign up'}
           </a>
           .

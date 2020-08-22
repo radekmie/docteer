@@ -1,7 +1,5 @@
-// @flow
+export function cache<Fn extends (arg: string) => any>(fn: Fn) {
+  const cached: Record<string, ReturnType<Fn>> = Object.create(null);
 
-export function cache<A, B>(fn: A => B): A => B {
-  const cached: {[A]: B} = {};
-
-  return (x: A): B => cached[x] || (cached[x] = fn(x));
+  return (arg => cached[arg] || (cached[arg] = fn(arg))) as Fn;
 }

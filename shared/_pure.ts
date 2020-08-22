@@ -1,15 +1,15 @@
-// @flow
+import { shallowEqual } from './';
 
-import {shallowEqual} from '@shared';
+export function pure<Args extends any[], Result>(
+  fn: (...args: Args) => Result,
+) {
+  let prevArgs: Args;
+  let prevResult: Result;
 
-// $FlowFixMe: Function is unsafe, but we use it as a base.
-export function pure<Fn: Function>(fn: Fn): Fn {
-  let prevArgs;
-  let prevResult;
-
-  return (...args) => {
-    if (prevArgs !== undefined && shallowEqual(args, prevArgs))
+  return (...args: Args) => {
+    if (prevArgs !== undefined && shallowEqual(args, prevArgs)) {
       return prevResult;
+    }
 
     prevArgs = args;
     prevResult = fn(...args);

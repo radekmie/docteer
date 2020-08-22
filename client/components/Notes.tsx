@@ -1,22 +1,18 @@
-// @flow
-// @jsx h
+import { Component, h } from 'preact';
 
-import {Component, h} from 'preact';
+import { shallowEqual } from '../../shared';
+import { NoteType } from '../../types';
 
-import {shallowEqual} from '@shared';
-
-import type {NoteType} from '@types';
-
-type NotesItem$Props = {|
-  note: NoteType<{|name?: string|}>
-|};
+type NotesItem$Props = {
+  note: NoteType;
+};
 
 class NotesItem extends Component<NotesItem$Props> {
-  shouldComponentUpdate(props) {
+  shouldComponentUpdate(props: NotesItem$Props) {
     return !shallowEqual(this.props.note, props.note);
   }
 
-  render({note}: NotesItem$Props) {
+  render({ note }: NotesItem$Props) {
     const color = note._created
       ? note._removed
         ? 'gray hover-light-gray'
@@ -29,35 +25,36 @@ class NotesItem extends Component<NotesItem$Props> {
 
     return (
       <a
-        class={`${
+        className={`${
           note._active ? 'bg-near-white bl bw2 b--dark-gray ' : ''
         }db ${color} hover-bg-near-white link ph2${
           note._active ? ' pl1' : ''
         } truncate`}
         data-item
         data-test-note={note.name || '(untitled)'}
-        dangerouslySetInnerHTML={{__html: note.name || '(untitled)'}}
+        // @ts-expect-error Unknown field.
+        dangerouslySetInnerHTML={{ __html: note.name || '(untitled)' }}
         href={note._href}
       />
     );
   }
 }
 
-type Notes$Props = {|
-  notes: NoteType<>[],
-  search: string
-|};
+type Notes$Props = {
+  notes: NoteType[];
+  search: string;
+};
 
 export class Notes extends Component<Notes$Props> {
   shouldComponentUpdate(props: Notes$Props) {
     return !shallowEqual(this.props, props);
   }
 
-  render({notes, search}: Notes$Props) {
+  render({ notes, search }: Notes$Props) {
     return (
-      <div class="b--dark-gray bl bw1 flex-1 overflow-auto strict">
+      <div className="b--dark-gray bl bw1 flex-1 overflow-auto strict">
         {notes.length === 0 && (
-          <div class="pa3 tc">{`(no notes${search ? ' found' : ''})`}</div>
+          <div className="pa3 tc">{`(no notes${search ? ' found' : ''})`}</div>
         )}
 
         {notes.map(note => (

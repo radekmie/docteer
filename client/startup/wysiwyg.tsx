@@ -1,21 +1,19 @@
-// @flow
-// @jsx h
+import { VNode, h, render } from 'preact';
 
-import {h, render} from 'preact';
+import { Popup } from '../components/Popup';
 
-import {Popup} from '@client/components/Popup';
-
-function create(node) {
+function create(node: HTMLElement) {
   if (!node.popup) {
     node.popup = document.createElement('div');
-    node.parentElement.appendChild(node.popup);
+    node.parentElement!.appendChild(node.popup);
 
     document.addEventListener('click', function hide(event: MouseEvent) {
-      // $FlowFixMe: Lift EventTarget to HTMLElement.
-      let element: HTMLElement = event.target;
+      let element = event.target as HTMLElement | null | undefined;
       do {
-        if (element === node) return;
-      } while ((element = element.parentElement));
+        if (element === node) {
+          return;
+        }
+      } while ((element = element!.parentElement));
 
       document.removeEventListener('click', hide);
 
@@ -26,26 +24,30 @@ function create(node) {
   return node.popup;
 }
 
-function remove(node) {
+function remove(node: HTMLElement) {
   if (node && node.popup) {
     rerender(null, node.popup);
-    node.parentElement.removeChild(node.popup);
+    node.parentElement!.removeChild(node.popup);
     node.popup = null;
   }
 }
 
-function rerender(jsx, node) {
-  render(jsx, node, node.firstChild);
+function rerender(jsx: VNode | null, node: HTMLElement) {
+  render(jsx, node, node.firstChild as HTMLElement);
 }
 
 document.addEventListener('selectionchange', () => {
   const selection = window.getSelection();
-  if (!selection || !selection.rangeCount) return;
+  if (!selection || !selection.rangeCount) {
+    return;
+  }
 
-  let element = selection.anchorNode;
+  let element = selection.anchorNode as HTMLElement;
   do {
-    if (element.contentEditable === 'true') break;
-  } while ((element = element.parentElement));
+    if (element.contentEditable === 'true') {
+      break;
+    }
+  } while ((element = element.parentElement!));
 
   const range = selection.getRangeAt(0);
   if (!range || range.startOffset === range.endOffset) {
@@ -54,7 +56,7 @@ document.addEventListener('selectionchange', () => {
   }
 
   if (element) {
-    const node = element.parentElement.parentElement;
+    const node = element.parentElement!.parentElement!;
 
     rerender(
       <Popup
@@ -62,7 +64,7 @@ document.addEventListener('selectionchange', () => {
         offsets={node.getBoundingClientRect()}
         position={range.getBoundingClientRect()}
       />,
-      create(element)
+      create(element),
     );
   }
 });

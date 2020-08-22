@@ -1,5 +1,3 @@
-// @flow
-
 export * from './_endpoint';
 export * from './_server';
 

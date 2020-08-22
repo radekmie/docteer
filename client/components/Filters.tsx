@@ -1,46 +1,41 @@
-// @flow
-// @jsx h
+import { h } from 'preact';
 
-import {h} from 'preact';
+import { LabelType, NoteType } from '../../types';
+import { onSearch } from '../actions';
+import { iconSearch } from './Icon';
+import { Labels } from './Labels';
+import { Notes } from './Notes';
 
-import {Labels} from '@client/components/Labels';
-import {Notes} from '@client/components/Notes';
-import {iconSearch} from '@client/components/Icon';
-import {onSearch} from '@client/actions';
-
-import type {LabelType, NoteType} from '@types';
-
-type Filters$Props = {|
-  labels: LabelType[],
-  notes: NoteType<>[],
-  search: string,
-  standalone?: boolean
-|};
+type Filters$Props = {
+  labels: LabelType[];
+  notes: NoteType[];
+  search: string;
+  standalone?: boolean;
+};
 
 export function Filters(props: Filters$Props) {
   return (
     <div
-      class={`${props.standalone ? 'ba bw1 ' : ''}column flex flex-column${
+      className={`${props.standalone ? 'ba bw1 ' : ''}column flex flex-column${
         props.standalone ? ' w-100' : ''
       }`}
     >
-      <div class="b--dark-gray bb bg-near-white bw1">
-        <label class="flex flex-center" for="search" title="Search">
-          <span class="flex flex-center input-icon pa2">{iconSearch}</span>
-
+      <div className="b--dark-gray bb bg-near-white bw1">
+        <label className="flex flex-center" htmlFor="search" title="Search">
+          <span className="flex flex-center input-icon pa2">{iconSearch}</span>
           <input
-            class="br-0 bw0 flex-1 pa2 ph1 w-100"
+            className="br-0 bw0 flex-1 pa2 ph1 w-100"
             id="search"
             name="search"
             placeholder="Search..."
+            // @ts-expect-error Invalid event type.
             onInput={onSearch}
             type="search"
             value={props.search}
           />
         </label>
       </div>
-
-      <div class="flex h-100">
+      <div className="flex h-100">
         <Labels labels={props.labels} />
         <Notes notes={props.notes} search={props.search} />
       </div>

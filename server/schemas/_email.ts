@@ -1,6 +1,4 @@
-// @flow
-
 export const email = {
   type: 'string',
-  format: 'email'
+  format: 'email',
 };

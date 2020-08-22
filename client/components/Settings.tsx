@@ -1,9 +1,6 @@
-// @flow
-// @jsx h
+import { Component, h } from 'preact';
 
-import {Component, h} from 'preact';
-
-import {Button} from '@client/components/Button';
+import { UserType } from '../../types';
 import {
   onChangePassword,
   onExportCSV,
@@ -16,44 +13,49 @@ import {
   onSchemaName,
   onSchemaOrder,
   onSchemaRemove,
-  onSchemaType
-} from '@client/actions';
+  onSchemaType,
+} from '../actions';
+import { Button } from './Button';
 
-import type {UserType} from '@types';
-
-type Credentials$Props = {|
-  user: UserType
-|};
+type Credentials$Props = {
+  user: UserType;
+};
 
 class Credentials extends Component<Credentials$Props> {
-  current: ?HTMLInputElement;
-  new1: ?HTMLInputElement;
-  new2: ?HTMLInputElement;
+  current: HTMLInputElement | null | undefined;
+  new1: HTMLInputElement | null | undefined;
+  new2: HTMLInputElement | null | undefined;
 
-  onCurrent = (ref: ?HTMLInputElement) => {
+  onCurrent = (ref: HTMLInputElement | null | undefined) => {
     this.current = ref;
   };
 
-  onNew1 = (ref: ?HTMLInputElement) => {
+  onNew1 = (ref: HTMLInputElement | null | undefined) => {
     this.new1 = ref;
   };
 
-  onNew2 = (ref: ?HTMLInputElement) => {
+  onNew2 = (ref: HTMLInputElement | null | undefined) => {
     this.new2 = ref;
   };
 
-  onChangePassword = event => {
+  onChangePassword = (event: Event) => {
     event.preventDefault();
 
     if (this.current && this.new1 && this.new2) {
       onChangePassword(
         this.current.value,
         this.new1.value,
-        this.new2.value
+        this.new2.value,
       ).then(() => {
-        if (this.current) this.current.value = '';
-        if (this.new1) this.new1.value = '';
-        if (this.new2) this.new2.value = '';
+        if (this.current) {
+          this.current.value = '';
+        }
+        if (this.new1) {
+          this.new1.value = '';
+        }
+        if (this.new2) {
+          this.new2.value = '';
+        }
       });
     }
   };
@@ -61,14 +63,13 @@ class Credentials extends Component<Credentials$Props> {
   render(props: Credentials$Props) {
     return (
       <details>
-        <summary class="pointer">Change password</summary>
-
+        <summary className="pointer">Change password</summary>
         <form action="#" onSubmit={this.onChangePassword}>
-          <label class="flex flex-column mt1" for="email" title="Email">
+          <label className="flex flex-column mt1" htmlFor="email" title="Email">
             <b>Email</b>
             <input
-              autocomplete="email username"
-              class="ba bg-near-white br-0 bw1 ph1 w-100"
+              autoComplete="email username"
+              className="ba bg-near-white br-0 bw1 ph1 w-100"
               disabled
               id="email"
               name="email"
@@ -76,54 +77,54 @@ class Credentials extends Component<Credentials$Props> {
               value={props.user.emails[0].address}
             />
           </label>
-
           <label
-            class="flex flex-column mt1"
-            for="current"
+            className="flex flex-column mt1"
+            htmlFor="current"
             title="Current password"
           >
             <b>Current password</b>
             <input
-              autocomplete="current-password"
-              class="ba br-0 bw1 ph1 w-100"
+              autoComplete="current-password"
+              className="ba br-0 bw1 ph1 w-100"
               id="current"
               name="current"
               ref={this.onCurrent}
               type="password"
             />
           </label>
-
-          <label class="flex flex-column mt1" for="new1" title="New password">
+          <label
+            className="flex flex-column mt1"
+            htmlFor="new1"
+            title="New password"
+          >
             <b>New password</b>
             <input
-              autocomplete="new-password"
-              class="ba br-0 bw1 ph1 w-100"
+              autoComplete="new-password"
+              className="ba br-0 bw1 ph1 w-100"
               id="new1"
-              minlength={4}
+              minLength={4}
               name="new1"
               ref={this.onNew1}
               type="password"
             />
           </label>
-
           <label
-            class="flex flex-column mt1"
-            for="new2"
+            className="flex flex-column mt1"
+            htmlFor="new2"
             title="New password (again)"
           >
             <b>New password (again)</b>
             <input
-              autocomplete="new-password"
-              class="ba br-0 bw1 ph1 w-100"
+              autoComplete="new-password"
+              className="ba br-0 bw1 ph1 w-100"
               id="new2"
-              minlength={4}
+              minLength={4}
               name="new2"
               ref={this.onNew2}
               type="password"
             />
           </label>
-
-          <Button class="mt1 w-100" title="Change password" type="submit">
+          <Button className="mt1 w-100" title="Change password" type="submit">
             Change password
           </Button>
         </form>
@@ -132,28 +133,25 @@ class Credentials extends Component<Credentials$Props> {
   }
 }
 
-type Settings$Props = {|
-  user: UserType
-|};
+type Settings$Props = {
+  user: UserType;
+};
 
 export function Settings(props: Settings$Props) {
   return (
-    <dl class="ma0 w10 w-100">
-      <dt class="mt3">
+    <dl className="ma0 w10 w-100">
+      <dt className="mt3">
         <b>Credentials:</b>
       </dt>
-
-      <dd class="ml4" data-test-settings="credentials">
+      <dd className="ml4" data-test-settings="credentials">
         <Credentials user={props.user} />
       </dd>
-
-      <dt class="mt3">
+      <dt className="mt3">
         <b>Schemas:</b>
       </dt>
-
-      <dd class="ml4" data-test-settings="schemas">
+      <dd className="ml4" data-test-settings="schemas">
         <Button
-          class="w-100"
+          className="w-100"
           data-test-schema-add
           onClick={onSchemaAdd}
           title="Add schema"
@@ -162,12 +160,11 @@ export function Settings(props: Settings$Props) {
         </Button>
 
         {props.user.schemas.map((schema, index) => (
-          <details class="mt1" data-test-schema={schema.name} key={index}>
-            <summary class="pointer">{schema.name}</summary>
-
-            <div class="flex mt1" data-name={schema.name}>
+          <details className="mt1" data-test-schema={schema.name} key={index}>
+            <summary className="pointer">{schema.name}</summary>
+            <div className="flex mt1" data-name={schema.name}>
               <input
-                class="b--dark-gray br-0 bw1 flex-1 ph1 w-100"
+                className="b--dark-gray br-0 bw1 flex-1 ph1 w-100"
                 data-test-schema-name
                 onInput={onSchemaName}
                 type="Schema name"
@@ -175,19 +172,19 @@ export function Settings(props: Settings$Props) {
               />
             </div>
 
-            {schema.fields.map(({name, type}, index, array) => {
+            {schema.fields.map(({ name, type }, index, array) => {
               const disabled = name === 'labels' || name === 'name';
 
               return (
                 <div
-                  class="flex mt1"
+                  className="flex mt1"
                   data-field={name}
                   data-index={index}
                   data-name={schema.name}
                   key={index}
                 >
                   <Button
-                    class="ph1"
+                    className="ph1"
                     data-order="-1"
                     data-test-schema-field-up
                     disabled={index === 0}
@@ -196,9 +193,8 @@ export function Settings(props: Settings$Props) {
                   >
                     ↑
                   </Button>
-
                   <Button
-                    class="ml1 ph1"
+                    className="ml1 ph1"
                     data-order="+1"
                     data-test-schema-field-down
                     disabled={index === array.length - 1}
@@ -207,9 +203,8 @@ export function Settings(props: Settings$Props) {
                   >
                     ↓
                   </Button>
-
                   <input
-                    class={`b--dark-gray ${
+                    className={`b--dark-gray ${
                       disabled ? 'bg-near-white ' : ''
                     }br-0 bw1 ml1 flex-1 ph1 w-100`}
                     data-test-schema-field-name
@@ -218,9 +213,8 @@ export function Settings(props: Settings$Props) {
                     title="Field name"
                     value={name}
                   />
-
                   <select
-                    class={`b--dark-gray ba bg-${
+                    className={`b--dark-gray ba bg-${
                       disabled ? 'near-' : ''
                     }white br-0 bw1${disabled ? '' : ' dim'} ml1${
                       disabled ? '' : ' pointer'
@@ -236,9 +230,8 @@ export function Settings(props: Settings$Props) {
                     <option value="textarea">Text</option>
                     <option value="div">Snippet</option>
                   </select>
-
                   <Button
-                    class="ml1 ph1"
+                    className="ml1 ph1"
                     data-test-schema-field-remove
                     disabled={disabled}
                     onClick={onSchemaDelete}
@@ -249,19 +242,17 @@ export function Settings(props: Settings$Props) {
                 </div>
               );
             })}
-
-            <div class="flex mt1" data-name={schema.name}>
+            <div className="flex mt1" data-name={schema.name}>
               <Button
-                class="flex-1"
+                className="flex-1"
                 data-test-schema-field-add
                 onClick={onSchemaField}
                 title="Add field"
               >
                 Add field
               </Button>
-
               <Button
-                class="flex-1 ml1"
+                className="flex-1 ml1"
                 disabled={props.user.schemas.length === 1}
                 onClick={onSchemaRemove}
                 title="Remove schema"
@@ -272,33 +263,29 @@ export function Settings(props: Settings$Props) {
           </details>
         ))}
       </dd>
-
-      <dt class="mt3">
+      <dt className="mt3">
         <b>Import / Export:</b>
       </dt>
-
-      <dd class="ml4" data-test-settings="import-export">
-        <div class="flex mt1">
+      <dd className="ml4" data-test-settings="import-export">
+        <div className="flex mt1">
           <Button
-            class="flex-1"
+            className="flex-1"
             data-test-export="csv"
             onClick={onExportCSV}
             title="Export CSV"
           >
             Export CSV
           </Button>
-
           <Button
-            class="flex-1 ml1"
+            className="flex-1 ml1"
             data-test-export="json"
             onClick={onExportJSON}
             title="Export JSON"
           >
             Export JSON
           </Button>
-
           <Button
-            class="flex-1 ml1"
+            className="flex-1 ml1"
             data-test-import="json"
             onClick={onImport}
             title="Import JSON"

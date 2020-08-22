@@ -1,5 +1,3 @@
-// @flow
-
 export const NotesArchive = {
   name: 'notes-archive',
   indexes: [],
@@ -8,22 +6,22 @@ export const NotesArchive = {
     additionalProperties: false,
     properties: {
       _id: {
-        bsonType: 'objectId'
+        bsonType: 'objectId',
       },
       _id_user: {
-        bsonType: ['objectId', 'string']
+        bsonType: ['objectId', 'string'],
       },
       _id_slug: {
-        bsonType: 'string'
+        bsonType: 'string',
       },
       _created: {
-        bsonType: 'date'
+        bsonType: 'date',
       },
       _removed: {
-        bsonType: 'date'
+        bsonType: 'date',
       },
       _updated: {
-        bsonType: 'date'
+        bsonType: 'date',
       },
       _objects: {
         bsonType: 'object',
@@ -32,13 +30,13 @@ export const NotesArchive = {
           '^[^$_][^.]*$': {
             bsonType: ['array', 'string'],
             items: {
-              bsonType: 'string'
-            }
-          }
-        }
+              bsonType: 'string',
+            },
+          },
+        },
       },
       _outname: {
-        bsonType: 'string'
+        bsonType: 'string',
       },
       _outline: {
         bsonType: 'array',
@@ -48,14 +46,14 @@ export const NotesArchive = {
           properties: {
             name: {
               bsonType: 'string',
-              pattern: '^[^$_][^.]*$'
+              pattern: '^[^$_][^.]*$',
             },
             type: {
               bsonType: 'string',
-              enum: ['div', 'ol', 'textarea', 'ul']
-            }
-          }
-        }
+              enum: ['div', 'ol', 'textarea', 'ul'],
+            },
+          },
+        },
       },
       _version: {
         bsonType: 'array',
@@ -64,7 +62,7 @@ export const NotesArchive = {
           additionalProperties: false,
           properties: {
             _updated: {
-              bsonType: 'date'
+              bsonType: 'date',
             },
             _objects: {
               bsonType: 'object',
@@ -73,13 +71,13 @@ export const NotesArchive = {
                 '^[^$_][^.]*$': {
                   bsonType: ['array', 'string'],
                   items: {
-                    bsonType: 'string'
-                  }
-                }
-              }
+                    bsonType: 'string',
+                  },
+                },
+              },
             },
             _outname: {
-              bsonType: 'string'
+              bsonType: 'string',
             },
             _outline: {
               bsonType: 'array',
@@ -89,19 +87,19 @@ export const NotesArchive = {
                 properties: {
                   name: {
                     bsonType: 'string',
-                    pattern: '^[^$_][^.]*$'
+                    pattern: '^[^$_][^.]*$',
                   },
                   type: {
                     bsonType: 'string',
-                    enum: ['div', 'ol', 'textarea', 'ul']
-                  }
-                }
-              }
-            }
+                    enum: ['div', 'ol', 'textarea', 'ul'],
+                  },
+                },
+              },
+            },
           },
-          required: ['_updated', '_objects']
-        }
-      }
+          required: ['_updated', '_objects'],
+        },
+      },
     },
     required: [
       '_id',
@@ -113,7 +111,7 @@ export const NotesArchive = {
       '_objects',
       '_outname',
       '_outline',
-      '_version'
-    ]
-  }
+      '_version',
+    ],
+  },
 };

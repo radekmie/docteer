@@ -1,20 +1,17 @@
-// @flow
-// @jsx h
+import { h } from 'preact';
 
-import {h} from 'preact';
-
-let mover: ?HTMLElement = null;
-let sizer: ?HTMLElement = null;
+let mover: HTMLElement | null | undefined = null;
+let sizer: HTMLElement | null | undefined = null;
 
 function blurs() {
-  window.getSelection().removeAllRanges();
+  window.getSelection()!.removeAllRanges();
 }
 
-function clientX(event) {
+function clientX(event: MouseEvent | TouchEvent) {
   return (event instanceof TouchEvent ? event.touches[0] : event).clientX;
 }
 
-function onMoved(ref) {
+function onMoved(ref: typeof mover) {
   mover = ref;
 }
 
@@ -26,11 +23,11 @@ function onSized(event: MouseEvent | TouchEvent) {
 }
 
 function onStart(event: MouseEvent | TouchEvent) {
-  // $FlowFixMe: EventTarget has no parentNode.
-  if (mover && (event.target === mover || event.target.parentNode === mover)) {
+  if (mover && (event.target === mover || event.target!.parentNode === mover)) {
     blurs();
-    if (mover.previousSibling instanceof HTMLElement)
+    if (mover.previousSibling instanceof HTMLElement) {
       sizer = mover.previousSibling;
+    }
     onSized(event);
   }
 }
@@ -43,13 +40,13 @@ function onStop() {
 }
 
 if (typeof window !== 'undefined') {
-  let modifier = false;
+  let modifier: false | { passive: true } = false;
+  // @ts-expect-error Invalid event name.
   window.addEventListener('', null, {
-    // $FlowFixMe: unsafe-getters-setters
     get passive() {
-      modifier = {passive: true};
+      modifier = { passive: true };
       return false;
-    }
+    },
   });
 
   document.addEventListener('mousedown', onStart, modifier);
@@ -61,5 +58,5 @@ if (typeof window !== 'undefined') {
 }
 
 export const Resizer = () => (
-  <div class="b--dark-gray bl br bw1 resizer" ref={onMoved} />
+  <div className="b--dark-gray bl br bw1 resizer" ref={onMoved} />
 );

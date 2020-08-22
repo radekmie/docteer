@@ -1,12 +1,9 @@
-// @flow
-
-import {compare, titleForView} from '@shared';
-import {onLoginWithToken} from '@client/actions';
-import * as tree from '@client/state';
+import { compare, titleForView } from '../../shared';
+import { onLoginWithToken } from '../actions';
+import * as tree from '../state';
 
 // Startup
 const storage = window.localStorage || {};
-
 new Promise(window.requestIdleCallback || window.setTimeout)
   .then(() => onLoginWithToken(storage.token))
   .then(loaded, loaded);
@@ -23,7 +20,9 @@ function loaded() {
 }
 
 function refreshToken() {
-  if (storage.token) onLoginWithToken(storage.token, true);
+  if (storage.token) {
+    onLoginWithToken(storage.token, true);
+  }
 }
 
 // Errors
@@ -41,13 +40,14 @@ window.document.addEventListener('click', event => {
     event.ctrlKey ||
     event.metaKey ||
     event.shiftKey
-  )
+  ) {
     return;
+  }
 
-  let node = event.target;
+  let node = event.target!;
   do {
     if (node instanceof HTMLAnchorElement) {
-      const href = node.getAttribute('href');
+      const href = node.getAttribute('href')!;
       if (/^[/?]/.test(href)) {
         event.stopImmediatePropagation();
         event.stopPropagation();
@@ -56,7 +56,7 @@ window.document.addEventListener('click', event => {
         return;
       }
     }
-  } while ((node = node.parentNode));
+  } while ((node = node.parentNode!));
 });
 
 const keyBoth = ['ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp'];
@@ -66,37 +66,48 @@ const keyNext = ['ArrowDown', 'ArrowRight'];
 
 // eslint-disable-next-line complexity
 window.document.addEventListener('keydown', event => {
-  const {key, target} = event;
-  if (target.contentEditable === 'true' || target instanceof HTMLInputElement)
+  const { key, target } = event;
+  if (
+    target!.contentEditable === 'true' ||
+    target instanceof HTMLInputElement
+  ) {
     return;
+  }
 
   if (keyBoth.includes(key)) {
     const list = window.document.querySelector(
-      `[data-application] > :nth-child(2) > :nth-child(2) > :nth-child(${1 +
-        keyNote.includes(key)}
-      )`
+      `[data-application] > :nth-child(2) > :nth-child(2) > :nth-child(${
+        keyNote.includes(key) ? 2 : 1
+      })`,
     );
 
-    if (!list) return;
+    if (!list) {
+      return;
+    }
 
     const focus = window.document.activeElement;
     const active =
       focus && focus.parentNode === list
         ? focus
         : list.querySelector('[data-item]');
-    const item =
-      (active &&
-        active[`${keyNext.includes(key) ? 'next' : 'previous'}Sibling`]) ||
-      (keyNext.includes(key) ? list.lastChild : list.children[0]);
+    const item = ((active &&
+      active[keyNext.includes(key) ? 'nextSibling' : 'previousSibling']) ||
+      (keyNext.includes(key)
+        ? list.lastChild
+        : list.children[0])) as HTMLAnchorElement | null;
     if (item && item.pathname && item !== active) {
       item.focus();
-      if (item.pathname !== '/d' && keyNote.includes(key)) item.click();
+      if (item.pathname !== '/d' && keyNote.includes(key)) {
+        item.click();
+      }
       event.preventDefault();
     }
   } else if (keyHelp.includes(key)) {
-    tree.updateWith({help: key === '?'});
+    tree.updateWith({ help: key === '?' });
   } else if (key === 'Enter') {
-    if (target.__preactattr_ && target.__preactattr_.onClick) target.click();
+    if (target!.__preactattr_ && target!.__preactattr_.onClick) {
+      target!.click!();
+    }
   }
 });
 
@@ -105,30 +116,36 @@ window.addEventListener('popstate', syncHistory);
 
 // Tree
 function setTriggers() {
-  tree.on(({href}) => {
+  tree.on(({ href }) => {
     pushHistory(href);
   });
 
-  tree.on(({filter, labels}) => {
+  tree.on(({ filter, labels }) => {
     const filterAvailable = filter.filter(name =>
-      labels.find(label => label.name === name)
+      labels.find(label => label.name === name),
     );
 
-    if (filter.length !== filterAvailable.length)
-      tree.updateWith({filter: filterAvailable.sort(compare)});
+    if (filter.length !== filterAvailable.length) {
+      tree.updateWith({ filter: filterAvailable.sort(compare) });
+    }
   });
 
-  tree.on(({userToken}) => {
-    if (userToken) storage.token = userToken;
-    else delete storage.token;
+  tree.on(({ userToken }) => {
+    if (userToken) {
+      storage.token = userToken;
+    } else {
+      delete storage.token;
+    }
   });
 }
 
 // Helpers
 const pattern = /^\/(\w+)?(?:\/(\w+))?.*?(?:[&?]filter=([^&?]+))?(?:[&?]search=([^&?]+))?.*$/;
 
-function pushHistory(href) {
-  if (href !== '?') href = href.replace(/\?$/, '');
+function pushHistory(href: string) {
+  if (href !== '?') {
+    href = href.replace(/\?$/, '');
+  }
   if (location.href !== location.origin + href) {
     history.pushState(null, '', href);
     syncHistory();
@@ -137,7 +154,7 @@ function pushHistory(href) {
 
 function syncHistory() {
   // eslint-disable-next-line complexity
-  tree.update((store, {notes, userLoggedIn}) => {
+  tree.update((store, { notes, userLoggedIn }) => {
     const [, view, noteId, filterString, search] =
       pattern.exec(location.href.replace(location.origin, '')) || [];
 
@@ -156,22 +173,23 @@ function syncHistory() {
       (!userLoggedIn && store.view === 'notes') ||
       (!userLoggedIn && store.view === 'settings');
 
-    if (invalidView) store.view = userLoggedIn ? 'notes' : '';
+    if (invalidView) {
+      store.view = userLoggedIn ? 'notes' : '';
+    }
 
     store.search = userLoggedIn && search ? decodeURIComponent(search) : '';
 
     const filter =
       userLoggedIn && filterString
-        ? decodeURIComponent(filterString)
-            .split(',')
-            .sort(compare)
+        ? decodeURIComponent(filterString).split(',').sort(compare)
         : [];
 
     if (store.filter.length !== filter.length) {
       store.filter = filter;
     } else {
-      for (let index = 0; index < filter.length; ++index)
+      for (let index = 0; index < filter.length; ++index) {
         store.filter[index] = filter[index];
+      }
     }
 
     store.noteId =

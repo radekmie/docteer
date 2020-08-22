@@ -1,18 +1,16 @@
-// @flow
-
+import { createPool } from 'generic-pool';
 import puppeteer from 'puppeteer-core';
-import {createPool} from 'generic-pool';
 
 const pool = createPool(
   {
     create: () =>
       puppeteer.launch({
         args: ['--disable-gpu', '--disable-infobars', '--no-sandbox'],
-        executablePath: 'google-chrome'
+        executablePath: 'google-chrome',
       }),
-    destroy: browser => browser.close()
+    destroy: browser => browser.close(),
   },
-  {max: 1}
+  { max: 1 },
 );
 
 export const getBrowserContext = async () => {
@@ -23,7 +21,7 @@ export const getBrowserContext = async () => {
     await pool.release(browser);
   };
 
-  return {browser, page, release};
+  return { browser, page, release };
 };
 
 afterAll(async () => {

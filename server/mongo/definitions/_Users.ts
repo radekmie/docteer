@@ -1,22 +1,20 @@
-// @flow
-
 export const Users = {
   name: 'users',
   indexes: [
     [
-      {'emails.address': 1},
-      {collation: {locale: 'en', strength: 2}, unique: true}
-    ]
+      { 'emails.address': 1 },
+      { collation: { locale: 'en', strength: 2 }, unique: true },
+    ],
   ],
   schema: {
     bsonType: 'object',
     additionalProperties: false,
     properties: {
       _id: {
-        bsonType: ['objectId', 'string']
+        bsonType: ['objectId', 'string'],
       },
       createdAt: {
-        bsonType: 'date'
+        bsonType: 'date',
       },
       services: {
         bsonType: 'object',
@@ -27,13 +25,13 @@ export const Users = {
             additionalProperties: false,
             properties: {
               bcrypt: {
-                bsonType: 'string'
-              }
+                bsonType: 'string',
+              },
             },
-            required: ['bcrypt']
-          }
+            required: ['bcrypt'],
+          },
         },
-        required: ['password']
+        required: ['password'],
       },
       emails: {
         bsonType: 'array',
@@ -42,11 +40,11 @@ export const Users = {
           additionalProperties: false,
           properties: {
             address: {
-              bsonType: 'string'
-            }
+              bsonType: 'string',
+            },
           },
-          required: ['address']
-        }
+          required: ['address'],
+        },
       },
       schemas: {
         bsonType: 'array',
@@ -55,7 +53,7 @@ export const Users = {
           additionalProperties: false,
           properties: {
             name: {
-              bsonType: 'string'
+              bsonType: 'string',
             },
             fields: {
               bsonType: 'array',
@@ -65,20 +63,20 @@ export const Users = {
                 properties: {
                   name: {
                     bsonType: 'string',
-                    pattern: '^[^$_][^.]*$'
+                    pattern: '^[^$_][^.]*$',
                   },
                   type: {
                     bsonType: 'string',
-                    enum: ['div', 'ol', 'textarea', 'ul']
-                  }
-                }
-              }
-            }
+                    enum: ['div', 'ol', 'textarea', 'ul'],
+                  },
+                },
+              },
+            },
           },
-          required: ['name', 'fields']
-        }
-      }
+          required: ['name', 'fields'],
+        },
+      },
     },
-    required: ['_id', 'createdAt', 'services', 'emails', 'schemas']
-  }
+    required: ['_id', 'createdAt', 'services', 'emails', 'schemas'],
+  },
 };

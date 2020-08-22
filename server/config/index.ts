@@ -1,9 +1,32 @@
-// @flow
-
 import crypto from 'crypto';
 import set from 'lodash/set';
 
-const config = {
+export type Config = {
+  jwt: { exp: number; secret: Buffer | string };
+  mongo: {
+    client: {
+      options: {
+        ignoreUndefined: boolean;
+        retryReads: boolean;
+        retryWrites: boolean;
+        useNewUrlParser: boolean;
+        useUnifiedTopology: boolean;
+      };
+      url: string;
+    };
+    retry: { count: number; delay: number };
+  };
+  node: { env: string };
+  server: {
+    port: number;
+    static: {
+      client: { extensions: string[]; index: boolean };
+      public: { index: boolean };
+    };
+  };
+};
+
+const config: Record<string, unknown> = {
   'jwt.exp': 24 * 60 * 60,
   'jwt.secret': crypto.randomBytes(256),
   'mongo.client.options.ignoreUndefined': true,
@@ -18,18 +41,15 @@ const config = {
   'server.port': 3000,
   'server.static.client.extensions': ['js', 'map'],
   'server.static.client.index': false,
-  'server.static.public.index': false
+  'server.static.public.index': false,
 };
 
 for (const key of Object.keys(config)) {
   const env = key.replace(/\./g, '_').toUpperCase();
-
   if (env in process.env) {
     try {
-      // $FlowFixMe: Environment variables are not typed.
-      config[key] = JSON.parse(process.env[env]);
+      config[key] = JSON.parse(process.env[env] ?? '');
     } catch (error) {
-      // $FlowFixMe: Environment variables are not typed.
       config[key] = process.env[env];
     }
   }
@@ -40,5 +60,7 @@ if (config['node.env'] === 'development') {
   config['jwt.secret'] = 'koń';
 }
 
-// $FlowFixMe: Implicit any.
-export default Object.entries(config).reduce((a, b) => set(a, ...b), {});
+export default Object.entries(config).reduce(
+  (a, b) => set(a, ...b),
+  Object.create(null),
+) as Config;

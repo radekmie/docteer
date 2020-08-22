@@ -1,17 +1,14 @@
-// @flow
-
 import faker from 'faker';
 
-import {DAG} from '@tests/helpers';
-import {browserClose, browserOpen, load, resize} from '@tests/actions';
+import { browserClose, browserOpen, load, resize } from '../../actions';
+import { DAG } from '../../helpers';
 
-// $FlowFixMe: Generics.
 export default DAG.create()
   .with(() => ({
     user: {
-      email: (faker.internet.email(): string),
-      password: (faker.internet.password(): string)
-    }
+      email: faker.internet.email(),
+      password: faker.internet.password(),
+    },
   }))
   .with(browserOpen)
   .dead(browserClose)

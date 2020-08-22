@@ -1,33 +1,16 @@
-// @flow
-// @jsx h
+import { JSX, h } from 'preact';
 
-import {h} from 'preact';
+type Button$Props = JSX.HTMLAttributes<HTMLButtonElement>;
 
-type Button$Props = {
-  as: string,
-  class?: string,
-  disabled?: boolean
-};
+export function Button(props: Button$Props) {
+  const className = [
+    `b--dark-gray ba bg-${props.disabled ? 'near-' : ''}white bw1 dark-gray db${
+      props.disabled ? '' : ' dim pointer'
+    } tc trans`,
+    props.className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
-export function Button({as, ...props}: Button$Props) {
-  return h(
-    as,
-    Object.assign({}, props, {
-      class: [
-        `b--dark-gray ba bg-${
-          props.disabled ? 'near-' : ''
-        }white bw1 dark-gray db${
-          props.disabled ? '' : ' dim pointer'
-        } tc trans`,
-        props.class
-      ]
-        .filter(Boolean)
-        .join(' '),
-      tabIndex: '0'
-    })
-  );
+  return <button {...props} className={className} tabIndex={0} />;
 }
-
-Button.defaultProps = {
-  as: 'button'
-};

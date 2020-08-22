@@ -1,25 +1,24 @@
-// @flow
-
 import bcrypt from 'bcryptjs';
 
-import * as schemas from '@server/schemas';
-import {APIError} from '@server/api';
-import {method} from '@server/services';
+import { APIContextType, PassType } from '../../../types';
+import { APIError } from '../../api';
+import * as schemas from '../../schemas';
+import { method } from './..';
 
-import type {APIContextType, PassType} from '@types';
-
-type Params = {|new1: PassType, new2: PassType, old: PassType|};
+type Params = { new1: PassType; new2: PassType; old: PassType };
 
 export async function handle(
-  {new1, new2, old}: Params,
-  context: APIContextType
+  { new1, new2, old }: Params,
+  context: APIContextType,
 ) {
-  if (new1.digest !== new2.digest)
-    throw new APIError({code: 'user-password-mismatch'});
+  if (new1.digest !== new2.digest) {
+    throw new APIError({ code: 'user-password-mismatch' });
+  }
 
   const digest = context.user.services.password.bcrypt;
-  if (!(await bcrypt.compare(old.digest, digest)))
-    throw new APIError({code: 'user-password-incorrect'});
+  if (!(await bcrypt.compare(old.digest, digest))) {
+    throw new APIError({ code: 'user-password-incorrect' });
+  }
 
   if (
     context.user.emails &&
@@ -30,11 +29,13 @@ export async function handle(
     return {};
   }
 
-  const {Users} = context.collections;
+  const { Users } = context.collections;
   await Users.updateOne(
-    {_id: context.userId},
-    {$set: {'services.password.bcrypt': await bcrypt.hash(new1.digest, 10)}},
-    {session: context.session}
+    { _id: context.userId },
+    {
+      $set: { 'services.password.bcrypt': await bcrypt.hash(new1.digest, 10) },
+    },
+    { session: context.session },
   );
 
   return {};
@@ -45,10 +46,10 @@ export const schema = {
   properties: {
     new1: schemas.password,
     new2: schemas.password,
-    old: schemas.password
+    old: schemas.password,
   },
   required: ['new1', 'new2', 'old'],
-  additionalProperties: false
+  additionalProperties: false,
 };
 
-export default method<Params, _, _>(handle, schema);
+export default method(handle, schema);

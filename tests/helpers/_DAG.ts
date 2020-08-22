@@ -1,88 +1,84 @@
-// @flow
-
-// $FlowFixMe: How to type these arguments?
 type DAGStepArgs = any[];
-type DAGStep<Context, Args: DAGStepArgs = DAGStepArgs> = {
-  args?: (Context => Args) | Args,
-  fn: (...Args) => ?Context
+type DAGStep<Context, Args extends DAGStepArgs = DAGStepArgs> = {
+  args?: ((context: Context) => MaybeReadonly<Args>) | MaybeReadonly<Args>;
+  fn: (...args: Args) => Context | void;
 };
 
-export class DAG<Context> {
-  _dead: DAGStep<Context>[];
-  _last: DAGStep<Context>[];
-  _next: DAGStep<Context>[];
+type MaybeReadonly<T> = T | Readonly<T>;
 
+export class DAG<Context extends object> {
   constructor(
-    dead: DAGStep<Context>[] = [],
-    last: DAGStep<Context>[] = [],
-    next: DAGStep<Context>[] = []
-  ) {
-    this._dead = dead;
-    this._last = last;
-    this._next = next;
+    public _dead: DAGStep<Context>[] = [],
+    public _last: DAGStep<Context>[] = [],
+    public _next: DAGStep<Context>[] = [],
+  ) {}
+
+  static create() {
+    return new DAG<{}>();
   }
 
-  static create(): DAG<{}> {
-    return new DAG();
-  }
-
-  bind(): () => void {
-    return (): void => {
-      // $FlowFixMe: It's valid only at the beginning.
+  bind() {
+    return () => {
+      // @ts-expect-error It's valid only at the beginning.
       let context: Context = {};
-      for (const step of this._next) context = invoke(context, step);
-      for (const step of this._last) context = invoke(context, step);
-      for (const step of this._dead) context = invoke(context, step);
-
-      function invoke(context, {args, fn}) {
+      for (const step of this._next) {
+        context = invoke(context, step);
+      }
+      for (const step of this._last) {
+        context = invoke(context, step);
+      }
+      for (const step of this._dead) {
+        context = invoke(context, step);
+      }
+      function invoke(context: Context, { args, fn }: DAGStep<Context>) {
         const ready = typeof args === 'function' ? args(context) : args || [];
         return fn.bind(context)(...ready) || context;
       }
     };
   }
 
-  dead<Args: DAGStepArgs>(
-    fn: (...Args) => ?Context,
-    args?: (Context => Args) | Args
-  ): DAG<Context> {
-    // $FlowFixMe: Force cast arguments.
-    return new DAG(this._dead.concat({args, fn}), this._last, this._next);
+  dead<Args extends DAGStepArgs>(
+    fn: (...args: Args) => Context | void,
+    args?: ((context: Context) => MaybeReadonly<Args>) | MaybeReadonly<Args>,
+  ) {
+    // @ts-expect-error Force cast arguments.
+    return new DAG(this._dead.concat({ args, fn }), this._last, this._next);
   }
 
-  last<Args: DAGStepArgs>(
-    fn: (...Args) => ?Context,
-    args?: (Context => Args) | Args
-  ): DAG<Context> {
-    // $FlowFixMe: Force cast arguments.
-    return new DAG(this._dead, this._last.concat({args, fn}), this._next);
+  last<Args extends DAGStepArgs>(
+    fn: (...args: Args) => Context | void,
+    args?: ((context: Context) => MaybeReadonly<Args>) | MaybeReadonly<Args>,
+  ) {
+    // @ts-expect-error Force cast arguments.
+    return new DAG(this._dead, this._last.concat({ args, fn }), this._next);
   }
 
-  next<Args: DAGStepArgs>(
-    fn: (...Args) => ?Context,
-    args?: (Context => Args) | Args
-  ): DAG<Context> {
-    // $FlowFixMe: Force cast arguments.
-    return new DAG(this._dead, this._last, this._next.concat({args, fn}));
+  next<Args extends DAGStepArgs>(
+    fn: (...args: Args) => Context | void,
+    args?: ((context: Context) => MaybeReadonly<Args>) | MaybeReadonly<Args>,
+  ) {
+    // @ts-expect-error Force cast arguments.
+    return new DAG(this._dead, this._last, this._next.concat({ args, fn }));
   }
 
-  only(title: string): void {
+  only(title: string) {
     describe.only(title, this.bind());
   }
 
-  save(title: string): void {
+  save(title: string) {
     describe(title, this.bind());
   }
 
-  with<ContextNext>(map: Context => ContextNext): DAG<Context & ContextNext> {
-    // $FlowFixMe: Force cast.
-    return new DAG(
+  with<ContextNext>(map: (context: Context) => ContextNext) {
+    return new DAG<Context & ContextNext>(
+      // @ts-expect-error Force cast.
       this._dead,
       this._last,
       this._next.concat({
         args: context => [context],
         fn: context =>
-          Object.assign(({}: $Shape<Context>), context, map(context))
-      })
+          Object.assign({} as Partial<Context>, context, map(context)),
+      }),
     );
   }
 }

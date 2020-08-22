@@ -1,33 +1,31 @@
-// @flow
-
 export const Notes = {
   name: 'notes',
   indexes: [
-    [{_id_user: 1, _id_slug: 1}, {unique: true}],
-    [{_id_user: 1, _updated: 1}],
-    [{_removed: 1}]
+    [{ _id_user: 1, _id_slug: 1 }, { unique: true }],
+    [{ _id_user: 1, _updated: 1 }],
+    [{ _removed: 1 }],
   ],
   schema: {
     bsonType: 'object',
     additionalProperties: false,
     properties: {
       _id: {
-        bsonType: 'objectId'
+        bsonType: 'objectId',
       },
       _id_user: {
-        bsonType: ['objectId', 'string']
+        bsonType: ['objectId', 'string'],
       },
       _id_slug: {
-        bsonType: 'string'
+        bsonType: 'string',
       },
       _created: {
-        bsonType: 'date'
+        bsonType: 'date',
       },
       _removed: {
-        bsonType: ['date', 'null']
+        bsonType: ['date', 'null'],
       },
       _updated: {
-        bsonType: 'date'
+        bsonType: 'date',
       },
       _objects: {
         bsonType: 'object',
@@ -36,13 +34,13 @@ export const Notes = {
           '^[^$_][^.]*$': {
             bsonType: ['array', 'string'],
             items: {
-              bsonType: 'string'
-            }
-          }
-        }
+              bsonType: 'string',
+            },
+          },
+        },
       },
       _outname: {
-        bsonType: 'string'
+        bsonType: 'string',
       },
       _outline: {
         bsonType: 'array',
@@ -52,14 +50,14 @@ export const Notes = {
           properties: {
             name: {
               bsonType: 'string',
-              pattern: '^[^$_][^.]*$'
+              pattern: '^[^$_][^.]*$',
             },
             type: {
               bsonType: 'string',
-              enum: ['div', 'ol', 'textarea', 'ul']
-            }
-          }
-        }
+              enum: ['div', 'ol', 'textarea', 'ul'],
+            },
+          },
+        },
       },
       _version: {
         bsonType: 'array',
@@ -68,7 +66,7 @@ export const Notes = {
           additionalProperties: false,
           properties: {
             _updated: {
-              bsonType: 'date'
+              bsonType: 'date',
             },
             _objects: {
               bsonType: 'object',
@@ -77,13 +75,13 @@ export const Notes = {
                 '^[^$_][^.]*$': {
                   bsonType: ['array', 'string'],
                   items: {
-                    bsonType: 'string'
-                  }
-                }
-              }
+                    bsonType: 'string',
+                  },
+                },
+              },
             },
             _outname: {
-              bsonType: 'string'
+              bsonType: 'string',
             },
             _outline: {
               bsonType: 'array',
@@ -93,19 +91,19 @@ export const Notes = {
                 properties: {
                   name: {
                     bsonType: 'string',
-                    pattern: '^[^$_][^.]*$'
+                    pattern: '^[^$_][^.]*$',
                   },
                   type: {
                     bsonType: 'string',
-                    enum: ['div', 'ol', 'textarea', 'ul']
-                  }
-                }
-              }
-            }
+                    enum: ['div', 'ol', 'textarea', 'ul'],
+                  },
+                },
+              },
+            },
           },
-          required: ['_updated', '_objects']
-        }
-      }
+          required: ['_updated', '_objects'],
+        },
+      },
     },
     required: [
       '_id',
@@ -117,7 +115,7 @@ export const Notes = {
       '_objects',
       '_outname',
       '_outline',
-      '_version'
-    ]
-  }
+      '_version',
+    ],
+  },
 };

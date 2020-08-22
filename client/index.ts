@@ -1,6 +1,6 @@
-// @flow
-
-if (process.env.NODE_ENV === 'development') require('preact/debug');
+if (process.env.NODE_ENV === 'development') {
+  require('preact/debug');
+}
 
 require('./startup/render');
 require('./startup/triggers');

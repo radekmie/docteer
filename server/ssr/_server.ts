@@ -1,9 +1,7 @@
-// @flow
-
 import connect from 'connect';
-import {extname} from 'path';
+import { extname } from 'path';
 
-import {params, render} from '@server/ssr';
+import { params, render } from './';
 
 export const server = connect();
 
@@ -13,10 +11,11 @@ server.use('/', (request, response, next) => {
     return;
   }
 
-  const {body, headers} = render(params(request.url));
+  const { body, headers } = render(params(request.url));
 
-  if (request.headers['if-none-match'] === headers.etag)
+  if (request.headers['if-none-match'] === headers.etag) {
     response.statusCode = 304;
+  }
 
   response.writeHead(response.statusCode, headers);
   response.end(body);

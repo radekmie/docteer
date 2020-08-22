@@ -1,12 +1,9 @@
-// @flow
-// @jsx h
-
-import {h} from 'preact';
+import { h } from 'preact';
 
 export function Landing() {
   return (
-    <div class="flex-1">
-      <p class="big pl4">
+    <div className="flex-1">
+      <p className="big pl4">
         A simple way to store everything.
         <br />
         With <b>DocTeer</b> your data are easier to use.

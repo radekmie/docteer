@@ -1,40 +1,36 @@
-// @flow
-// @jsx h
+import { Component, h } from 'preact';
 
-import {Component, h} from 'preact';
+import { StateType } from '../../types';
+import * as tree from '../state';
+import { Account } from './Account';
+import { Actions } from './Actions';
+import { Filters } from './Filters';
+import { Help } from './Help';
+import { Landing } from './Landing';
+import { Navigation } from './Navigation';
+import { Note } from './Note';
+import { Resizer } from './Resizer';
+import { Settings } from './Settings';
+import { Toasts } from './Toasts';
 
-import {Account} from '@client/components/Account';
-import {Actions} from '@client/components/Actions';
-import {Filters} from '@client/components/Filters';
-import {Help} from '@client/components/Help';
-import {Landing} from '@client/components/Landing';
-import {Navigation} from '@client/components/Navigation';
-import {Note} from '@client/components/Note';
-import {Resizer} from '@client/components/Resizer';
-import {Settings} from '@client/components/Settings';
-import {Toasts} from '@client/components/Toasts';
-import * as tree from '@client/state';
+type Application$Props = {
+  view?: string;
+};
 
-import type {StateType} from '@types';
-
-type Application$Props = {|
-  view?: string
-|};
-
-type Application$State = {|
-  state: StateType
-|};
+type Application$State = {
+  state: StateType;
+};
 
 export class Application extends Component<
   Application$Props,
   Application$State
 > {
-  constructor() {
-    super(...arguments);
+  constructor(...args: any[]) {
+    super(...args);
 
-    this.state = {state: tree.state()};
+    this.state = { state: tree.state() };
     this._sync = () => {
-      this.setState({state: tree.state()});
+      this.setState({ state: tree.state() });
     };
 
     tree.on(this._sync);
@@ -46,12 +42,13 @@ export class Application extends Component<
 
   _sync: () => void;
 
-  render(props: Application$Props, {state}: Application$State) {
+  // eslint-disable-next-line complexity
+  render(props: Application$Props, { state }: Application$State) {
     const view = props.view || state.view;
 
     return (
       <main
-        class={`app dark-gray flex h-100 lh-copy${
+        className={`app dark-gray flex h-100 lh-copy${
           state.load ? ' hidden' : ''
         } w-100`}
         data-application
@@ -59,7 +56,7 @@ export class Application extends Component<
         <Navigation pend={state.pend} user={state.user} />
 
         {view === '' && (
-          <div class="flex flex-center w-100">
+          <div className="flex flex-center w-100">
             <Landing />
           </div>
         )}
@@ -74,18 +71,18 @@ export class Application extends Component<
 
         {view === 'notes' && <Resizer />}
 
-        {view === 'notes' && state.user && (
+        {view === 'notes' && state.note && state.user && (
           <Note edit={state.edit} note={state.note} user={state.user} />
         )}
 
         {(view === 'login' || view === 'signup') && (
-          <div class="flex flex-center w-100">
+          <div className="flex flex-center w-100">
             <Account signup={view === 'signup'} />
           </div>
         )}
 
         {view === 'settings' && state.user && (
-          <div class="h-100 overflow-auto pa3 w-100">
+          <div className="h-100 overflow-auto pa3 w-100">
             <Settings user={state.user} />
           </div>
         )}

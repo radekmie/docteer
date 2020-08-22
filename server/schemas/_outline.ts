@@ -1,5 +1,3 @@
-// @flow
-
 export const outline = {
   type: 'array',
   items: {
@@ -8,12 +6,12 @@ export const outline = {
     properties: {
       name: {
         type: 'string',
-        pattern: '^[^$_][^.]*$'
+        pattern: '^[^$_][^.]*$',
       },
       type: {
         type: 'string',
-        enum: ['div', 'ol', 'textarea', 'ul']
-      }
-    }
-  }
+        enum: ['div', 'ol', 'textarea', 'ul'],
+      },
+    },
+  },
 };

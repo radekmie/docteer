@@ -1,29 +1,29 @@
-// @flow
-
 import fuzzysort from 'fuzzysort';
 
-import {hash, schemaEmpty} from '@shared';
-import * as tree from '@client/state';
-
-import type {
-  EventType,
-  InputEventType,
+import { hash, schemaEmpty } from '../shared';
+import {
   NotePatchType,
+  NoteType,
   PatchType,
+  SchemaOutlineFieldType,
   SchemaType,
   ShapeType,
-  StoreType
-} from '@types';
+  StoreType,
+  UserType,
+} from '../types';
+import * as tree from './state';
 
 // Publish tree.
-if (typeof window !== 'undefined') window.__DOCTEER_STATE__ = tree;
+if (typeof window !== 'undefined') {
+  window.__DOCTEER_STATE__ = tree;
+}
 
 export function onAdd() {
-  create((_, {user}) => (user ? schemaEmpty(user.schemas[0]) : undefined));
+  create((_, { user }) => (user ? schemaEmpty(user.schemas[0]) : undefined));
 }
 
 export function onClone() {
-  create((_, {note}) => {
+  create((_, { note }) => {
     if (note) {
       note = Object.assign({}, note);
       delete note._created;
@@ -41,7 +41,7 @@ export function onChange(_id: string, key: string, value: string | string[]) {
     if (store.notesUpdated[_id]) {
       store.notesUpdated[_id][key] = value;
     } else {
-      store.notesUpdated[_id] = {[key]: value};
+      store.notesUpdated[_id] = { [key]: value } as NotePatchType;
     }
   });
 }
@@ -52,23 +52,25 @@ export function onChangePassword(old: string, new1: string, new2: string) {
   return call('POST', '/api/users/password', {
     new1: hash(new1),
     new2: hash(new2),
-    old: hash(old)
+    old: hash(old),
   }).then(() => {
     toast('success', 'Changed password.');
   });
 }
 
-export function onChangeSchema(_id: string, schema: SchemaType<>) {
+export function onChangeSchema(_id: string, schema: SchemaType) {
   tree.update((store, shape) => {
     const doc = shape.notes.find(note => note._id === _id);
-    if (!doc) return;
+    if (!doc) {
+      return;
+    }
 
     store.notesUpdated[_id] = schema.fields.reduce(
-      (clone, {name}) =>
+      (clone, { name }) =>
         typeof clone[name] === typeof doc[name]
-          ? Object.assign(clone, {[name]: doc[name]})
+          ? Object.assign(clone, { [name]: doc[name] })
           : clone,
-      schemaEmpty(schema)
+      schemaEmpty(schema),
     );
   });
 }
@@ -84,7 +86,7 @@ export function onEdit() {
 export function onExport(data: string, extension: string) {
   const link = document.createElement('a');
   const type = `application/${extension}`;
-  const url = URL.createObjectURL(new Blob([data], {type}));
+  const url = URL.createObjectURL(new Blob([data], { type }));
 
   link.href = url;
   link.download = `docteer-${tree
@@ -110,9 +112,9 @@ export function onExport(data: string, extension: string) {
 export function onExportCSV() {
   const items = tree.state().notesOrigins;
   const data = new Array(items.length);
-  const keys = [];
+  const keys: string[] = [];
 
-  let parse: string => string;
+  let parse: (arg0: string) => string;
   try {
     const parser = new DOMParser();
     parse = text => {
@@ -125,9 +127,12 @@ export function onExportCSV() {
 
   items.forEach((item, index) => {
     Object.keys(item).forEach(key => {
-      if (!key.startsWith('_') && !keys.includes(key)) keys.push(key);
+      if (!key.startsWith('_') && !keys.includes(key)) {
+        keys.push(key);
+      }
 
       data[index] = keys
+        // @ts-expect-error Unknown object.
         .map(key => [].concat(item[key]).join('\n'))
         .map(parse)
         .map(value => `"${value.replace(/"/g, '\\"')}"`)
@@ -168,19 +173,17 @@ export function onImport() {
     clearTimeout(removeDelay);
 
     toast('info', 'Importing...');
-
-    reader.readAsText(input.files[0]);
+    reader.readAsText(input.files![0]);
     reader.onerror = () => {
       toast('error', 'Import error.');
     };
     reader.onload = () => {
       try {
         tree.update(store => {
-          const created = {};
-          const updated = {};
+          const created: Record<string, boolean> = {};
+          const updated: Record<string, NotePatchType> = {};
 
-          // $FlowFixMe: This will be a string, because of readAsText.
-          JSON.parse(reader.result).forEach(row => {
+          JSON.parse(reader.result as string).forEach((row: NoteType) => {
             if (
               typeof row._id !== 'string' ||
               row._id.length === 0 ||
@@ -195,15 +198,17 @@ export function onImport() {
                   typeof field.name !== 'string' ||
                   !/^[^$_][^.]*$/.test(field.name) ||
                   !['div', 'ol', 'textarea', 'ul'].includes(field.type) ||
-                  Object.keys(field).length !== 2
+                  Object.keys(field).length !== 2,
               )
-            )
+            ) {
               throw new Error();
+            }
 
             Object.keys(row).forEach(key => {
-              if (key.slice(0, 1) === '_') {
-                if (key !== '_id' && key !== '_outline' && key !== '_outname')
+              if (key.startsWith('_')) {
+                if (key !== '_id' && key !== '_outline' && key !== '_outname') {
                   throw new Error();
+                }
                 return;
               }
 
@@ -213,19 +218,23 @@ export function onImport() {
                 return;
               }
 
-              if (field.type === 'div' && typeof row[key] === 'string') return;
+              if (field.type === 'div' && typeof row[key] === 'string') {
+                return;
+              }
               if (
                 (field.type === 'ol' || field.type === 'ul') &&
+                // @ts-expect-error Unknown object.
                 row[key].every(line => typeof line === 'string')
-              )
+              ) {
                 return;
+              }
 
               throw new Error();
             });
 
-            if (!store.notesOrigins.some(note => note._id === row._id))
+            if (!store.notesOrigins.some(note => note._id === row._id)) {
               created[row._id] = true;
-
+            }
             updated[row._id] = row;
           });
 
@@ -248,21 +257,29 @@ export function onImport() {
 export function onLogin(email: string, password: string) {
   toast('info', 'Logging in...');
 
-  return call('POST', '/api/users/login', {email, password: hash(password)})
-    .then(login)
-    .then(() => {
-      toast('success', 'Logged in.');
-      tree.updateWith({view: 'notes'});
-    })
-    .then(() => onRefresh(true));
+  return (
+    call('POST', '/api/users/login', { email, password: hash(password) })
+      // @ts-expect-error Unknown response.
+      .then(login)
+      .then(() => {
+        toast('success', 'Logged in.');
+        tree.updateWith({ view: 'notes' });
+      })
+      .then(() => onRefresh(true))
+  );
 }
 
 export function onLoginWithToken(token: string, skipRefresh?: boolean) {
-  if (!token) return Promise.reject();
+  if (!token) {
+    return Promise.reject();
+  }
 
-  return call('POST', '/api/users/token', {}, {silent: true, token})
-    .then(userData => login(userData, skipRefresh))
-    .then(() => (skipRefresh ? undefined : onRefresh(true)));
+  return (
+    call('POST', '/api/users/token', {}, { silent: true, token })
+      // @ts-expect-error Unknown response.
+      .then(userData => login(userData, skipRefresh))
+      .then(() => (skipRefresh ? undefined : onRefresh(true)))
+  );
 }
 
 export function onLogout() {
@@ -272,29 +289,31 @@ export function onLogout() {
     notesOrigins: [],
     userData: null,
     userDiff: null,
-    view: 'login'
+    view: 'login',
   });
 
   toast('success', 'Logged out.');
 }
 
-export function onRefresh(firstRun: ?boolean) {
+export function onRefresh(firstRun?: boolean) {
   toast('info', firstRun === true ? 'Loading...' : 'Refreshing...');
 
   const last = new Date();
-  return call('GET', '/api/notes', {refresh: +tree.state().last}).then(
-    // $FlowFixMe: Polymorphic API call.
-    (patch: PatchType<>) => {
-      tree.updateWith({last});
+  return call('GET', '/api/notes', { refresh: +tree.state().last }).then(
+    // @ts-expect-error Unknown response.
+    (patch: PatchType) => {
+      tree.updateWith({ last });
       toast('success', firstRun === true ? 'Loaded.' : 'Refreshed.');
       merge(patch);
-    }
+    },
   );
 }
 
 export function onRemove() {
   tree.update(store => {
-    if (!store.noteId) return;
+    if (!store.noteId) {
+      return;
+    }
     store.notesRemoved[store.noteId] = true;
     store.noteId = null;
   });
@@ -303,8 +322,9 @@ export function onRemove() {
 export function onReset() {
   tree.update(store => {
     const noteId = store.noteId;
-    if (noteId && !store.notesOrigins.some(note => note._id === noteId))
+    if (noteId && !store.notesOrigins.some(note => note._id === noteId)) {
       store.noteId = null;
+    }
 
     store.notesCreated = {};
     store.notesRemoved = {};
@@ -313,19 +333,21 @@ export function onReset() {
 }
 
 export function onSave() {
-  tree.updateWith({edit: false});
+  tree.updateWith({ edit: false });
 
   const {
     last: refresh,
     notesCreated: created,
     notesRemoved: removed,
-    notesUpdated: updated
+    notesUpdated: updated,
   } = tree.state();
 
   const patch = {
     created: Object.keys(created),
     removed: Object.keys(removed),
-    updated: Object.keys(updated).map(_id => Object.assign({_id}, updated[_id]))
+    updated: Object.keys(updated).map(_id =>
+      Object.assign({ _id }, updated[_id]),
+    ),
   };
 
   const skippable = patch.created.filter(_id => patch.removed.includes(_id));
@@ -344,122 +366,154 @@ export function onSave() {
 
   const last = new Date();
 
-  return call('POST', '/api/notes', {patch, refresh: +refresh}).then(
-    // $FlowFixMe: Polymorphic API call.
-    (patch: PatchType<>) => {
-      tree.updateWith({last});
+  return call('POST', '/api/notes', { patch, refresh: +refresh }).then(
+    // @ts-expect-error Unknown response.
+    (patch: PatchType) => {
+      tree.updateWith({ last });
       toast('success', 'Saved.');
       merge(patch);
       onReset();
     },
     error => {
-      tree.updateWith({edit: true});
+      tree.updateWith({ edit: true });
       throw error;
-    }
+    },
   );
 }
 
 export function onSchemaAdd() {
   tree.update((store, shape) => {
-    if (shape.user === null) return;
-    if (store.userDiff === null) store.userDiff = {};
-    if (store.userDiff.schemas === undefined) store.userDiff.schemas = [];
+    if (shape.user === null) {
+      return;
+    }
+    if (store.userDiff === null) {
+      store.userDiff = {};
+    }
+    if (store.userDiff.schemas === undefined) {
+      store.userDiff.schemas = [];
+    }
 
     store.userDiff.schemas.push({
       name: `Schema ${shape.user.schemas.length + 1}`,
-      fields: [{name: 'name', type: 'div'}, {name: 'labels', type: 'ul'}]
+      fields: [
+        { name: 'name', type: 'div' },
+        { name: 'labels', type: 'ul' },
+      ],
     });
   });
 }
 
-export function onSchemaDelete(event: EventType) {
-  const name = event.target.parentNode.dataset.name;
-  const index = +event.target.parentNode.dataset.index;
+export function onSchemaDelete(event: Event) {
+  const name = event.target!.parentNode!.dataset!.name;
+  const index = +event.target!.parentNode!.dataset!.index!;
 
   tree.update((store, shape) => {
-    if (shape.user === null) return;
+    if (shape.user === null) {
+      return;
+    }
 
     const schema = shape.user.schemas.find(schema => schema.name === name);
-    if (schema === undefined || store.userDiff === null) return;
-
-    const diff = store.userDiff.schemas.find(schema => schema.name === name);
-    if (diff === undefined) return;
+    if (schema === undefined || store.userDiff === null) {
+      return;
+    }
+    const diff = store.userDiff.schemas!.find(schema => schema.name === name);
+    if (diff === undefined) {
+      return;
+    }
 
     diff.fields.splice(index, 1);
   });
 }
 
-export function onSchemaField(event: EventType) {
-  const name = event.target.parentNode.dataset.name;
+export function onSchemaField(event: Event) {
+  const name = event.target!.parentNode!.dataset!.name;
 
   tree.update((store, shape) => {
-    if (shape.user === null) return;
+    if (shape.user === null) {
+      return;
+    }
 
     const schema = shape.user.schemas.find(schema => schema.name === name);
-    if (schema === undefined || store.userDiff === null) return;
+    if (schema === undefined || store.userDiff === null) {
+      return;
+    }
+    const diff = store.userDiff.schemas!.find(schema => schema.name === name);
+    if (diff === undefined) {
+      return;
+    }
 
-    const diff = store.userDiff.schemas.find(schema => schema.name === name);
-    if (diff === undefined) return;
-
-    diff.fields.push({name: `_${schema.fields.length}`, type: 'div'});
+    diff.fields.push({ name: `_${schema.fields.length}`, type: 'div' });
   });
 }
 
-export function onSchemaKey(event: EventType) {
-  const name = event.target.parentNode.dataset.name;
-  const value = event.target.value;
-  const index = +event.target.parentNode.dataset.index;
+export function onSchemaKey(event: Event) {
+  const name = event.target!.parentNode!.dataset!.name;
+  const value = event.target!.value as string;
+  const index = +event.target!.parentNode!.dataset!.index!;
 
   tree.update((store, shape) => {
-    if (shape.user === null) return;
+    if (shape.user === null) {
+      return;
+    }
 
     const schema = shape.user.schemas.find(schema => schema.name === name);
-    if (schema === undefined || store.userDiff === null) return;
-
-    const diff = store.userDiff.schemas.find(schema => schema.name === name);
-    if (diff === undefined) return;
+    if (schema === undefined || store.userDiff === null) {
+      return;
+    }
+    const diff = store.userDiff.schemas!.find(schema => schema.name === name);
+    if (diff === undefined) {
+      return;
+    }
 
     diff.fields[index].name = value;
   });
 }
 
-export function onSchemaName(event: EventType) {
-  const name = event.target.parentNode.dataset.name;
-  const value = event.target.value;
+export function onSchemaName(event: Event) {
+  const name = event.target!.parentNode!.dataset!.name;
+  const value = event.target!.value as string;
 
   tree.update(store => {
-    if (store.userDiff === null) return;
-
-    const diff = store.userDiff.schemas.find(schema => schema.name === name);
-    if (diff === undefined) return;
+    if (store.userDiff === null) {
+      return;
+    }
+    const diff = store.userDiff.schemas!.find(schema => schema.name === name);
+    if (diff === undefined) {
+      return;
+    }
 
     diff.name = value;
   });
 }
 
-export function onSchemaOrder(event: EventType) {
-  const name = event.target.parentNode.dataset.name;
-  const index = +event.target.parentNode.dataset.index;
-  const order = +event.target.dataset.order;
+export function onSchemaOrder(event: Event) {
+  const name = event.target!.parentNode!.dataset!.name;
+  const index = +event.target!.parentNode!.dataset!.index!;
+  const order = +event.target!.dataset!.order!;
 
   tree.update((store, shape) => {
-    if (shape.user === null) return;
+    if (shape.user === null) {
+      return;
+    }
 
     const schema = shape.user.schemas.find(schema => schema.name === name);
-    if (schema === undefined || store.userDiff === null) return;
-
-    const diff = store.userDiff.schemas.find(schema => schema.name === name);
-    if (diff === undefined) return;
+    if (schema === undefined || store.userDiff === null) {
+      return;
+    }
+    const diff = store.userDiff.schemas!.find(schema => schema.name === name);
+    if (diff === undefined) {
+      return;
+    }
 
     const fields = diff.fields;
     fields.splice(index, 1, fields.splice(index + order, 1, fields[index])[0]);
   });
 }
 
-export function onSchemaRemove(event: EventType) {
-  const name = event.target.parentNode.dataset.name;
+export function onSchemaRemove(event: Event) {
+  const name = event.target!.parentNode!.dataset!.name;
 
-  tree.update(({userDiff}) => {
+  tree.update(({ userDiff }) => {
     if (userDiff && userDiff.schemas) {
       const index = userDiff.schemas.findIndex(schema => schema.name === name);
       userDiff.schemas.splice(index, 1);
@@ -467,35 +521,41 @@ export function onSchemaRemove(event: EventType) {
   });
 }
 
-export function onSchemaType(event: EventType) {
-  const name = event.target.parentNode.dataset.name;
-  const value = event.target.value;
-  const index = +event.target.parentNode.dataset.index;
+export function onSchemaType(event: Event) {
+  const name = event.target!.parentNode!.dataset!.name;
+  const value = event.target!.value as SchemaOutlineFieldType;
+  const index = +event.target!.parentNode!.dataset!.index!;
 
   tree.update(store => {
-    if (store.userDiff === null) return;
+    if (store.userDiff === null) {
+      return;
+    }
+    const diff = store.userDiff.schemas!.find(schema => schema.name === name);
+    if (diff === undefined) {
+      return;
+    }
 
-    const diff = store.userDiff.schemas.find(schema => schema.name === name);
-    if (diff === undefined) return;
-
-    // $FlowFixMe: No check for exact string enum values.
     diff.fields[index].type = value;
   });
 }
 
-export function onSearch(event: InputEventType) {
-  tree.updateWith({search: event.target.value});
+export function onSearch(event: InputEvent) {
+  tree.updateWith({ search: event.target!.value as string });
 }
 
 export function onSettingsReset() {
   tree.update(store => {
-    store.userDiff = store.userData ? {schemas: store.userData.schemas} : null;
+    store.userDiff = store.userData
+      ? { schemas: store.userData.schemas }
+      : null;
   });
 }
 
 export function onSettingsSave() {
   const userDiff = tree.state().userDiff;
-  if (userDiff === null) return Promise.resolve();
+  if (userDiff === null) {
+    return Promise.resolve();
+  }
 
   toast('info', 'Saving...');
 
@@ -511,23 +571,28 @@ export function onSettingsSave() {
 export function onSignup(email: string, password: string) {
   toast('info', 'Signing up...');
 
-  return call('POST', '/api/users/register', {
-    email,
-    password: hash(password)
-  })
-    .then(login)
-    .then(() => {
-      toast('success', 'Signed in.');
-      tree.updateWith({noteId: 'introduction'});
+  return (
+    call('POST', '/api/users/register', {
+      email,
+      password: hash(password),
     })
-    .then(() => onRefresh(true));
+      // @ts-expect-error Unknown response.
+      .then(login)
+      .then(() => {
+        toast('success', 'Signed in.');
+        tree.updateWith({ noteId: 'introduction' });
+      })
+      .then(() => onRefresh(true))
+  );
 }
 
-export function onTypeAhead(event: InputEventType) {
-  if (event.target.__skip) return;
+export function onTypeAhead(event: InputEvent) {
+  if (event.target!.__skip) {
+    return;
+  }
 
-  const selection = window.getSelection();
-  const focusNode = selection.focusNode;
+  const selection = window.getSelection()!;
+  const focusNode = selection.focusNode!;
   const search = focusNode.wholeText && focusNode.wholeText.trim();
 
   if (search) {
@@ -542,63 +607,77 @@ export function onTypeAhead(event: InputEventType) {
       const label = match.target.slice(start);
 
       if (label) {
-        event.target.__skip = true;
+        event.target!.__skip = true;
 
         document.execCommand('insertText', true, label);
         selection.setBaseAndExtent(
           focusNode,
           start,
           focusNode,
-          focusNode.length
+          focusNode.length!,
         );
       }
     }
   }
 }
 
-onTypeAhead.pre = event => {
-  event.target.__skip =
+onTypeAhead.pre = (event: KeyboardEvent) => {
+  event.target!.__skip =
     event.ctrlKey || event.metaKey || !event.key || event.key.length !== 1;
 };
 
-onTypeAhead.post = event => {
-  event.target.__skip = true;
+onTypeAhead.post = (event: KeyboardEvent) => {
+  event.target!.__skip = true;
 };
 
-function call(method: 'GET' | 'POST', path, data: {}, {silent, token} = {}) {
-  const headers = new Headers({'Content-Type': 'application/json'});
+function call(
+  method: 'GET' | 'POST',
+  path: string,
+  data: object,
+  { silent, token }: { silent?: boolean; token?: string } = {},
+) {
+  const headers = new Headers({ 'Content-Type': 'application/json' });
   const url = new URL(path, location.origin);
 
-  let body;
+  let body: string;
   if (method === 'GET') {
-    for (const [key, value] of Object.entries(data))
+    for (const [key, value] of Object.entries(data)) {
       url.searchParams.append(key, String(value));
+    }
   } else {
     body = JSON.stringify(data);
   }
 
   const auth = token || tree.state().userToken;
-  if (auth) headers.append('Authorization', `Bearer ${auth}`);
+  if (auth) {
+    headers.append('Authorization', `Bearer ${auth}`);
+  }
 
   return new Promise((resolve, reject) => {
     const id = setTimeout(done, 5000, new Error('Sorry, try again later.'));
-
-    fetch(url, {body, headers, method})
+    // @ts-expect-error Use `URL` instead of `string`.
+    fetch(url, { body, headers, method })
       .then(response => {
-        if (!response.ok) throw new Error();
+        if (!response.ok) {
+          throw new Error();
+        }
         return response.json();
       })
       .then(response => {
-        if (response.error) throw Object.assign(new Error(), response.error);
+        if (response.error) {
+          throw Object.assign(new Error(), response.error);
+        }
         return response.result;
       })
       .then(response => done(null, response), done);
 
-    function done(error, response) {
+    function done(error: Error | null, response?: unknown) {
       clearTimeout(id);
 
       if (error) {
-        if (!silent) toast('error', error);
+        if (!silent) {
+          toast('error', error);
+        }
         reject(error);
       } else {
         resolve(response);
@@ -607,19 +686,24 @@ function call(method: 'GET' | 'POST', path, data: {}, {silent, token} = {}) {
   });
 }
 
-function create(make: (StoreType, $ReadOnly<ShapeType>) => ?NotePatchType<>) {
+function create(
+  make: (
+    store: StoreType,
+    shape: Readonly<ShapeType>,
+  ) => NotePatchType | null | undefined,
+) {
   const notes = tree.state().notes;
 
-  let _id;
+  let _id: string;
   do {
-    _id = Math.random()
-      .toString(36)
-      .substr(2, 6);
+    _id = Math.random().toString(36).substr(2, 6);
   } while (notes.some(note => note._id === _id));
 
   tree.update((store, shape) => {
     const instance = make(store, shape);
-    if (instance === undefined) return;
+    if (!instance) {
+      return;
+    }
 
     store.notesUpdated[_id] = instance;
     store.notesCreated[_id] = true;
@@ -628,35 +712,37 @@ function create(make: (StoreType, $ReadOnly<ShapeType>) => ?NotePatchType<>) {
   });
 }
 
-function login(userData = null, skipRefresh) {
-  const diff: $Shape<StoreType> = {last: new Date(0), userData};
-  if (!skipRefresh && userData) diff.userDiff = {schemas: userData.schemas};
+function login(userData: UserType | null = null, skipRefresh?: boolean) {
+  const diff: Partial<StoreType> = { last: new Date(0), userData };
+  if (!skipRefresh && userData) {
+    diff.userDiff = { schemas: userData.schemas };
+  }
   tree.updateWith(diff);
 }
 
-function merge(diff) {
+function merge(patch: PatchType) {
   tree.update(store => {
     store.notesOrigins = store.notesOrigins
-      .filter(note => !diff.removed.includes(note._id))
-      .concat(diff.created.map(_id => ({_id})))
+      .filter(note => !patch.removed.includes(note._id))
+      .concat(patch.created.map(_id => ({ _id } as NoteType)))
       .filter(
         (note, index, notes) =>
-          notes.findIndex(other => other._id === note._id) === index
+          notes.findIndex(other => other._id === note._id) === index,
       )
       .map(note => {
-        const patch = diff.updated.find(updated => updated._id === note._id);
-        return patch ? Object.assign({}, note, patch) : note;
+        const diff = patch.updated.find(updated => updated._id === note._id);
+        return diff ? Object.assign({}, note, diff) : note;
       });
   });
 }
 
 let toastId = 0;
-function toast(type, message) {
+function toast(type: 'error' | 'info' | 'success', message: Error | string) {
   const _id = toastId++;
   const text =
-    message instanceof Error // $FlowFixMe: Custom Error properties.
-      ? message.code // $FlowFixMe: Custom Error properties.
-        ? message.text
+    message instanceof Error
+      ? message.code
+        ? message.text!
         : message.message
       : message;
 
@@ -666,7 +752,7 @@ function toast(type, message) {
       dead: false,
       marked: type === 'info',
       text,
-      type
+      type,
     });
   });
 
@@ -676,12 +762,17 @@ function toast(type, message) {
     });
   } else {
     const toast = tree.state().toasts.find(toast => toast.marked);
-    if (!toast) return;
+    if (!toast) {
+      return;
+    }
+
     const info = toast._id;
 
     tree.update(store => {
       const toast = store.toasts.find(toast => toast._id === info);
-      if (toast) toast.marked = false;
+      if (toast) {
+        toast.marked = false;
+      }
     });
 
     setTimeout(() => {
@@ -693,22 +784,28 @@ function toast(type, message) {
     setTimeout(() => {
       tree.update(store => {
         const toast = store.toasts.find(toast => toast._id === info);
-        if (toast) toast.dead = true;
+        if (toast) {
+          toast.dead = true;
+        }
       });
     }, 1000);
 
     setTimeout(() => {
       tree.update(store => {
         const toast = store.toasts.find(toast => toast._id === _id);
-        if (toast) toast.dead = true;
+        if (toast) {
+          toast.dead = true;
+        }
       });
     }, 1250);
 
     setTimeout(() => {
-      tree.update(({toasts}) => {
+      tree.update(({ toasts }) => {
         for (let index = toasts.length - 1; index >= 0; --index) {
           const toastId = toasts[index]._id;
-          if (toastId === _id || toastId === info) toasts.splice(index, 1);
+          if (toastId === _id || toastId === info) {
+            toasts.splice(index, 1);
+          }
         }
       });
     }, 1500);

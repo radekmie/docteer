@@ -1,17 +1,14 @@
-// @flow
-
 import compression from 'compression';
 import connect from 'connect';
-import {join} from 'path';
+import { join } from 'path';
 import serve from 'serve-static';
 
-import config from '@server/config';
-import {server as rest} from '@server/rest';
-import {server as ssr} from '@server/ssr';
+import config from './config';
+import { server as rest } from './rest';
+import { server as ssr } from './ssr';
 
 export const server = connect();
 export const root = join(__dirname, '..');
-
 server.use('/', compression());
 server.use('/', serve(join(root, 'public'), config.server.static.public));
 server.use('/', serve(join(root, 'client'), config.server.static.client));

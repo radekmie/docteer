@@ -1,10 +1,8 @@
-// @flow
-
-const TITLES = {
+const TITLES: Record<string, string> = {
   notes: 'Notes',
   login: 'Log in',
   signup: 'Sign in',
-  settings: 'Settings'
+  settings: 'Settings',
 };
 
 export function titleForView(view: string) {

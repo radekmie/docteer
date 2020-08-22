@@ -1,11 +1,7 @@
-// @flow
+import { h, render } from 'preact';
 
-import {h, render} from 'preact';
-
-import {Application} from '@client/components/Application';
-
-// $FlowFixMe: Is body really nullable?
-render(h(Application), document.body, document.body.firstChild);
+import { Application } from '../components/Application';
+render(<Application />, document.body, document.body.firstChild as Element);
 
 // Manual children reordering to make HMR work.
 if (process.env.NODE_ENV === 'development') {

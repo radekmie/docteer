@@ -1,17 +1,6 @@
-// @flow
-// @jsx h
+import { Component, VNode, h } from 'preact';
 
-import {Component, h} from 'preact';
-
-import {
-  iconAdd,
-  iconClone,
-  iconMinus,
-  iconNo,
-  iconOk,
-  iconPen,
-  iconRefresh
-} from '@client/components/Icon';
+import { UserType } from '../../types';
 import {
   onAdd,
   onClone,
@@ -20,17 +9,26 @@ import {
   onRemove,
   onSave,
   onSettingsReset,
-  onSettingsSave
-} from '@client/actions';
+  onSettingsSave,
+} from '../actions';
+import {
+  iconAdd,
+  iconClone,
+  iconMinus,
+  iconNo,
+  iconOk,
+  iconPen,
+  iconRefresh,
+} from './Icon';
 
-import type {UserType} from '@types';
+type Action = [boolean, string, boolean, string, () => void, VNode];
 
-type Actions$Props = {|
-  note: boolean,
-  edit: boolean,
-  user: ?UserType,
-  view: ?string
-|};
+type Actions$Props = {
+  note: boolean;
+  edit: boolean;
+  user: UserType | null | undefined;
+  view: string | null | undefined;
+};
 
 export class Actions extends Component<Actions$Props> {
   shouldComponentUpdate(props: Actions$Props) {
@@ -42,34 +40,39 @@ export class Actions extends Component<Actions$Props> {
     );
   }
 
-  render({note, edit, user, view}: Actions$Props) {
-    if (view !== 'notes' && view !== 'settings') return null;
+  // eslint-disable-next-line complexity
+  render({ note, edit, user, view }: Actions$Props) {
+    if (view !== 'notes' && view !== 'settings') {
+      return null;
+    }
 
     // prettier-ignore
-    const buttons = [
-      [view === 'notes',                 'dark-pink', false,                  'Create',  onAdd,           iconAdd],
-      [view === 'notes' && edit && note, 'lavender',  false,                  'Clone',   onClone,         iconClone],
-      [view === 'notes' && edit && note, 'red',       false,                  'Remove',  onRemove,        iconMinus],
-      [view === 'notes' && edit,         'green',     false,                  'Save',    onSave,          iconOk],
-      [view === 'notes' && !edit,        'dark-blue', false,                  'Edit',    onEdit,          iconPen],
-      [view === 'notes' && edit,         'blue',      false,                  'Cancel',  onEdit,          iconNo],
-      [view === 'notes',                 'orange',    false,                  'Refresh', onRefresh,       iconRefresh],
-      [view === 'settings' && user,      'green',     user && !user._changed, 'Save',    onSettingsSave,  iconOk],
-      [view === 'settings' && user,      'red',       user && !user._changed, 'Cancel',  onSettingsReset, iconNo]
+    const buttons: Action[] = [
+      [view === 'notes', 'dark-pink', false, 'Create', onAdd, iconAdd],
+      [view === 'notes' && edit && note, 'lavender', false, 'Clone', onClone, iconClone],
+      [view === 'notes' && edit && note, 'red', false, 'Remove', onRemove, iconMinus],
+      [view === 'notes' && edit, 'green', false, 'Save', onSave, iconOk],
+      [view === 'notes' && !edit, 'dark-blue', false, 'Edit', onEdit, iconPen],
+      [view === 'notes' && edit, 'blue', false, 'Cancel', onEdit, iconNo],
+      [view === 'notes', 'orange', false, 'Refresh', onRefresh, iconRefresh],
+      [view === 'settings' && !!user, 'green', !!user && !user._changed, 'Save', onSettingsSave, iconOk],
+      [view === 'settings' && !!user, 'red', !!user && !user._changed, 'Cancel', onSettingsReset, iconNo],
     ];
 
-    return <div class="bottom-1 fixed right-1 w2">{buttons.map(button)}</div>;
+    return (
+      <div className="bottom-1 fixed right-1 w2">{buttons.map(button)}</div>
+    );
   }
 }
 
-function button(props) {
+function button(props: Action) {
   return !props[0] ? null : (
     <div
-      class={buttonClass(props[1], props[2])}
+      className={buttonClass(props[1], props[2])}
       data-test-notes-action={props[3].toLowerCase()}
       key={props[3]}
       onClick={props[4]}
-      tabIndex="0"
+      tabIndex={0}
       title={props[3]}
     >
       {props[5]}
@@ -77,7 +80,7 @@ function button(props) {
   );
 }
 
-function buttonClass(color, disabled) {
+function buttonClass(color: string, disabled: boolean) {
   return `b--dark-gray ba bg${disabled ? '-near' : ''}-white br-100 bw1 h2 ${
     disabled ? '' : `hover-${color}`
   } link mb1 pa1${disabled ? '' : ' pointer'} shadow-4`;

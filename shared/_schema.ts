@@ -1,13 +1,11 @@
-// @flow
+import { NotePatchType, SchemaOutlineFieldType, SchemaType } from '../types';
 
-import type {SchemaOutlineFieldType, SchemaType} from '@types';
-
-export function schemaEmpty({fields, name}: SchemaType<>) {
+export function schemaEmpty({ fields, name }: SchemaType) {
   return fields.reduce(
-    (empty, {name, type}) =>
-      Object.assign(empty, {[name]: schemaIsArray(type) ? [] : ''}),
-    {_outline: fields, _outname: name}
-  );
+    (empty, { name, type }) =>
+      Object.assign(empty, { [name]: schemaIsArray(type) ? [] : '' }),
+    { _outline: fields, _outname: name },
+  ) as NotePatchType;
 }
 
 export function schemaIsArray(tag: SchemaOutlineFieldType): boolean {
@@ -17,6 +15,6 @@ export function schemaIsArray(tag: SchemaOutlineFieldType): boolean {
 export function schemaKey(name: string) {
   return (name[0].toUpperCase() + name.slice(1)).replace(
     /(.)([A-Z])/g,
-    '$1 $2'
+    '$1 $2',
   );
 }

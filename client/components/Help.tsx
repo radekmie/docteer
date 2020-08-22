@@ -1,11 +1,8 @@
-// @flow
-// @jsx h
+import { Component, h } from 'preact';
 
-import {Component, h} from 'preact';
-
-type Help$Props = {|
-  active: boolean
-|};
+type Help$Props = {
+  active: boolean;
+};
 
 const actions = [
   ['?', 'Show help'],
@@ -13,9 +10,9 @@ const actions = [
   ['↓', 'Next note'],
   ['←', 'Previous filter'],
   ['→', 'Next filter'],
-  ['Enter', 'Toggle note/filter']
+  ['Enter', 'Toggle note/filter'],
 ].map(action => (
-  <div class="flex flex-between" key={action[0]}>
+  <div className="flex flex-between" key={action[0]}>
     <b>
       <code>{action[0]}</code>
     </b>
@@ -31,11 +28,11 @@ export class Help extends Component<Help$Props> {
   render(props: Help$Props) {
     return (
       <div
-        class={`bg-dark-gray center fixed${
+        className={`bg-dark-gray center fixed${
           props.active ? '' : ' hidden'
         } near-white pa3 w5`}
       >
-        <div class="flex flex-between flex-end">
+        <div className="flex flex-between flex-end">
           <b>Keyboard Shortcuts</b>
           <small>ESC to close</small>
         </div>
