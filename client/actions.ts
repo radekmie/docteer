@@ -632,7 +632,7 @@ function call<Endpoint extends keyof APIEndpoints>(
 ) {
   const [method, path] = endpoint.split(' ');
   const headers = new Headers({ 'Content-Type': 'application/json' });
-  const url = new URL(`/api/${path}`, location.origin);
+  const url = new URL(`/api${path}`, location.origin);
 
   let body: string;
   if (method === 'GET') {
