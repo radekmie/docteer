@@ -91,7 +91,8 @@ export async function handle(
 
     _id = result.insertedId;
   } catch (error) {
-    if (error.codeName) {
+    // "MongoError: E11000 duplicate key error collection...""
+    if (error.code === 11000) {
       throw new APIError({ code: 'user-already-exists' });
     }
     throw error;
