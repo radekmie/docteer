@@ -17,7 +17,7 @@
     "reset:db-data": "docker volume rm docteer-db || true",
     "start": "run-p -lns start:*",
     "start:client": "parcel watch --no-autoinstall --no-hmr --target client client/index.html",
-    "start:db": "docker run --rm -p 27017:27017 --name docteer-db --volume docteer-db:/data/db mongo:4.0.10 --replSet rs0",
+    "start:db": "docker run --rm -p 27017:27017 --name docteer-db --volume docteer-db:/data/db mongo:4.4.0 --replSet rs0",
     "start:db-rs": "sleep 3 && docker exec docteer-db mongo --eval \"rs.initiate({_id: 'rs0', members: [{_id: 0, host: 'localhost:27017'}]})\"",
     "start:server": "parcel watch --no-autoinstall --no-hmr --target server server/index.ts",
     "start:static": "nodemon -w 'client/public/**' -x 'npm run build:static'",
