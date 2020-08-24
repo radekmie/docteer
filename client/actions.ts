@@ -12,7 +12,6 @@ import {
   SchemaType,
   ShapeType,
   StoreType,
-  UserType,
 } from '../types';
 import * as tree from './state';
 
@@ -100,13 +99,11 @@ export function onExport(data: string, extension: string) {
     .replace('T', '-')}.${extension}`;
   link.style.display = 'none';
 
-  // $FlowFixMe: Is body really nullable?
   document.body.appendChild(link);
 
   link.click();
 
   setTimeout(() => {
-    // $FlowFixMe: Is body really nullable?
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   }, 0);
@@ -157,14 +154,12 @@ export function onImport() {
   input.accept = '.json';
   input.style.display = 'none';
 
-  // $FlowFixMe: Is body really nullable?
   document.body.appendChild(input);
 
   input.click();
   input.addEventListener('change', uploaded, false);
 
   function remove() {
-    // $FlowFixMe: Is body really nullable?
     document.body.removeChild(input);
   }
 
@@ -396,8 +391,7 @@ export function onSchemaAdd() {
 }
 
 export function onSchemaDelete(event: Event) {
-  const name = event.target!.parentNode!.dataset!.name;
-  const index = +event.target!.parentNode!.dataset!.index!;
+  const { index, name } = getSchemaInfo(event);
 
   tree.update((store, shape) => {
     if (shape.user === null) {
@@ -419,7 +413,7 @@ export function onSchemaDelete(event: Event) {
 }
 
 export function onSchemaField(event: Event) {
-  const name = event.target!.parentNode!.dataset!.name;
+  const { name } = getSchemaInfo(event);
 
   tree.update((store, shape) => {
     if (shape.user === null) {
@@ -441,9 +435,7 @@ export function onSchemaField(event: Event) {
 }
 
 export function onSchemaKey(event: Event) {
-  const name = event.target!.parentNode!.dataset!.name;
-  const value = event.target!.value as string;
-  const index = +event.target!.parentNode!.dataset!.index!;
+  const { index, name, value } = getSchemaInfo(event);
 
   tree.update((store, shape) => {
     if (shape.user === null) {
@@ -465,8 +457,7 @@ export function onSchemaKey(event: Event) {
 }
 
 export function onSchemaName(event: Event) {
-  const name = event.target!.parentNode!.dataset!.name;
-  const value = event.target!.value as string;
+  const { name, value } = getSchemaInfo(event);
 
   tree.update(store => {
     if (store.userDiff === null) {
@@ -483,9 +474,7 @@ export function onSchemaName(event: Event) {
 }
 
 export function onSchemaOrder(event: Event) {
-  const name = event.target!.parentNode!.dataset!.name;
-  const index = +event.target!.parentNode!.dataset!.index!;
-  const order = +event.target!.dataset!.order!;
+  const { index, order, name } = getSchemaInfo(event);
 
   tree.update((store, shape) => {
     if (shape.user === null) {
@@ -508,7 +497,7 @@ export function onSchemaOrder(event: Event) {
 }
 
 export function onSchemaRemove(event: Event) {
-  const name = event.target!.parentNode!.dataset!.name;
+  const { name } = getSchemaInfo(event);
 
   tree.update(({ userDiff }) => {
     if (userDiff && userDiff.schemas) {
@@ -519,9 +508,7 @@ export function onSchemaRemove(event: Event) {
 }
 
 export function onSchemaType(event: Event) {
-  const name = event.target!.parentNode!.dataset!.name;
-  const value = event.target!.value as SchemaOutlineFieldType;
-  const index = +event.target!.parentNode!.dataset!.index!;
+  const { index, name, value } = getSchemaInfo(event);
 
   tree.update(store => {
     if (store.userDiff === null) {
@@ -706,6 +693,16 @@ function create(
     store.noteId = _id;
     store.edit = true;
   });
+}
+
+function getSchemaInfo({ target }: Event) {
+  const parentDataset = target!.parentNode!.dataset!;
+  return {
+    index: +parentDataset.index!,
+    name: parentDataset.name,
+    order: +target!.dataset!.order!,
+    value: target!.value as SchemaOutlineFieldType,
+  };
 }
 
 function login(
