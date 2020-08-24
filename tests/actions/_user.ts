@@ -16,7 +16,7 @@ export function userAddSchema(this: BrowserContext, schema: SchemaType) {
     await page.$eval(
       `${inA}[data-test-schema-name]`,
       /* istanbul ignore next */
-      input => input.blur!(),
+      input => input.blur(),
     );
 
     for (const { name: fieldName, type: fieldType } of schema.fields) {

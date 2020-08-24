@@ -95,7 +95,7 @@ export function noteField(
     await page.$eval(
       selector,
       /* istanbul ignore next */
-      input => input.blur!(),
+      input => input.blur(),
     );
 
     const unify = (string: string) =>
