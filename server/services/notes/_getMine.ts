@@ -10,20 +10,14 @@ export async function handle({ refresh }: Params, context: APIContextType) {
   }
 
   const after = new Date(refresh);
-  const projection: object = {
-    _id: 0,
-    _id_user: 0,
-    _updated: 0,
-    _version: 0,
-  };
 
-  const { Notes } = context.collections;
+  const { Notes, NotesArchive } = context.collections;
   await Notes.find(
+    { _id_user: context.userId, _updated: { $gt: after } },
     {
-      _id_user: context.userId,
-      ...(after ? { _updated: { $gt: after } } : {}),
+      projection: { _id: 0, _id_user: 0, _updated: 0, _version: 0 } as object,
+      session: context.session,
     },
-    { projection, session: context.session },
   ).forEach(note => {
     if (note._removed && note._removed > after) {
       diff.removed.push(note._id_slug);
@@ -40,6 +34,16 @@ export async function handle({ refresh }: Params, context: APIContextType) {
         diff.created.push(note._id_slug);
       }
     }
+  });
+
+  await NotesArchive.find(
+    { _id_user: context.userId, _updated: { $gt: after } },
+    {
+      projection: { _id: 0, _id_slug: 1 } as object,
+      session: context.session,
+    },
+  ).forEach(note => {
+    diff.removed.push(note._id_slug);
   });
 
   return diff;
