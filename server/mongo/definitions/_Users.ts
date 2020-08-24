@@ -5,7 +5,7 @@ export const Users = {
       { 'emails.address': 1 },
       { collation: { locale: 'en', strength: 2 }, unique: true },
     ],
-  ],
+  ] as const,
   schema: {
     bsonType: 'object',
     additionalProperties: false,

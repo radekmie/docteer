@@ -4,7 +4,7 @@ export const Notes = {
     [{ _id_user: 1, _id_slug: 1 }, { unique: true }],
     [{ _id_user: 1, _updated: 1 }],
     [{ _removed: 1 }],
-  ],
+  ] as const,
   schema: {
     bsonType: 'object',
     additionalProperties: false,

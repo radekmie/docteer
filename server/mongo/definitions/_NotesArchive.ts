@@ -1,6 +1,6 @@
 export const NotesArchive = {
   name: 'notes-archive',
-  indexes: [],
+  indexes: [[{ _id_user: 1, _updated: 1 }]] as const,
   schema: {
     bsonType: 'object',
     additionalProperties: false,
