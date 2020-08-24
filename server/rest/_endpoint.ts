@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
+import mapValues from 'lodash/mapValues';
 import { ObjectId } from 'mongodb';
-import url from 'url';
+import { ParsedQs } from 'qs';
 
 import { server } from '.';
 import { APIContextType, APIEndpoints } from '../../types';
@@ -25,7 +26,7 @@ export function endpoint<Endpoint extends keyof APIEndpoints>(
     try {
       const data =
         request.method === 'GET'
-          ? _parseQuery(request.url)
+          ? _parseQuery(request.query)
           : _parseJSON(request.body);
 
       const result = await withTransaction(async transaction => {
@@ -54,7 +55,8 @@ export function endpoint<Endpoint extends keyof APIEndpoints>(
       });
 
       response.status(200).json({ error: null, result });
-    } catch (error) {
+    } catch (rawError) {
+      const error = APIError.fromError(rawError);
       response.status(error.http).json({ error: error.toJSON(), result: null });
     }
   });
@@ -66,7 +68,7 @@ async function _authorize(context: APIContextType, token?: string) {
       throw new APIError({ code: 'api-invalid-token' });
     }
 
-    context.jwt = token.replace(/^Bearer (.*?)$/, '$1');
+    context.jwt = token.replace('Bearer ', '');
 
     try {
       // @ts-expect-error `jwt.verify` returns `string | object`;
@@ -75,12 +77,10 @@ async function _authorize(context: APIContextType, token?: string) {
       throw new APIError({ code: 'api-failed-token' });
     }
 
-    try {
-      context.userId = new ObjectId(context.jwtDecoded.sub);
-    } catch (error) {
-      // NOTE: It might be an old user, with Meteor string id.
-      context.userId = context.jwtDecoded.sub;
-    }
+    // NOTE: It might be an old user, with Meteor string id.
+    context.userId = ObjectId.isValid(context.jwtDecoded.sub)
+      ? new ObjectId(context.jwtDecoded.sub)
+      : context.jwtDecoded.sub;
 
     // @ts-expect-error This is checked later.
     context.user = await users.byId({ _id: context.userId }, context);
@@ -105,18 +105,8 @@ function _parseJSON(text: string) {
   return result;
 }
 
-function _parseQuery(path: string) {
-  try {
-    const result = url.parse(path, true).query as Record<string, unknown>;
-    for (const [key, value] of Object.entries(result)) {
-      const valueInt = parseInt(value as string);
-      if (isFinite(valueInt) && '' + valueInt === value) {
-        result[key] = valueInt;
-      }
-    }
-
-    return result;
-  } catch (error) {
-    throw new APIError({ code: 'api-url' });
-  }
+function _parseQuery(query: ParsedQs) {
+  return mapValues(query as Record<string, string>, value =>
+    isFinite(+value) && `${+value}` === value ? +value : value,
+  );
 }

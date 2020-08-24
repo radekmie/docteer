@@ -21,7 +21,7 @@
     "start:db-rs": "sleep 3 && docker exec docteer-db mongo --eval \"rs.initiate({_id: 'rs0', members: [{_id: 0, host: 'localhost:27017'}]})\"",
     "start:server": "parcel watch --no-autoinstall --no-hmr --target server server/index.ts",
     "start:static": "nodemon -w 'client/public/**' -x 'npm run build:static'",
-    "start:ssr": "nodemon -C -w 'dist/**' -x 'node dist/server/index.js'",
+    "start:ssr": "nodemon -C -w 'dist/**' -x 'node --inspect dist/server/index.js'",
     "test": "run-s -lns test:*",
     "test:lint": "eslint --ext ts,tsx .",
     "test:text": "prettier --check '**/*.{json,md,mdx,yml}'",

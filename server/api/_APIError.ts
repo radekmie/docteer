@@ -18,7 +18,6 @@ export const APIErrors = {
   'api-not-found': 'Resource Not Found',
   'api-unavailable': 'External Service Unavailable',
   'api-unknown-token': 'Unknown JWT',
-  'api-url': 'Failed URL Parsing',
   'api-validation': 'Validation Failed',
 
   // Business logic.

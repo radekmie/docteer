@@ -9,10 +9,12 @@ import { server as ssr } from './ssr';
 
 export const server = express();
 
-server.disable('x-powered-by');
+server.set('query parser', 'simple');
+server.set('etag', false);
+server.set('x-powered-by', false);
 server.use(compression());
+server.use('/api', rest);
 server.use(serve(join(__dirname, '..', 'public'), config.server.static.public));
 server.use(serve(join(__dirname, '..', 'client'), config.server.static.client));
-server.use('/api', rest);
 server.use(ssr);
 server.listen(config.server.port);

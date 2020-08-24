@@ -67,7 +67,7 @@ export class Actions extends Component<Actions$Props> {
 
 function button(props: Action) {
   return !props[0] ? null : (
-    <div
+    <button
       className={buttonClass(props[1], props[2])}
       data-test-notes-action={props[3].toLowerCase()}
       key={props[3]}
@@ -76,7 +76,7 @@ function button(props: Action) {
       title={props[3]}
     >
       {props[5]}
-    </div>
+    </button>
   );
 }
 
