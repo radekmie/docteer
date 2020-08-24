@@ -26,7 +26,6 @@ export async function handle({ refresh }: Params, context: APIContextType) {
         _id: note._id_slug,
         _outname: note._outname,
         _outline: note._outline,
-        // @ts-expect-error `note._objects` is an array.
         ...note._objects,
       });
 

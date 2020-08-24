@@ -49,20 +49,22 @@ export type LabelType = {
 
 export type NoteBase = Record<string, unknown>;
 
-export type NoteDocType<T extends NoteBase = NoteBase> = T & {
+export type NoteDocType<T extends NoteBase = NoteBase> = {
   _id: ObjectId | string;
   _id_slug: string;
   _id_user: ObjectId | string;
   _outline: SchemaOutlineType<T>;
   _outname: string;
   _created: Date;
+  _objects: T;
   _removed: Date | null;
   _updated: Date;
-  _version: (T & {
-    _created: Date;
-    _outline: SchemaOutlineType<T>;
-    _outname: string;
-  })[];
+  _version: {
+    _objects: T;
+    _outline?: SchemaOutlineType<T>;
+    _outname?: string;
+    _updated: Date;
+  }[];
 };
 
 export type NotePatchType<T extends NoteBase = NoteBase> = T & {
@@ -84,14 +86,10 @@ export type PassType = {
   digest: string;
 };
 
-export type PatchType<
-  Created extends string = string,
-  Removed extends string = string,
-  Updated extends string = string
-> = {
-  created: Created[];
-  removed: Removed[];
-  updated: (NotePatchType & { _id: Created | Removed | Updated })[];
+export type PatchType = {
+  created: string[];
+  removed: string[];
+  updated: NotePatchType[];
 };
 
 export type SchemaOutlineFieldType = 'div' | 'ol' | 'ul' | 'textarea';

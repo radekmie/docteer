@@ -82,7 +82,6 @@ export async function handle(
                 {},
               ),
             },
-            // @ts-expect-error Invalid type.
             $push: {
               _version: {
                 _updated: now,
