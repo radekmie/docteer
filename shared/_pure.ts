@@ -1,6 +1,6 @@
 import { shallowEqual } from '.';
 
-export function pure<Args extends any[], Result>(
+export function pure<Args extends unknown[], Result>(
   fn: (...args: Args) => Result,
 ) {
   let prevArgs: Args;

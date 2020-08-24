@@ -1,84 +1,55 @@
-type DAGStepArgs = any[];
-type DAGStep<Context, Args extends DAGStepArgs = DAGStepArgs> = {
-  args?: ((context: Context) => MaybeReadonly<Args>) | MaybeReadonly<Args>;
-  fn: (...args: Args) => Context | void;
-};
+import isFunction from 'lodash/isFunction';
 
-type MaybeReadonly<T> = T | Readonly<T>;
+type Step<T, Args extends unknown[] = unknown[]> = [
+  (...args: Readonly<Args>) => T | void,
+  ((context: T) => Readonly<Args>) | Readonly<Args> | void,
+];
 
-export class DAG<Context extends object> {
-  constructor(
-    public _dead: DAGStep<Context>[] = [],
-    public _last: DAGStep<Context>[] = [],
-    public _next: DAGStep<Context>[] = [],
+export class DAG<T> {
+  private constructor(
+    private _dead: Step<T>[] = [],
+    private _last: Step<T>[] = [],
+    private _next: Step<T>[] = [],
   ) {}
 
   static create() {
     return new DAG<{}>();
   }
 
-  bind() {
-    return () => {
-      // @ts-expect-error It's valid only at the beginning.
-      let context: Context = {};
-      for (const step of this._next) {
-        context = invoke(context, step);
-      }
-      for (const step of this._last) {
-        context = invoke(context, step);
-      }
-      for (const step of this._dead) {
-        context = invoke(context, step);
-      }
-      function invoke(context: Context, { args, fn }: DAGStep<Context>) {
-        const ready = typeof args === 'function' ? args(context) : args || [];
-        return fn.bind(context)(...ready) || context;
-      }
-    };
+  dead<Args extends unknown[]>(...step: Step<T, Args>) {
+    return new DAG([...this._dead, step as Step<T>], this._last, this._next);
   }
 
-  dead<Args extends DAGStepArgs>(
-    fn: (...args: Args) => Context | void,
-    args?: ((context: Context) => MaybeReadonly<Args>) | MaybeReadonly<Args>,
-  ) {
-    // @ts-expect-error Force cast arguments.
-    return new DAG(this._dead.concat({ args, fn }), this._last, this._next);
+  last<Args extends unknown[]>(...step: Step<T, Args>) {
+    return new DAG(this._dead, [...this._last, step as Step<T>], this._next);
   }
 
-  last<Args extends DAGStepArgs>(
-    fn: (...args: Args) => Context | void,
-    args?: ((context: Context) => MaybeReadonly<Args>) | MaybeReadonly<Args>,
-  ) {
-    // @ts-expect-error Force cast arguments.
-    return new DAG(this._dead, this._last.concat({ args, fn }), this._next);
-  }
-
-  next<Args extends DAGStepArgs>(
-    fn: (...args: Args) => Context | void,
-    args?: ((context: Context) => MaybeReadonly<Args>) | MaybeReadonly<Args>,
-  ) {
-    // @ts-expect-error Force cast arguments.
-    return new DAG(this._dead, this._last, this._next.concat({ args, fn }));
+  next<Args extends unknown[]>(...step: Step<T, Args>) {
+    return new DAG(this._dead, this._last, [...this._next, step as Step<T>]);
   }
 
   only(title: string) {
-    describe.only(title, this.bind());
+    describe.only(title, this.start.bind(this));
   }
 
   save(title: string) {
-    describe(title, this.bind());
+    describe(title, this.start.bind(this));
   }
 
-  with<ContextNext>(map: (context: Context) => ContextNext) {
-    return new DAG<Context & ContextNext>(
-      // @ts-expect-error Force cast.
-      this._dead,
-      this._last,
-      this._next.concat({
-        args: context => [context],
-        fn: context =>
-          Object.assign({} as Partial<Context>, context, map(context)),
-      }),
+  start() {
+    [...this._next, ...this._last, ...this._dead].reduce(
+      (context, [fn, args]) => {
+        args = isFunction(args) ? args(context) : args || [];
+        return fn.apply(context, args as unknown[]) || context;
+      },
+      {} as T,
     );
+  }
+
+  with<U>(map: (context: T) => U) {
+    return (this.next<[T]>(
+      context => ({ ...context, ...map(context) }),
+      context => [context],
+    ) as unknown) as DAG<T & U>;
   }
 }

@@ -107,7 +107,7 @@ function _parseJSON(text: string) {
 
 function _parseQuery(path: string) {
   try {
-    const result = url.parse(path, true).query as any;
+    const result = url.parse(path, true).query as Record<string, unknown>;
     for (const [key, value] of Object.entries(result)) {
       const valueInt = parseInt(value as string);
       if (isFinite(valueInt) && '' + valueInt === value) {

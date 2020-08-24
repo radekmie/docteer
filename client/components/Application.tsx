@@ -25,8 +25,8 @@ export class Application extends Component<
   Application$Props,
   Application$State
 > {
-  constructor(...args: any[]) {
-    super(...args);
+  constructor(props: Application$Props) {
+    super(props);
 
     this.state = { state: tree.state() };
     this._sync = () => {

@@ -638,8 +638,7 @@ function call<Endpoint extends keyof APIEndpoints>(
   return new Promise<APIEndpointResult<Endpoint>>((resolve, reject) => {
     const id = setTimeout(done, 5000, new Error('Sorry, try again later.'));
 
-    // @ts-expect-error Use `URL` instead of `string`.
-    fetch(url, { body, headers, method })
+    fetch(url.toString(), { body, headers, method })
       .then(response => {
         if (!response.ok) {
           throw new Error();
@@ -654,7 +653,7 @@ function call<Endpoint extends keyof APIEndpoints>(
       })
       .then(response => done(null, response), done);
 
-    function done(error: Error | null, response?: any) {
+    function done(error: Error | null, response?: APIEndpointResult<Endpoint>) {
       clearTimeout(id);
 
       if (error) {

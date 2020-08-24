@@ -15,14 +15,14 @@ export type APIEndpointParams<
 > = APIEndpoints[Endpoint] extends (
   params: infer Params,
   context: APIContextType,
-) => Promise<any>
+) => Promise<unknown>
   ? Params
   : never;
 
 export type APIEndpointResult<
   Endpoint extends keyof APIEndpoints
 > = APIEndpoints[Endpoint] extends (
-  params: any,
+  params: never,
   context: APIContextType,
 ) => Promise<infer Result>
   ? Result
