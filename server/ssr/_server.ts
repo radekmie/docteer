@@ -1,22 +1,17 @@
-import connect from 'connect';
+import express from 'express';
 import { extname } from 'path';
 
 import { params, render } from '.';
 
-export const server = connect();
+export const server = express.Router();
 
-server.use('/', (request, response, next) => {
+server.use((request, response, next) => {
   if (request.method !== 'GET' || extname(request.url)) {
     next();
     return;
   }
 
   const { body, headers } = render(params(request.url));
-
-  if (request.headers['if-none-match'] === headers.etag) {
-    response.statusCode = 304;
-  }
-
-  response.writeHead(response.statusCode, headers);
-  response.end(body);
+  const code = request.headers['if-none-match'] === headers.etag ? 304 : 200;
+  response.status(code).set(headers).end(body);
 });

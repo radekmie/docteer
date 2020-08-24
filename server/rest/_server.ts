@@ -1,6 +1,6 @@
 import { text } from 'body-parser';
-import connect from 'connect';
+import express from 'express';
 
-export const server = connect();
+export const server = express.Router();
 
 server.use(text({ type: 'application/json' }));

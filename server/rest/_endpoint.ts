@@ -1,4 +1,3 @@
-import { ServerResponse } from 'http';
 import jwt from 'jsonwebtoken';
 import { ObjectId } from 'mongodb';
 import url from 'url';
@@ -17,7 +16,6 @@ export function endpoint<Endpoint extends keyof APIEndpoints>(
 ) {
   const [method, path] = endpoint.split(' ');
 
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   server.use(path, async (request, response, next) => {
     if (request.method !== method) {
       next();
@@ -55,9 +53,9 @@ export function endpoint<Endpoint extends keyof APIEndpoints>(
         return await fn(data, context);
       });
 
-      _response(response, null, result);
+      response.status(200).json({ error: null, result });
     } catch (error) {
-      _response(response, APIError.fromError(error), null);
+      response.status(error.http).json({ error: error.toJSON(), result: null });
     }
   });
 }
@@ -121,16 +119,4 @@ function _parseQuery(path: string) {
   } catch (error) {
     throw new APIError({ code: 'api-url' });
   }
-}
-
-function _response(
-  response: ServerResponse,
-  error: APIError | null,
-  result: unknown,
-) {
-  const code = error ? error.http : 200;
-  const body = { error: error ? error.toJSON() : null, result };
-
-  response.writeHead(code, { 'Content-Type': 'application/json' });
-  response.end(JSON.stringify(body));
 }

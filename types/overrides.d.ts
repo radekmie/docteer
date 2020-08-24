@@ -1,12 +1,3 @@
-import { RequestHandler } from 'express';
-
-declare module 'connect' {
-  export interface Server {
-    use(fn: RequestHandler): Server;
-    use(route: string, fn: RequestHandler): Server;
-  }
-}
-
 declare global {
   export interface Element {
     blur?(): void;
