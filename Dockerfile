@@ -3,7 +3,7 @@ ARG NODE=14.8.0-alpine
 FROM node:$NODE
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN HUSKY_SKIP_INSTALL=true npm ci --no-audit && npm cache clean --force
+RUN HUSKY_SKIP_INSTALL=true PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci --no-audit && npm cache clean --force
 COPY . .
 RUN PARCEL_WORKERS=1 npm run build
 

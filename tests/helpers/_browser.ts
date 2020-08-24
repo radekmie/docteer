@@ -1,15 +1,8 @@
 import { createPool } from 'generic-pool';
-import puppeteer from 'puppeteer-core';
+import { chromium } from 'playwright';
 
 const pool = createPool(
-  {
-    create: () =>
-      puppeteer.launch({
-        args: ['--disable-gpu', '--disable-infobars', '--no-sandbox'],
-        executablePath: 'google-chrome',
-      }),
-    destroy: browser => browser.close(),
-  },
+  { create: () => chromium.launch(), destroy: browser => browser.close() },
   { max: 1 },
 );
 

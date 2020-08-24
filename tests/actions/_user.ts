@@ -7,26 +7,25 @@ export function userAddSchema(this: BrowserContext, schema: SchemaType) {
   navigate.call(this, 'settings');
 
   it(`should create schema '${schema.name}'`, async () => {
-    const inA = '[data-test-schema]:last-of-type';
-    const inB = '[data-test-schema]:last-of-type > :nth-last-child(2)';
+    const inA = '[data-test-schema]:last-of-type ';
+    const inB = `${inA}> :nth-last-child(2) `;
     const page = await this.page;
     await page.click('[data-test-schema-add]');
-    await page.waitFor(10);
-    await page.click(`${inA} summary`);
-    await type(page, `${inA} [data-test-schema-name]`, schema.name);
+    await page.click(`${inA}summary`);
+    await type(page, `${inA}[data-test-schema-name]`, schema.name);
     await page.$eval(
-      `${inA} [data-test-schema-name]`,
+      `${inA}[data-test-schema-name]`,
       /* istanbul ignore next */
       input => input.blur!(),
     );
 
     for (const { name: fieldName, type: fieldType } of schema.fields) {
-      await page.click(`${inA} [data-test-schema-field-add]`);
-      await page.select(`${inB} [data-test-schema-field-type]`, fieldType);
-      await type(page, `${inB} [data-test-schema-field-name]`, fieldName);
+      await page.click(`${inA}[data-test-schema-field-add]`);
+      await page.selectOption(`${inB}[data-test-schema-field-type]`, fieldType);
+      await type(page, `${inB}[data-test-schema-field-name]`, fieldName);
     }
 
-    await page.click(`${inA} summary`);
+    await page.click(`${inA}summary`);
   });
 }
 
@@ -54,9 +53,8 @@ export function userLogIn(
   navigate.call(this, 'login');
 
   it(`should log in as ${user.email}:${user.password}`, async () => {
-    const selector = '[href="/signup"]';
     const page = await this.page;
-    await page.waitForSelector(selector);
+    await page.waitForSelector('[href="/signup"]');
 
     await type(page, '#email', user.email);
     await type(page, '#password', user.password);
@@ -79,11 +77,9 @@ export function userSignUp(
   navigate.call(this, 'login');
 
   it(`should sign in as ${user.email}:${user.password}`, async () => {
-    const selector = '[href="/signup"]';
     const page = await this.page;
-    await page.waitForSelector(selector);
-    await page.click(selector);
-    await page.waitForSelector(selector, { hidden: true });
+    await page.click('[href="/signup"]');
+    await page.waitForSelector('[href="/signup"]', { state: 'hidden' });
 
     await type(page, '#email', user.email);
     await type(page, '#password', user.password);

@@ -5,10 +5,8 @@ import { BrowserContext } from './_browser';
 
 export function noteAction(this: BrowserContext, title: string) {
   it(`should perform '${title}' notes action`, async () => {
-    const selector = `[data-test-notes-action="${title}"]`;
     const page = await this.page;
-    await page.waitForSelector(selector);
-    await page.click(selector);
+    await page.click(`[data-test-notes-action="${title}"]`);
   });
 }
 
@@ -22,8 +20,7 @@ export function noteCheck(
   if (color === '-') {
     it(`should check if note called '${title}' is not visible`, async () => {
       const page = await this.page;
-      await page.waitForSelector(selector, { hidden: true });
-      await page.waitForSelector(selector, { hidden: true });
+      await page.waitForSelector(selector, { state: 'hidden' });
     });
 
     return;
@@ -31,7 +28,6 @@ export function noteCheck(
 
   it(`should check if note called '${title}' is visible`, async () => {
     const page = await this.page;
-    await page.waitForSelector(selector);
     await page.hover(selector);
   });
 
@@ -121,8 +117,7 @@ export function noteField(
 export function noteSchema(this: BrowserContext, name: string) {
   it(`should select schema '${name}'`, async () => {
     const page = await this.page;
-    await page.waitForSelector('[data-test-note-schema]');
-    await page.select('[data-test-note-schema]', name);
+    await page.selectOption('[data-test-note-schema]', name);
   });
 }
 

@@ -1,26 +1,9 @@
 import { RequestHandler } from 'express';
-import { CDPSession, Page } from 'puppeteer-core';
 
 declare module 'connect' {
   export interface Server {
     use(fn: RequestHandler): Server;
     use(route: string, fn: RequestHandler): Server;
-  }
-}
-
-declare module 'puppeteer-core' {
-  export interface CDPSession {
-    send(
-      method: 'Browser.getWindowForTarget',
-      params: { targetId: string },
-    ): Promise<{ windowId: string }>;
-    send(
-      method: 'Target.getTargets',
-    ): Promise<{ targetInfos: { attached: boolean; targetId: string }[] }>;
-  }
-
-  export interface Page {
-    _client: CDPSession;
   }
 }
 

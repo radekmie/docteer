@@ -1,4 +1,4 @@
-import { Page } from 'puppeteer-core';
+import { Page } from 'playwright';
 
 export async function type(page: Page, selector: string, value: string) {
   await page.click(selector);
