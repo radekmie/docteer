@@ -28,5 +28,5 @@ export async function start() {
   await server.register(rest, { prefix: '/api' });
   await server.register(assets);
   await server.register(ssr);
-  await server.listen(config.server.port);
+  await server.listen(config.server);
 }

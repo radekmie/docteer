@@ -18,6 +18,7 @@ export type Config = {
   };
   node: { env: string };
   server: {
+    host: string;
     port: number;
   };
 };
@@ -34,6 +35,7 @@ const config: Record<string, unknown> = {
   'mongo.retry.count': 10,
   'mongo.retry.delay': 1000,
   'node.env': 'development',
+  'server.host': '0.0.0.0',
   'server.port': 3000,
 };
 
