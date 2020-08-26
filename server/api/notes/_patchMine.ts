@@ -1,16 +1,13 @@
 import { BulkWriteOperation } from 'mongodb';
 
-import * as notes from '.';
-import { method } from '..';
+import * as api from '..';
 import { APIContextType, NoteDocType, PatchType } from '../../../types';
+import { method } from '../../lib';
 import * as schemas from '../../schemas';
 
 type Params = { patch: PatchType; refresh: number };
 
-export async function handle(
-  { patch, refresh }: Params,
-  context: APIContextType,
-) {
+async function handle({ patch, refresh }: Params, context: APIContextType) {
   const now = new Date();
   const bulk: BulkWriteOperation<NoteDocType>[] = [];
 
@@ -101,16 +98,16 @@ export async function handle(
     await Notes.bulkWrite(bulk, { session: context.session });
   }
 
-  const result = await notes.getMine({ refresh }, context);
+  const result = await api.notes.getMine.run({ refresh }, context);
 
   if (patch.removed.length) {
-    await notes.archive({}, context);
+    await api.notes.archive.run({}, context);
   }
 
   return result;
 }
 
-export const schema = {
+const schema = {
   type: 'object',
   properties: {
     patch: schemas.patch,
@@ -120,4 +117,4 @@ export const schema = {
   additionalProperties: false,
 };
 
-export default method(handle, schema);
+export const patchMine = method(handle, schema);

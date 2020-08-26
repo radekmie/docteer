@@ -12,7 +12,7 @@ export interface APIEndpoints {}
 
 export type APIEndpointParams<
   Endpoint extends keyof APIEndpoints
-> = APIEndpoints[Endpoint] extends (
+> = APIEndpoints[Endpoint]['run'] extends (
   params: infer Params,
   context: APIContextType,
 ) => Promise<unknown>
@@ -21,7 +21,7 @@ export type APIEndpointParams<
 
 export type APIEndpointResult<
   Endpoint extends keyof APIEndpoints
-> = APIEndpoints[Endpoint] extends (
+> = APIEndpoints[Endpoint]['run'] extends (
   params: never,
   context: APIContextType,
 ) => Promise<infer Result>

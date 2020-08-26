@@ -84,11 +84,11 @@
     "ajv": "6.12.3",
     "ajv-keywords": "3.5.2",
     "bcryptjs": "2.4.3",
-    "body-parser": "1.19.0",
     "cheerio": "1.0.0-rc.3",
-    "compression": "1.7.4",
     "etag": "1.8.1",
-    "express": "4.17.1",
+    "fastify": "3.2.1",
+    "fastify-compress": "3.3.0",
+    "fastify-static": "3.2.0",
     "fuzzysort": "1.1.4",
     "hash.js": "1.1.7",
     "immer": "7.0.7",
@@ -96,8 +96,7 @@
     "lodash": "4.17.20",
     "mongodb": "3.6.0",
     "preact": "10.4.7",
-    "preact-render-to-string": "5.1.10",
-    "serve-static": "1.14.1"
+    "preact-render-to-string": "5.1.10"
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "7.11.0",

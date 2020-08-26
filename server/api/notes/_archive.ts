@@ -1,9 +1,9 @@
-import { method } from '..';
 import { APIContextType } from '../../../types';
+import { method } from '../../lib';
 
 type Params = {};
 
-export async function handle(input: Params, context: APIContextType) {
+async function handle(input: Params, context: APIContextType) {
   const { Notes, NotesArchive } = context.collections;
   const archive = await Notes.find(
     { _removed: { $ne: null } },
@@ -22,11 +22,11 @@ export async function handle(input: Params, context: APIContextType) {
   ]);
 }
 
-export const schema = {
+const schema = {
   type: 'object',
   properties: {},
   required: [],
   additionalProperties: false,
 };
 
-export default method(handle, schema);
+export const archive = method(handle, schema);

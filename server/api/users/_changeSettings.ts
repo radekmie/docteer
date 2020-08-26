@@ -1,6 +1,5 @@
-import { method } from '..';
 import { APIContextType, SchemaType } from '../../../types';
-import { APIError } from '../../api';
+import { APIError, method } from '../../lib';
 import * as schemas from '../../schemas';
 
 function _hasDuplicatedField(schema: SchemaType) {
@@ -11,7 +10,7 @@ function _hasDuplicatedField(schema: SchemaType) {
 
 type Params = { schemas: SchemaType[] };
 
-export async function handle(input: Params, context: APIContextType) {
+async function handle(input: Params, context: APIContextType) {
   if (input.schemas.some(_hasDuplicatedField)) {
     throw new APIError({ code: 'schema-field-duplicated' });
   }
@@ -30,7 +29,7 @@ export async function handle(input: Params, context: APIContextType) {
   return value!;
 }
 
-export const schema = {
+const schema = {
   type: 'object',
   properties: {
     schemas: {
@@ -42,4 +41,4 @@ export const schema = {
   additionalProperties: false,
 };
 
-export default method(handle, schema);
+export const changeSettings = method(handle, schema);

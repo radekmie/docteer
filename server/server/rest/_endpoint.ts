@@ -1,35 +1,27 @@
+import { HTTPMethods, RouteOptions } from 'fastify';
 import jwt from 'jsonwebtoken';
-import mapValues from 'lodash/mapValues';
 import { ObjectId } from 'mongodb';
-import { ParsedQs } from 'qs';
 
-import { server } from '.';
-import { APIContextType, APIEndpoints } from '../../types';
-import { APIError } from '../api';
-import config from '../config';
-import { withTransaction } from '../mongo';
-import * as users from '../services/users';
+import { APIContextType, APIEndpoints } from '../../../types';
+import * as api from '../../api';
+import config from '../../config';
+import { APIError } from '../../lib';
+import { withTransaction } from '../../mongo';
 
 export function endpoint<Endpoint extends keyof APIEndpoints>(
   endpoint: Endpoint,
   fn: APIEndpoints[Endpoint],
   { authorize }: { authorize: boolean },
-) {
-  const [method, path] = endpoint.split(' ');
+): RouteOptions {
+  const [method, url] = endpoint.split(' ');
 
-  server.use(path, async (request, response, next) => {
-    if (request.method !== method) {
-      next();
-      return;
-    }
-
-    try {
-      const data =
-        request.method === 'GET'
-          ? _parseQuery(request.query)
-          : _parseJSON(request.body);
-
-      const result = await withTransaction(async transaction => {
+  return {
+    method: method as HTTPMethods,
+    schema: { [method === 'GET' ? 'querystring' : 'body']: fn.schema },
+    url,
+    handler: async request => ({
+      error: null,
+      result: await withTransaction(async transaction => {
         const context: APIContextType = {
           ...transaction,
           // @ts-expect-error These are filled in `_authorize`.
@@ -51,15 +43,11 @@ export function endpoint<Endpoint extends keyof APIEndpoints>(
           throw new APIError({ code: 'api-log-in' });
         }
 
-        return await fn(data, context);
-      });
-
-      response.status(200).json({ error: null, result });
-    } catch (rawError) {
-      const error = APIError.fromError(rawError);
-      response.status(error.http).json({ error: error.toJSON(), result: null });
-    }
-  });
+        const data = method === 'GET' ? request.query : request.body;
+        return await fn.run(data as any, context);
+      }),
+    }),
+  };
 }
 
 async function _authorize(context: APIContextType, token?: string) {
@@ -83,30 +71,9 @@ async function _authorize(context: APIContextType, token?: string) {
       : context.jwtDecoded.sub;
 
     // @ts-expect-error This is checked later.
-    context.user = await users.byId({ _id: context.userId }, context);
+    context.user = await api.users.byId.run({ _id: context.userId }, context);
     if (!context.user) {
       throw new APIError({ code: 'api-unknown-token' });
     }
   }
-}
-
-function _parseJSON(text: string) {
-  let result;
-  try {
-    result = JSON.parse(text);
-  } catch (error) {
-    throw new APIError({ code: 'api-json' });
-  }
-
-  if (!result || result.constructor !== Object) {
-    throw new APIError({ code: 'api-json-body' });
-  }
-
-  return result;
-}
-
-function _parseQuery(query: ParsedQs) {
-  return mapValues(query as Record<string, string>, value =>
-    isFinite(+value) && `${+value}` === value ? +value : value,
-  );
 }

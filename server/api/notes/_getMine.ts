@@ -1,9 +1,9 @@
-import { method } from '..';
 import { APIContextType, PatchType } from '../../../types';
+import { method } from '../../lib';
 
 type Params = { refresh: number };
 
-export async function handle({ refresh }: Params, context: APIContextType) {
+async function handle({ refresh }: Params, context: APIContextType) {
   const diff: PatchType = { created: [], removed: [], updated: [] };
   if (refresh === Infinity) {
     return diff;
@@ -43,7 +43,7 @@ export async function handle({ refresh }: Params, context: APIContextType) {
   return diff;
 }
 
-export const schema = {
+const schema = {
   type: 'object',
   properties: {
     refresh: { type: 'integer', minimum: 0 },
@@ -52,4 +52,4 @@ export const schema = {
   additionalProperties: false,
 };
 
-export default method(handle, schema);
+export const getMine = method(handle, schema);

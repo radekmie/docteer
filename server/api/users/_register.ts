@@ -2,17 +2,15 @@ import bcrypt from 'bcryptjs';
 import cloneDeep from 'lodash/cloneDeep';
 import { ObjectId } from 'mongodb';
 
-import * as users from '.';
-import { method } from '..';
+import * as api from '..';
 import {
   APIContextType,
   PassType,
   PatchType,
   SchemaType,
 } from '../../../types';
-import { APIError } from '../../api';
+import { APIError, method } from '../../lib';
 import * as schemas from '../../schemas';
-import * as notes from '../notes';
 
 const defaultPatch: PatchType = {
   created: ['introduction'],
@@ -69,10 +67,7 @@ const defaultSchemas: SchemaType[] = [
 
 type Params = { email: string; password: PassType };
 
-export async function handle(
-  { email, password }: Params,
-  context: APIContextType,
-) {
+async function handle({ email, password }: Params, context: APIContextType) {
   const { Users } = context.collections;
 
   let _id;
@@ -106,15 +101,15 @@ export async function handle(
   context.user = user!;
   context.userId = user!._id;
 
-  await notes.patchMine(
+  await api.notes.patchMine.run(
     { patch: cloneDeep(defaultPatch), refresh: Infinity },
     context,
   );
 
-  return users.refreshToken({}, context);
+  return api.users.refreshToken.run({}, context);
 }
 
-export const schema = {
+const schema = {
   type: 'object',
   properties: {
     email: schemas.email,
@@ -124,4 +119,4 @@ export const schema = {
   additionalProperties: false,
 };
 
-export default method(handle, schema);
+export const register = method(handle, schema);

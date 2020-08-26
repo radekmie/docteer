@@ -5,13 +5,20 @@ import path from 'path';
 import { h } from 'preact';
 import { render as preact } from 'preact-render-to-string';
 
-import { Application } from '../../client/components/Application';
-import { Logo } from '../../client/components/Logo';
-import { cache, titleForView } from '../../shared';
+import { Application } from '../../../client/components/Application';
+import { Logo } from '../../../client/components/Logo';
+import { cache, titleForView } from '../../../shared';
 
 export const params = (url: string) => {
-  const view = url.split('/', 3)[1];
-  return view !== 'login' && view !== 'signup' ? '' : view;
+  if (url.startsWith('/login')) {
+    return 'login';
+  }
+
+  if (url.startsWith('/signup')) {
+    return 'signup';
+  }
+
+  return '';
 };
 
 export const render = cache(view => {

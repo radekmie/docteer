@@ -1,17 +1,13 @@
 import bcrypt from 'bcryptjs';
 
-import * as users from '.';
-import { method } from '..';
+import * as api from '..';
 import { APIContextType, PassType } from '../../../types';
-import { APIError } from '../../api';
+import { APIError, method } from '../../lib';
 import * as schemas from '../../schemas';
 
 type Params = { email: string; password: PassType };
 
-export async function handle(
-  { email, password }: Params,
-  context: APIContextType,
-) {
+async function handle({ email, password }: Params, context: APIContextType) {
   const { Users } = context.collections;
   const user = await Users.findOne(
     { 'emails.address': email },
@@ -31,10 +27,10 @@ export async function handle(
   context.user = user;
   context.userId = user._id;
 
-  return await users.refreshToken({}, context);
+  return await api.users.refreshToken.run({}, context);
 }
 
-export const schema = {
+const schema = {
   type: 'object',
   properties: {
     email: schemas.email,
@@ -44,4 +40,4 @@ export const schema = {
   additionalProperties: false,
 };
 
-export default method(handle, schema);
+export const login = method(handle, schema);

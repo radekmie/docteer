@@ -19,10 +19,6 @@ export type Config = {
   node: { env: string };
   server: {
     port: number;
-    static: {
-      client: { extensions: string[]; index: boolean };
-      public: { index: boolean };
-    };
   };
 };
 
@@ -39,9 +35,6 @@ const config: Record<string, unknown> = {
   'mongo.retry.delay': 1000,
   'node.env': 'development',
   'server.port': 3000,
-  'server.static.client.extensions': ['js', 'map'],
-  'server.static.client.index': false,
-  'server.static.public.index': false,
 };
 
 for (const key of Object.keys(config)) {

@@ -1,12 +1,12 @@
 import jwt from 'jsonwebtoken';
 
-import { method } from '..';
 import { APIContextType } from '../../../types';
 import config from '../../config';
+import { method } from '../../lib';
 
 type Params = {};
 
-export async function handle(input: Params, context: APIContextType) {
+async function handle(input: Params, context: APIContextType) {
   return {
     emails: context.user.emails,
     schemas: context.user.schemas,
@@ -20,11 +20,11 @@ export async function handle(input: Params, context: APIContextType) {
   };
 }
 
-export const schema = {
+const schema = {
   type: 'object',
   properties: {},
   required: [],
   additionalProperties: false,
 };
 
-export default method(handle, schema);
+export const refreshToken = method(handle, schema);

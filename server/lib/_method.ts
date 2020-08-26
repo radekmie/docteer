@@ -1,14 +1,13 @@
-import { ajv } from '.';
 import { APIContextType } from '../../types';
-import { APIError } from '../api';
+import { APIError } from './_APIError';
+import { ajv } from './_ajv';
 
 export function method<Params extends {}, Result>(
-  handle: (params: Params, context: APIContextType) => Promise<Result>,
+  run: (params: Params, context: APIContextType) => Promise<Result>,
   schema: object,
 ) {
   const validator = ajv.compile(schema);
-
-  return async (params: Params, context: APIContextType) => {
+  async function runSafe(params: Params, context: APIContextType) {
     if (!validator(params)) {
       throw new APIError({
         code: 'api-validation',
@@ -16,6 +15,8 @@ export function method<Params extends {}, Result>(
       });
     }
 
-    return await handle(params, context);
-  };
+    return await run(params, context);
+  }
+
+  return { run, runSafe, schema, validator };
 }

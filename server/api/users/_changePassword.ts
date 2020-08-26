@@ -1,16 +1,12 @@
 import bcrypt from 'bcryptjs';
 
-import { method } from '..';
 import { APIContextType, PassType } from '../../../types';
-import { APIError } from '../../api';
+import { APIError, method } from '../../lib';
 import * as schemas from '../../schemas';
 
 type Params = { new1: PassType; new2: PassType; old: PassType };
 
-export async function handle(
-  { new1, new2, old }: Params,
-  context: APIContextType,
-) {
+async function handle({ new1, new2, old }: Params, context: APIContextType) {
   if (new1.digest !== new2.digest) {
     throw new APIError({ code: 'user-password-mismatch' });
   }
@@ -41,7 +37,7 @@ export async function handle(
   return {};
 }
 
-export const schema = {
+const schema = {
   type: 'object',
   properties: {
     new1: schemas.password,
@@ -52,4 +48,4 @@ export const schema = {
   additionalProperties: false,
 };
 
-export default method(handle, schema);
+export const changePassword = method(handle, schema);

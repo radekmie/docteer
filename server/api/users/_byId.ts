@@ -1,16 +1,16 @@
 import { ObjectId } from 'mongodb';
 
-import { method } from '..';
 import { APIContextType } from '../../../types';
+import { method } from '../../lib';
 
 type Params = { _id: ObjectId | string };
 
-export async function handle({ _id }: Params, context: APIContextType) {
+async function handle({ _id }: Params, context: APIContextType) {
   const { Users } = context.collections;
   return await Users.findOne({ _id }, { session: context.session });
 }
 
-export const schema = {
+const schema = {
   type: 'object',
   properties: {
     _id: {
@@ -21,4 +21,4 @@ export const schema = {
   additionalProperties: false,
 };
 
-export default method(handle, schema);
+export const byId = method(handle, schema);
