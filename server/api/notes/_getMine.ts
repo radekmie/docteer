@@ -14,7 +14,7 @@ async function handle({ refresh }: Params, context: APIContextType) {
   await Promise.all(
     [
       [Notes, { _id: 0, _id_user: 0, _updated: 0, _version: 0 }] as const,
-      [NotesArchive, { _id: 0, _id_slug: 1 }] as const,
+      [NotesArchive, { _id: 0, _id_slug: 1, _removed: 1 }] as const,
     ].map(([collection, projection]) =>
       collection
         .find(
