@@ -9,7 +9,7 @@
     "build:server": "parcel build --no-autoinstall --no-source-maps --target server server/index.ts --no-scope-hoist",
     "build:static": "mkdir -p dist/public && cp -R client/public dist",
     "e2e": "jest --ci .spec.ts",
-    "postbuild": "for file in dist/**/*.js ; do npx terser -cem -o $file -- $file ; done",
+    "postbuild": "for file in dist/client/*.js ; do npx terser -cem -o $file -- $file ; done",
     "prebuild": "npm run reset:build",
     "reset": "run-s -lns reset:*",
     "reset:build": "rm -rf dist",
@@ -75,7 +75,8 @@
       "engines": {
         "node": "14"
       },
-      "includeNodeModules": true
+      "includeNodeModules": true,
+      "minify": false
     }
   },
   "dependencies": {
