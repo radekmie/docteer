@@ -17,6 +17,7 @@ export const getMongo = cache(async () => {
     if (client && client.isConnected()) {
       return client;
     }
+
     await new Promise(resolve => setTimeout(resolve, config.mongo.retry.delay));
   }
 
