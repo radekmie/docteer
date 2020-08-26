@@ -88,7 +88,6 @@
     "cheerio": "1.0.0-rc.3",
     "etag": "1.8.1",
     "fastify": "3.2.1",
-    "fastify-compress": "3.3.0",
     "fastify-static": "3.2.0",
     "fuzzysort": "1.1.4",
     "hash.js": "1.1.7",

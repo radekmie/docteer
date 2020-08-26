@@ -1,5 +1,4 @@
 import fastify from 'fastify';
-import compress from 'fastify-compress';
 
 import config from '../config';
 import { ajv } from '../lib';
@@ -24,7 +23,6 @@ export async function start() {
   server.setValidatorCompiler(({ schema }) => ajv.compile(schema));
 
   // Register all routes.
-  await server.register(compress);
   await server.register(rest, { prefix: '/api' });
   await server.register(assets);
   await server.register(ssr);
