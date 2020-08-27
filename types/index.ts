@@ -36,6 +36,7 @@ export type APITransactionType = {
   };
   db: Db;
   mongo: MongoClient;
+  now: Date;
   session: ClientSession;
 };
 

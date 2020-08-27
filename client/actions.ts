@@ -290,11 +290,10 @@ export function onLogout() {
 export function onRefresh(firstRun?: boolean) {
   toast('info', firstRun === true ? 'Loading...' : 'Refreshing...');
 
-  const last = new Date();
-  return call('GET /notes', { refresh: +tree.state().last }).then(patch => {
-    tree.updateWith({ last });
+  return call('GET /notes', { refresh: +tree.state().last }).then(result => {
+    tree.updateWith({ last: new Date(result.refresh) });
     toast('success', firstRun === true ? 'Loaded.' : 'Refreshed.');
-    merge(patch);
+    merge(result.patch);
   });
 }
 
@@ -354,13 +353,11 @@ export function onSave() {
 
   toast('info', 'Saving...');
 
-  const last = new Date();
-
   return call('POST /notes', { patch, refresh: +refresh }).then(
-    patch => {
-      tree.updateWith({ last });
+    result => {
+      tree.updateWith({ last: new Date(result.refresh) });
       toast('success', 'Saved.');
-      merge(patch);
+      merge(result.patch);
       onReset();
     },
     error => {

@@ -8,7 +8,7 @@ import * as schemas from '../../schemas';
 type Params = { patch: PatchType; refresh: number };
 
 async function handle({ patch, refresh }: Params, context: APIContextType) {
-  const now = new Date();
+  const now = context.now;
   const bulk: BulkWriteOperation<NoteDocType>[] = [];
 
   patch.removed.forEach(_id => {
@@ -96,15 +96,13 @@ async function handle({ patch, refresh }: Params, context: APIContextType) {
   if (bulk.length !== 0) {
     const { Notes } = context.collections;
     await Notes.bulkWrite(bulk, { session: context.session });
+
+    if (patch.removed.length) {
+      await api.notes.archive.run({}, context);
+    }
   }
 
-  const result = await api.notes.getMine.run({ refresh }, context);
-
-  if (patch.removed.length) {
-    await api.notes.archive.run({}, context);
-  }
-
-  return result;
+  return await api.notes.getMine.run({ refresh }, context);
 }
 
 const schema = {

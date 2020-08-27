@@ -16,7 +16,8 @@ export async function withTransaction<Result>(
   session.startTransaction({ readConcern: { level: 'snapshot' } });
 
   try {
-    const result = await fn({ collections, db, mongo, session });
+    const now = new Date();
+    const result = await fn({ collections, db, mongo, now, session });
     await session.commitTransaction();
 
     return result;

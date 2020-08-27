@@ -74,7 +74,7 @@ async function handle({ email, password }: Params, context: APIContextType) {
   try {
     const result = await Users.insertOne(
       {
-        createdAt: new Date(),
+        createdAt: context.now,
         services: {
           password: { bcrypt: await bcrypt.hash(password.digest, 10) },
         },
@@ -102,7 +102,7 @@ async function handle({ email, password }: Params, context: APIContextType) {
   context.userId = user!._id;
 
   await api.notes.patchMine.run(
-    { patch: cloneDeep(defaultPatch), refresh: Infinity },
+    { patch: cloneDeep(defaultPatch), refresh: +context.now },
     context,
   );
 
