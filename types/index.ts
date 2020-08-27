@@ -31,7 +31,6 @@ export type APIEndpointResult<
 export type APITransactionType = {
   collections: {
     Notes: Collection<NoteDocType>;
-    NotesArchive: Collection<NoteDocType>;
     Users: Collection<UserDocType>;
   };
   db: Db;

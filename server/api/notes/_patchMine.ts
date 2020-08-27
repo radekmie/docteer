@@ -96,10 +96,6 @@ async function handle({ patch, refresh }: Params, context: APIContextType) {
   if (bulk.length !== 0) {
     const { Notes } = context.collections;
     await Notes.bulkWrite(bulk, { session: context.session });
-
-    if (patch.removed.length) {
-      await api.notes.archive.run({}, context);
-    }
   }
 
   return await api.notes.getMine.run({ refresh }, context);
