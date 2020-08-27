@@ -712,17 +712,21 @@ function login(
   tree.updateWith(diff);
 }
 
-function merge(patch: PatchType) {
+function merge({ created, removed, updated }: PatchType) {
+  if (created.length === 0 && removed.length === 0 && updated.length === 0) {
+    return;
+  }
+
   tree.update(store => {
     store.notesOrigins = store.notesOrigins
-      .filter(note => !patch.removed.includes(note._id))
-      .concat(patch.created.map(_id => ({ _id } as NoteType)))
+      .filter(note => !removed.includes(note._id))
+      .concat(created.map(_id => ({ _id } as NoteType)))
       .filter(
         (note, index, notes) =>
           notes.findIndex(other => other._id === note._id) === index,
       )
       .map(note => {
-        const diff = patch.updated.find(updated => updated._id === note._id);
+        const diff = updated.find(updated => updated._id === note._id);
         return diff ? Object.assign({}, note, diff) : note;
       });
   });
