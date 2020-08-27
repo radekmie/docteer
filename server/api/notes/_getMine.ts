@@ -17,9 +17,21 @@ async function handle({ refresh }: Params, context: APIContextType) {
   const after = new Date(refresh);
   const { Notes } = context.collections;
   await Notes.find(
-    { _id_user: context.userId, _updated: { $gt: after } },
     {
-      projection: { _id: 0, _id_user: 0, _updated: 0, _version: 0 } as object,
+      _id_user: context.userId,
+      _removed: refresh === 0 ? null : undefined,
+      _updated: { $gt: after },
+    },
+    {
+      projection: {
+        _created: 1,
+        _id: 0,
+        _id_slug: 1,
+        _objects: 1,
+        _outline: 1,
+        _outname: 1,
+        _removed: 1,
+      } as object,
       session: context.session,
     },
   ).forEach(note => {
