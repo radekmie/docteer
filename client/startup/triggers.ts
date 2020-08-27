@@ -192,11 +192,8 @@ function syncHistory() {
       }
     }
 
-    store.noteId =
-      userLoggedIn && store.view === 'notes' ? noteId || null : null;
-    store.noteId = notes.some(note => note._id === store.noteId)
-      ? store.noteId
-      : null;
+    const id = userLoggedIn && store.view === 'notes' ? noteId || null : null;
+    store.noteId = notes.some(note => note._id === id) ? id : null;
 
     document.title = `${titleForView(store.view)} | DocTeer`;
   });

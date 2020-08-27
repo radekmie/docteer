@@ -13,6 +13,7 @@ class NotesItem extends Component<NotesItem$Props> {
   }
 
   render({ note }: NotesItem$Props) {
+    const name = (note.name as string) || '(untitled)';
     const color = note._created
       ? note._removed
         ? 'gray hover-light-gray'
@@ -23,6 +24,11 @@ class NotesItem extends Component<NotesItem$Props> {
       ? 'blue hover-light-blue'
       : 'dark-gray';
 
+    // Fast path for non-HTML names.
+    const content = /[<&]/.test(name)
+      ? { dangerouslySetInnerHTML: { __html: name } }
+      : { children: name };
+
     return (
       <a
         className={`${
@@ -31,10 +37,9 @@ class NotesItem extends Component<NotesItem$Props> {
           note._active ? ' pl1' : ''
         } truncate`}
         data-item
-        data-test-note={note.name || '(untitled)'}
-        // @ts-expect-error Unknown field.
-        dangerouslySetInnerHTML={{ __html: note.name || '(untitled)' }}
+        data-test-note={name}
         href={note._href}
+        {...content}
       />
     );
   }

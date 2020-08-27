@@ -253,8 +253,8 @@ const _notesVisible = pure(
     noteId: string | null,
     filter: string[],
     search: string,
-  ) => {
-    return notes.map(note =>
+  ) =>
+    notes.map(note =>
       Object.assign(
         {
           _active: note._id === noteId,
@@ -267,8 +267,7 @@ const _notesVisible = pure(
         },
         note,
       ),
-    );
-  },
+    ),
 );
 
 const _user = pure((data: UserType | null, diff: Partial<UserType> | null) => {
