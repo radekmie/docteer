@@ -34,10 +34,14 @@ function checkForEnvVars(object: object, path: string[]) {
       const envKey = snakeCase(path.join('_')).toUpperCase();
       const envValue = process.env[envKey];
       if (envValue) {
-        try {
-          set(config, path, JSON.parse(envValue));
-        } catch (error) {
-          set(config, path, envValue);
+        if (value instanceof Buffer) {
+          set(config, path, Buffer.from(envValue, 'base64'));
+        } else {
+          try {
+            set(config, path, JSON.parse(envValue));
+          } catch (error) {
+            set(config, path, envValue);
+          }
         }
       }
     }
