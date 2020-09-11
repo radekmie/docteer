@@ -60,7 +60,10 @@ async function _authorize(context: APIContextType, token?: string) {
 
     try {
       // @ts-expect-error `jwt.verify` returns `string | object`;
-      context.jwtDecoded = jwt.verify(context.jwt, config.jwt.secret);
+      context.jwtDecoded = jwt.verify(context.jwt, config.jwt.secret, {
+        algorithms: ['HS256'],
+        clockTimestamp: +context.now / 1000,
+      });
     } catch (error) {
       throw new APIError({ code: 'api-failed-token' });
     }
