@@ -7,7 +7,7 @@ export async function plugin(server: FastifyInstance) {
     await server.register(serve, {
       decorateReply: false,
       root: join(__dirname, '..', path),
-      wildcard: false,
+      wildcard: '*.{ico,js{,.map},png,webmanifest}',
     });
   }
 }
