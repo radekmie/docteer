@@ -45,7 +45,7 @@ const defaultPatch: PatchType = {
         'with light-fast fuzzy search functionality and labelling/filtering mechanism.',
       ],
       snippet:
-        '<div className="flex flex-center w-100" style="width: 680px; background: aliceblue;"><div className="flex-1"><p className="big pl4"><br>A simple way to store everything.<br>With<span>&nbsp;</span><b>DocTeer</b><span>&nbsp;</span>your data are easier to use.<br><br><a href="https://docteer.com/signup">Sign up</a>.</p></div></div>',
+        '<div class="flex flex-center w-100" style="width: 680px; background: aliceblue;"><div class="flex-1"><p class="big pl4"><br>A simple way to store everything.<br>With<span>&nbsp;</span><b>DocTeer</b><span>&nbsp;</span>your data are easier to use.<br><br><a href="https://docteer.com/signup">Sign up</a>.</p></div></div>',
       what:
         "You start with an almost empty data collection, with just a 'read me' doc to scan through. To ginger up your party, you need to define some templates (settings icon on the left) and then create your own documents. Remember to save them when finished (accept icon). Play around for yourself!",
       why:
