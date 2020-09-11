@@ -35,14 +35,14 @@ export const render = cache(view => {
   return {
     body,
     headers: {
-      // FIXME: Get all needed.
-      // 'content-security-policy': [
-      //   "default-src 'none'; ",
-      //   'connect-src ws:; ',
-      //   'img-src * data:; ',
-      //   "script-src 'self' 'unsafe-inline'; ",
-      //   "style-src 'self' 'unsafe-inline';"
-      // ].join(''),
+      'content-security-policy': [
+        "default-src 'none'",
+        "connect-src 'self'",
+        'img-src * data:',
+        "manifest-src 'self'",
+        "script-src 'self'",
+        "style-src 'unsafe-inline'",
+      ].join(';'),
       'content-type': 'text/html',
       'referrer-policy': 'no-referrer',
       'x-frame-options': 'sameorigin',
