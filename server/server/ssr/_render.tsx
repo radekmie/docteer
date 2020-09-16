@@ -9,18 +9,6 @@ import { Application } from '../../../client/components/Application';
 import { Logo } from '../../../client/components/Logo';
 import { cache, titleForView } from '../../../shared';
 
-export const params = (url: string) => {
-  if (url.startsWith('/login')) {
-    return 'login';
-  }
-
-  if (url.startsWith('/signup')) {
-    return 'signup';
-  }
-
-  return '';
-};
-
 export const render = cache(view => {
   const $html = cheerio.load(template());
   $html('body')

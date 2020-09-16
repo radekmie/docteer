@@ -14,7 +14,7 @@ import { Settings } from './Settings';
 import { Toasts } from './Toasts';
 
 type Application$Props = {
-  view?: string;
+  view: string;
 };
 
 type Application$State = {
