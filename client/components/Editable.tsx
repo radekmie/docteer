@@ -43,7 +43,7 @@ export class Editable extends Component<Editable$Props> {
       }
 
       if (this.props.tag === 'textarea') {
-        element.style.height = element.scrollHeight + 'px';
+        element.style.height = `${element.scrollHeight}px`;
       } else if (props.tag === 'textarea') {
         element.style.height = '';
       }

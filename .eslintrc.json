@@ -2,12 +2,22 @@
   "env": { "jest": true },
   "extends": "vazco/typescript",
   "rules": {
+    "@typescript-eslint/ban-types": "off",
     "@typescript-eslint/camelcase": "off",
-    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-floating-promises": "off",
+    "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
-    "@typescript-eslint/no-use-before-define": "off",
-    "@typescript-eslint/require-await": "off"
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "@typescript-eslint/no-unsafe-call": "off",
+    "@typescript-eslint/no-unsafe-member-access": "off",
+    "@typescript-eslint/no-unsafe-return": "off",
+    "@typescript-eslint/require-await": "off",
+    "camelcase": "off",
+    "jsx-a11y/anchor-has-content": "off",
+    "jsx-a11y/autocomplete-valid": "off",
+    "jsx-a11y/no-onchange": "off"
   },
   "settings": {
     "react": { "pragma": "h", "version": "16.0.0" }
