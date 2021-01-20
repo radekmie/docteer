@@ -25,7 +25,8 @@ export function onAdd() {
 }
 
 export function onClone() {
-  create((_, { note }) => {
+  // FIXME: Implement type-safe `NoteType` => `Exclude<NotePatchType, '_id'>`.
+  create((_, { note }: { note: any }) => {
     if (note) {
       note = Object.assign({}, note);
       delete note._created;
@@ -658,7 +659,8 @@ function call<Endpoint extends keyof APIEndpoints>(
           toast('error', error);
         }
         reject(error);
-      } else {
+      } else if (response) {
+        // FIXME: Above assertion is superficial, but overloaded `done` is not enough.
         resolve(response);
       }
     }

@@ -139,6 +139,6 @@
     "postcss-custom-properties": "9.1.1",
     "prettier": "2.0.5",
     "terser": "5.1.0",
-    "typescript": "3.9.7"
+    "typescript": "4.1.3"
   }
 }

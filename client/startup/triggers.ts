@@ -4,7 +4,7 @@ import * as tree from '../state';
 
 // Startup
 const storage = window.localStorage || {};
-new Promise(window.requestIdleCallback || window.setTimeout)
+new Promise<void>(window.requestIdleCallback || window.setTimeout)
   .then(() => onLoginWithToken(storage.token))
   .then(loaded, loaded);
 
