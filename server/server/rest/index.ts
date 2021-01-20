@@ -10,6 +10,11 @@ export async function plugin(server: FastifyInstance) {
     reply.code(200).send({ error, result: null });
   });
 
+  // Maintain response format.
+  server.addHook('onSend', async (request, reply, payload) => {
+    return { error: null, result: payload };
+  });
+
   for (const endpoint of endpoints) {
     server.route(endpoint);
   }

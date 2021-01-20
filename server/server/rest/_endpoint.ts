@@ -19,9 +19,8 @@ export function endpoint<Endpoint extends keyof APIEndpoints>(
     method: method as HTTPMethods,
     schema: { [method === 'GET' ? 'querystring' : 'body']: fn.schema },
     url,
-    handler: async request => ({
-      error: null,
-      result: await withTransaction(async transaction => {
+    handler: request =>
+      withTransaction(async transaction => {
         const context: APIContextType = {
           ...transaction,
           // @ts-expect-error These are filled in `_authorize`.
@@ -46,7 +45,6 @@ export function endpoint<Endpoint extends keyof APIEndpoints>(
         const data = method === 'GET' ? request.query : request.body;
         return await fn.run(data as any, context);
       }),
-    }),
   };
 }
 
