@@ -43,7 +43,7 @@ export function endpoint<Endpoint extends keyof APIEndpoints>(
         }
 
         const data = method === 'GET' ? request.query : request.body;
-        return await fn.run(data as any, context);
+        return { error: null, result: await fn.run(data as any, context) };
       }),
   };
 }

@@ -1,17 +1,18 @@
 import Ajv from 'ajv';
+import ajvFormats from 'ajv-formats';
 import ajvKeywords from 'ajv-keywords';
+import ajvKeywordsInstanceOf from 'ajv-keywords/dist/definitions/instanceof';
 import { ObjectId } from 'mongodb';
 
 export const ajv = new Ajv({
   allErrors: true,
+  allowUnionTypes: true,
   coerceTypes: true,
   removeAdditional: true,
-  strictDefaults: true,
-  strictKeywords: true,
-  strictNumbers: true,
   useDefaults: true,
 });
 
-ajvKeywords(ajv, ['instanceof']);
-// @ts-expect-error `ajv-keywords` has not types for `.get`.
-ajvKeywords.get('instanceof').definition.CONSTRUCTORS.ObjectId = ObjectId;
+ajvFormats(ajv);
+ajvKeywords(ajv);
+
+Object.assign(ajvKeywordsInstanceOf.CONSTRUCTORS, { ObjectId });
