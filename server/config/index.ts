@@ -10,7 +10,8 @@ const config = {
       options: {
         ignoreUndefined: true,
         maxPoolSize: 100,
-        serverApi: { deprecationErrors: true, version: '1' as const },
+        // TODO: Enable once the free MongoDB Atlas cluster will update to 5.0.
+        // serverApi: { deprecationErrors: true, version: '1' as const },
         useUnifiedTopology: true,
       },
       url: 'mongodb://localhost:27017/docteer',
