@@ -1,4 +1,4 @@
-import { BulkWriteOperation } from 'mongodb';
+import { AnyBulkWriteOperation } from 'mongodb';
 
 import * as api from '..';
 import { APIContextType, NoteDocType, PatchType } from '../../../types';
@@ -9,7 +9,7 @@ type Params = { patch: PatchType; refresh: number };
 
 async function handle({ patch, refresh }: Params, context: APIContextType) {
   const now = context.now;
-  const bulk: BulkWriteOperation<NoteDocType>[] = [];
+  const bulk: AnyBulkWriteOperation<NoteDocType>[] = [];
 
   patch.removed.forEach(_id => {
     bulk.push({

@@ -1,5 +1,5 @@
 export const Notes = {
-  name: 'notes',
+  collectionName: 'notes',
   indexes: [
     [{ _id_user: 1, _id_slug: 1 }, { unique: true }],
     [{ _id_user: 1, _updated: 1 }],

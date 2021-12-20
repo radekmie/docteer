@@ -29,14 +29,16 @@ export type APIEndpointResult<
   : never;
 
 export type APITransactionType = {
-  collections: {
-    Notes: Collection<NoteDocType>;
-    Users: Collection<UserDocType>;
-  };
+  collections: Collections;
   db: Db;
   mongo: MongoClient;
   now: Date;
   session: ClientSession;
+};
+
+export type Collections = {
+  Notes: Collection<NoteDocType>;
+  Users: Collection<UserDocType>;
 };
 
 export type LabelType = {

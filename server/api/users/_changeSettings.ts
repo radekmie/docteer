@@ -21,7 +21,7 @@ async function handle(input: Params, context: APIContextType) {
     { $set: input },
     {
       projection: { _id: 0, schemas: 1 },
-      returnOriginal: false,
+      returnDocument: 'after',
       session: context.session,
     },
   );

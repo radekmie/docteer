@@ -1,4 +1,4 @@
-import MongoClient from 'mongodb';
+import { MongoClient } from 'mongodb';
 
 import { cache } from '../../shared';
 import config from '../config';
@@ -14,7 +14,7 @@ export const getMongo = cache(async () => {
         ? await clientPromise
         : await clientPromise.catch(() => null);
 
-    if (client && client.isConnected()) {
+    if (client) {
       return client;
     }
 

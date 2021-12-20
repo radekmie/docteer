@@ -1,5 +1,5 @@
 export const Users = {
-  name: 'users',
+  collectionName: 'users',
   indexes: [
     [
       { 'emails.address': 1 },

@@ -10,8 +10,8 @@ const config = {
       options: {
         ignoreUndefined: true,
         maxPoolSize: 100,
+        serverApi: { deprecationErrors: true, version: '1' as const },
         useUnifiedTopology: true,
-        validateOptions: true,
       },
       url: 'mongodb://localhost:27017/docteer',
     },
